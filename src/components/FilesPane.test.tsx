@@ -104,17 +104,20 @@ class StubResizeObserver {
   StubResizeObserver;
 
 // happy-dom reports 0 for every layout box, and @tanstack/react-virtual sizes
-// its visible window from the scroll element's `offsetHeight` — so without a
-// stub the virtualizer renders ZERO rows and nothing about the listing is
-// assertable. Give elements a viewport-sized box for the whole file.
-Object.defineProperty(HTMLElement.prototype, "offsetHeight", {
-  configurable: true,
-  get: () => 600,
-});
-Object.defineProperty(HTMLElement.prototype, "offsetWidth", {
-  configurable: true,
-  get: () => 800,
-});
+// its visible window from the scroll element's box — `offsetHeight` up to
+// virtual-core 3.19.5, `clientHeight` from 3.19.6 ("measure the scroll
+// viewport using client dimensions so borders and scrollbars do not obscure
+// end-aligned items") — so without a stub the virtualizer renders ZERO rows
+// and nothing about the listing is assertable. Give elements a viewport-
+// sized box, both flavours, for the whole file.
+for (const [prop, px] of [
+  ["offsetHeight", 600],
+  ["clientHeight", 600],
+  ["offsetWidth", 800],
+  ["clientWidth", 800],
+] as const) {
+  Object.defineProperty(HTMLElement.prototype, prop, { configurable: true, get: () => px });
+}
 
 // The OS-drop hit-test (F1) measures the pane with `getBoundingClientRect`,
 // which happy-dom returns all-zero. Give every element the same 800×600

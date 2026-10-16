@@ -110,7 +110,7 @@ serde_yaml_bw = "2.5"
 unicode-normalization = "0.1"
 toml_edit = "0.25"
 regex = "1"
-dirs = "6"
+dirs = "7"
 tempfile = "3"
 # Bulk connection import parsers (connection-import feature). roxmltree:
 # read-only XML DOM for SecureCRT SCRTConfig.xml (MIT OR Apache-2.0).
@@ -315,7 +315,7 @@ secrecy.workspace = true
 keyring.workspace = true
 # SHA-256 for the PKCE code challenge (chatgpt_auth.rs). Already in the
 # tree via transit_tls.
-sha2 = "0.10"
+sha2 = "0.11"
 # Phase 6's `agent_dispatch` module — `regex` for the per-chat
 # always-allow allowlist (compiled once on Approve-and-remember,
 # matched per propose_command), `async-trait` for the

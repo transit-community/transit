@@ -765,6 +765,14 @@ function TabTrigger({
                 }}
                 onBlur={commit}
                 onClick={(e) => e.stopPropagation()}
+                // The input lives INSIDE a Radix TabsTrigger. Since
+                // @radix-ui/react-tabs 1.2 the trigger's onMouseDown calls
+                // `event.currentTarget.focus()`, so a click inside the input
+                // (placing the caret) bubbled up, moved focus to the button,
+                // blurred the input and committed whatever draft was there.
+                // Keep mousedown inside the input; default caret placement
+                // still happens because only propagation is stopped.
+                onMouseDown={(e) => e.stopPropagation()}
                 className="w-24 bg-transparent font-mono text-sm outline-none ring-1 ring-ring rounded px-1"
                 data-testid={`tab-rename-input-${tab.sessionId}`}
                 aria-label="Tab name"

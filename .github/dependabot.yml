@@ -32,6 +32,12 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      # age 0.12 pulls ml-kem ^0.2 → kem ^0.3.0-pre.0, which resolves to
+      # kem 0.3.0 final and does not compile (found Oct 2026). Lift when
+      # age's ml-kem dependency reaches 0.3.
+      - dependency-name: "age"
+        versions: [">= 0.12"]
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -47,6 +53,10 @@ updates:
           - "minor"
           - "patch"
     ignore:
+      # react-resizable-panels v3/v4 rewrote the Panel/Group API; the
+      # migration (six call sites) is a deliberate follow-up, not a chore.
+      - dependency-name: "react-resizable-panels"
+        update-types: ["version-update:semver-major"]
       # react-doctor 0.5.x is far stricter than 0.1.x and fails the CI
       # gate on current source; adopting it is a tracked follow-up.
       - dependency-name: "react-doctor"

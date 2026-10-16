@@ -137,6 +137,9 @@ impl FilesSession {
                 max_packet_len: config.max_packet_len,
                 max_concurrent_writes: config.max_concurrent_writes,
                 request_timeout_secs: config.request_timeout_secs,
+                // russh-sftp 3.0 added read concurrency + a framed write
+                // packet size; the library defaults (16 / 32 KiB) are kept.
+                ..Default::default()
             },
         )
         .await

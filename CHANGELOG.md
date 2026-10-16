@@ -12,6 +12,23 @@ bumps the version files in lockstep.
 
 ## [Unreleased]
 
+### Changed
+- **October dependency train (post-fork).** Tauri 2.12.4 with its plugins
+  on both sides, React 19.3.1, Vite 8.3.4, Vitest 5.0.5, the Radix
+  primitives, TanStack Query/Virtual, zod, and the in-range Rust crates;
+  `russh-sftp` 3.0 (two new SFTP client tunables, left at the library
+  defaults) and `dirs` 7; `sha2` 0.11. Held deliberately: `age` 0.12
+  (pulls a pre-release `kem` that does not compile) and
+  `react-resizable-panels` v4 (API rewrite, separate migration); both
+  carry Dependabot ignores with the reason. The four GitHub Actions are
+  re-pinned to their new commit SHAs.
+
+### Fixed
+- **Tab rename lost the draft on a click inside the field.** Radix tabs
+  1.2 focuses the tab button on mousedown, so a click to place the caret
+  in the inline rename input bubbled up, blurred the input and committed
+  the draft early. Mousedown now stays inside the input.
+
 ### Security
 - Updated the SSH transport, **russh**, from 0.62 to 0.63.3: channel-scoped
   event handlers no longer fire for channel ids the client never opened
