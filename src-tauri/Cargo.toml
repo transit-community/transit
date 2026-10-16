@@ -110,7 +110,7 @@ serde_yaml_bw = "2.5"
 unicode-normalization = "0.1"
 toml_edit = "0.25"
 regex = "1"
-dirs = "6"
+dirs = "7"
 tempfile = "3"
 # Bulk connection import parsers (connection-import feature). roxmltree:
 # read-only XML DOM for SecureCRT SCRTConfig.xml (MIT OR Apache-2.0).
