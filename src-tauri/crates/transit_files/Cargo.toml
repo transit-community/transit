@@ -41,7 +41,7 @@ tokio-util = { version = "0.7", default-features = false }
 # the rest of the tree: `dashmap` (MIT) and `serde_bytes` (MIT OR
 # Apache-2.0); `chrono`, `bitflags`, `tokio-util`, `bytes`, `log` were
 # already present. See docs/security/licenses.md.
-russh-sftp = "2.4"
+russh-sftp = "3.0"
 
 [dev-dependencies]
 tempfile.workspace = true
