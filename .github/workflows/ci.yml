@@ -29,8 +29,11 @@ jobs:
   ci:
     name: ${{ matrix.name }}
     # Per-leg wall-clock cap: a hung leg fails fast instead of riding the
-    # 6-hour default.
-    timeout-minutes: 50
+    # 6-hour default. Sized for GitHub-hosted runners (2-core while the
+    # repo is private, 4-core public) on a cold cache; the step caps
+    # below were originally tuned for 8-core runners and timed out on
+    # the very first run.
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -131,6 +134,9 @@ jobs:
         uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           workspaces: src-tauri
+          # Save the cache even when a later step fails or times out, so
+          # a cold-cache timeout warms the next run instead of repeating.
+          cache-on-failure: true
 
       - name: Install cargo-deny
         uses: taiki-e/install-action@4cef1412cce204788f482e778a0b9187f9626a29 # v2
@@ -245,11 +251,11 @@ jobs:
       # concurrently, so a small macOS runner ends up heavily
       # oversubscribed and has wedged. Serializing costs seconds.
       - name: cargo test (workspace, excluding transit_ssh)
-        timeout-minutes: 20
+        timeout-minutes: 45
         run: cargo test --manifest-path src-tauri/Cargo.toml --workspace --exclude transit_ssh
 
       - name: cargo test (transit_ssh, serialized)
-        timeout-minutes: 15
+        timeout-minutes: 25
         run: cargo test --manifest-path src-tauri/Cargo.toml -p transit_ssh -- --test-threads=1
 
       - name: cargo test (integration-tests)
@@ -260,7 +266,7 @@ jobs:
         # The cap is per-OS because the two runners are not close. This step
         # recompiles the whole workspace under a different feature set, so it
         # is compile-dominated, and Windows compiles far slower than macOS.
-        timeout-minutes: ${{ matrix.name == 'windows-latest' && 30 || 20 }}
+        timeout-minutes: ${{ matrix.name == 'windows-latest' && 50 || 40 }}
         # macOS Keychain and Windows Credential Manager are always
         # available on a logged-in CI session — no daemon to start.
         # Keychain entries created by the runner persist on the
