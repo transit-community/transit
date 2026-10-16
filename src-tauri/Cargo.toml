@@ -94,7 +94,7 @@ tauri-plugin-dialog = "2"
 # Held at 0.11 in the monthly cargo bump: age 0.12 pulls ml-kem 0.2.1,
 # which fails to compile against the tree's kem 0.3.0 (russh's ML-KEM KEX).
 # Revisit when age's ml-kem dep aligns with kem 0.3.
-age = "0.11"
+age = "0.12"
 
 # Inventory + parsing
 toml = "1.1"
