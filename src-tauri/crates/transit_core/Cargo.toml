@@ -1,0 +1,42 @@
+[package]
+name = "transit_core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "Transit core types, parsing, and shared utilities (no Tauri, no async runtime)."
+
+[lints]
+workspace = true
+
+[dependencies]
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+tracing-appender.workspace = true
+toml.workspace = true
+toml_edit.workspace = true
+regex.workspace = true
+tempfile.workspace = true
+# Bulk connection import (ssh_config / CSV / SecureCRT). roxmltree is a
+# read-only XML DOM for SecureCRT's SCRTConfig.xml; csv handles RFC4180
+# quoting for the CSV importer. Both pure-Rust; licenses in the
+# deny.toml allowlist (roxmltree MIT/Apache; csv Unlicense OR MIT).
+roxmltree.workspace = true
+csv.workspace = true
+# v6.2.0 — NetBox inventory sync: the parse half of import::netbox reads
+# the JSON pages the app fetched (workspace dep, already vetted).
+serde_json.workspace = true
+# Phase 7b C16 — TerminalSession trait. async-trait for the
+# `send_input` dispatch site; bytes/tokio/time match what both
+# transport crates already use for their concrete Session impls.
+async-trait.workspace = true
+bytes.workspace = true
+time.workspace = true
+tokio = { version = "1", features = ["sync"] }
+
+[dev-dependencies]
+proptest.workspace = true
+tempfile.workspace = true

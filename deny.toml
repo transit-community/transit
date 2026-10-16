@@ -1,0 +1,268 @@
+# cargo-deny config for Transit.
+#
+# Three jobs:
+#   1. Advisories — block known-vulnerable crates (RustSec).
+#   2. Licenses  — strict allowlist for closed-source commercial bundling.
+#   3. Bans      — enforce the agent firewall + dep hygiene.
+#
+# Run locally: `cargo deny check` (from src-tauri/).
+# Runs in CI on every PR.
+
+[graph]
+all-features = true
+no-default-features = false
+
+[output]
+feature-depth = 1
+
+# ---------------------------------------------------------------------
+# Advisories
+# ---------------------------------------------------------------------
+[advisories]
+db-path = "~/.cargo/advisory-db"
+db-urls = ["https://github.com/rustsec/advisory-db"]
+yanked = "deny"
+
+# Carve-outs are for advisories on transitive deps we cannot upgrade
+# directly. Each entry needs a justification + a remove-by checkpoint.
+ignore = [
+    # All in the unic-* family — pulled in by tauri 2.x via tauri-utils.
+    # Awaiting upstream Tauri to migrate to icu_properties / unicode-ident.
+    "RUSTSEC-2025-0075",  # unic-char-range
+    "RUSTSEC-2025-0080",  # unic-common
+    "RUSTSEC-2025-0081",  # unic-char-property
+    "RUSTSEC-2025-0098",  # unic-ucd-version
+    "RUSTSEC-2025-0100",  # unic-ucd-ident
+    # proc-macro-error — unmaintained, transitive via tauri-build / wry / tao.
+    "RUSTSEC-2024-0370",
+    # proc-macro-error2 — the maintained fork above is now unmaintained too
+    # (author confirmed 2026-06). Build-time proc-macro only, transitive via
+    # age → i18n-embed-fl. No safe upgrade exists; remove when age /
+    # i18n-embed-fl migrate (re-check at the next `age` version bump).
+    "RUSTSEC-2026-0173",
+    # serial 0.4 — unmaintained (2017), non-optional transitive of
+    # portable-pty 0.8.1, which transit_localpty PINS deliberately:
+    # portable-pty 0.9.0 added PSUEDOCONSOLE_INHERIT_CURSOR to its ConPTY
+    # flags, wedging every Windows local shell (no output/input/exit — the
+    # v4.4.0 Windows smoke-test + CI failures, 2026-08-03; see the pin
+    # comment in crates/transit_localpty/Cargo.toml). The `serial` code is
+    # portable-pty's serial-port PTY backend, which Transit NEVER constructs
+    # (native_pty_system() only; Transit's real serial transport is
+    # transit_console on the maintained `serialport` crate). Remove when
+    # portable-pty makes INHERIT_CURSOR optional (or we ship a DSR
+    # auto-responder) and the pin can move forward off 0.8.x.
+    "RUSTSEC-2017-0008",
+    # gtk3-rs family unmaintained (Linux WebKitGTK stack pulls these in).
+    # Awaiting upstream Tauri to migrate the Linux backend to gtk4-rs.
+    "RUSTSEC-2024-0411",
+    "RUSTSEC-2024-0412",
+    "RUSTSEC-2024-0413",
+    "RUSTSEC-2024-0414",
+    "RUSTSEC-2024-0415",
+    "RUSTSEC-2024-0416",
+    "RUSTSEC-2024-0417",
+    "RUSTSEC-2024-0418",
+    "RUSTSEC-2024-0419",
+    "RUSTSEC-2024-0420",
+    # rsa crate Marvin-attack timing sidechannel on private-key
+    # operations. Pulled in transitively via russh → ssh-key → rsa.
+    # (russh 0.61 replaced its bundled internal-russh-forked-ssh-key
+    # with the upstream RustCrypto `ssh-key` crate; the `rsa`
+    # transitive dep — and therefore this advisory — is unchanged by
+    # that swap.) We're an SSH client that only does public-key
+    # VERIFICATION (host-key check); we don't sign with RSA private
+    # keys in-process. Future SshKey backend (Phase 2a.1) routes
+    # through ssh-agent for signing, not the rsa crate. Re-evaluate
+    # when the `rsa` crate ships a Marvin-hardened (constant-time)
+    # release, or at Phase 9 hardening.
+    "RUSTSEC-2023-0071",
+    # ttf-parser — unmaintained (author stepped back from his Rust font
+    # crates; RUSTSEC-2026-0192). Transitive via fontdb (src/fonts.rs
+    # read-only OS monospace-font enumeration for the terminal font picker).
+    # "Unmaintained," not a vulnerability — pure-Rust parsing of locally
+    # installed font metadata, no untrusted/network input. No maintained
+    # successor (fontdb is the same author's crate and depends on it).
+    # Remove when fontdb migrates off ttf-parser or we swap fontdb for a
+    # maintained enumerator. Re-check at the next fontdb bump.
+    "RUSTSEC-2026-0192",
+    # quick-xml < 0.41 DoS pair: quadratic duplicate-attribute check
+    # (RUSTSEC-2026-0194) + unbounded NsReader namespace allocation
+    # (RUSTSEC-2026-0195). Transitive via plist ← tauri (+ plugins) —
+    # macOS property-list parsing of LOCAL, trusted files (bundle
+    # Info.plist etc.), never network/attacker-controlled input, so the
+    # DoS vector doesn't apply here. Both fixed in quick-xml >= 0.41.0,
+    # but plist 1.9.0 (latest as of 2026-07-02) pins ^0.39.2 — no
+    # upgrade path exists. Our own XML importer uses roxmltree, not
+    # quick-xml. Remove when plist ships a quick-xml 0.41 bump
+    # (re-check at the next tauri/plist Dependabot bump).
+    "RUSTSEC-2026-0194",
+    "RUSTSEC-2026-0195",
+]
+
+# ---------------------------------------------------------------------
+# Licenses — adding to this list requires written justification in
+# docs/security/licenses.md.
+# ---------------------------------------------------------------------
+[licenses]
+version = 2
+confidence-threshold = 0.93
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "0BSD",
+    "Unicode-3.0",
+    "Unicode-DFS-2016",
+    "CC0-1.0",
+    "Zlib",
+    # MPL-2.0 is weakly copyleft (file-level). Acceptable for closed-source
+    # commercial bundling so long as we do not modify the MPL-licensed
+    # source files. Justified in docs/security/licenses.md.
+    "MPL-2.0",
+    # BSL-1.0 (Boost Software License 1.0): permissive, OSI-approved,
+    # FSF-approved. No copyleft, no advertising clause. Compatible with
+    # closed-source commercial bundling. Pulled in transitively via
+    # arboard → clipboard-win + error-code (Windows clipboard backend
+    # for tauri-plugin-clipboard-manager). Justified in
+    # docs/security/licenses.md.
+    "BSL-1.0",
+    # CDLA-Permissive-2.0 (Community Data License Agreement, Permissive
+    # 2.0): permissive license originally for data sets, now used by a
+    # handful of code projects too. No copyleft on derivative works,
+    # explicit grant of patent rights, no source-disclosure obligation
+    # — compatible with closed-source commercial bundling. Pulled in
+    # via reqwest → rustls → webpki-roots (the bundled trust-root list).
+    # Justified in docs/security/licenses.md.
+    "CDLA-Permissive-2.0",
+]
+exceptions = []
+
+# Skip license checks for our own workspace crates (publish = false).
+# They are Apache-2.0 but not published; skipping avoids a redundant check.
+private = { ignore = true }
+
+# ---------------------------------------------------------------------
+# Bans — architectural firewall and dep hygiene.
+# ---------------------------------------------------------------------
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+# Skip the wildcard check for in-workspace path deps. Internal crates
+# don't ship to crates.io so they have no version pin needed beyond the
+# path reference.
+allow-wildcard-paths = true
+highlight = "all"
+workspace-default-features = "allow"
+external-default-features = "allow"
+
+# THE AGENT FIREWALL.
+#
+# transit_agent must not depend on transit_auth. Allowed direct
+# dependents on transit_auth are listed in `wrappers`. Adding a new
+# wrapper here requires explicit user approval and a security review.
+[[bans.deny]]
+name = "transit_auth"
+wrappers = ["transit_app", "transit_ssh"]
+
+# THE AGENT FIREWALL — keyring half.
+#
+# transit_agent must not depend on `keyring` directly either. The
+# agent firewall's purpose is that the AI loop has no code path to
+# any OS-keychain credential — including the user's provider keys and
+# the user's provider API keys + local-endpoint tokens, which DON'T
+# live behind `transit_auth` (they're under `transit_app::provider_keys`
+# and `transit_app::local_models`). Without this ban, a future
+# refactor could add `keyring = ...` to transit_agent's Cargo.toml
+# and the workspace would happily build. This makes the keychain
+# surface unreachable from the agent at the dep-graph level, same
+# property as the `transit_auth` ban above.
+[[bans.deny]]
+name = "keyring"
+wrappers = ["transit_app", "transit_auth"]
+
+# THE AGENT FIREWALL — API-transport half (v4.0.0).
+#
+# transit_agent must not depend on `transit_api` either. `transit_api`
+# is the crate that resolves a controller's API key into an `X-API-KEY`
+# header and pins the request host — i.e. the one place a UniFi
+# credential becomes an outbound request. The agent's `propose_api_call`
+# tool is a *typed variant only*; its GET is executed in transit_app
+# (key injection + host pin + gate), never in transit_agent. This ban
+# makes "the AI loop has no code path to the API transport (and thus to
+# the injected key or a caller-chosen host)" a dep-graph property, the
+# same defense-in-depth as the two bans above. Only transit_app (the
+# binary) legitimately depends on transit_api.
+[[bans.deny]]
+name = "transit_api"
+wrappers = ["transit_app"]
+
+# THE AGENT FIREWALL — file-transfer half (v5.0.0).
+#
+# transit_agent must not depend on `transit_files` either. `transit_files`
+# is the SFTP browse/transfer engine plus the local-filesystem ops behind
+# the Files pane — i.e. the one place Transit reads and writes device files
+# and the user's own disk. File transfer is a HUMAN surface (the exact
+# classification of the local terminal, the button bar, and the broadcast
+# bar): the agent cannot list, browse, read, or transfer files, and the
+# crate is composed into neither of the agent's two session seams
+# (`UnifiedScrollbackSource` / `UnifiedSessionExecutor`, rebuilt per chat
+# turn in chat.rs). This ban makes that blindness a dep-graph property
+# rather than a review comment — a `transit_files = ...` line in
+# transit_agent's Cargo.toml fails `cargo deny` instead of building. Rule 2
+# stays at five tools; an agent file tool would be a deliberate §8 event
+# with its own redaction story. Only transit_app (the binary) legitimately
+# depends on transit_files. Threat model T43.
+[[bans.deny]]
+name = "transit_files"
+wrappers = ["transit_app"]
+
+# THE AGENT FIREWALL — local-terminal half (v4.4.0, banned v5.0.0).
+#
+# Backfill: v4.4.0 shipped the local-terminal firewall as prose plus the
+# structural omission from the agent's session seams, but never as a
+# dep-graph ban — so nothing stopped a refactor from adding
+# `transit_localpty` to transit_agent and writing a `LocalScrollbackSource`
+# there. A local shell is unrestricted local execution on the user's
+# machine, which is exactly what the agent must never reach (threat model
+# T42), so the same ban that guards transit_files guards it. Only
+# transit_app (the binary) legitimately depends on transit_localpty.
+[[bans.deny]]
+name = "transit_localpty"
+wrappers = ["transit_app"]
+
+# THE AGENT FIREWALL — packet-capture half (v6.0.0).
+#
+# `transit_pcap` is the odd one out on this list, and deliberately so.
+# Every other banned crate backs a surface the agent must never see at
+# all. PCaps is the opposite: the agent reading a capture IS the feature.
+#
+# The ban still belongs here, because visibility is granted the same way
+# scrollback's is — through a trait, not a dependency. `transit_agent`
+# owns the `CaptureSource` trait and the agent-facing answer types;
+# `transit_app` owns this engine, implements the trait over it, and hands
+# the resulting `Arc<dyn CaptureSource>` to the per-turn dispatcher,
+# exactly as `SshScrollbackSource` does. The agent therefore depends on
+# the SHAPE of an answer and never on the engine, the capture file, or
+# the OS capture process it supervises.
+#
+# What this ban buys: the three capabilities left OFF that trait —
+# raw packet bytes, flow reassembly, and export — cannot be reached by
+# adding a `transit_pcap = …` line to transit_agent and calling the
+# engine directly. Metadata-only stays an absence rather than a policy.
+# Only transit_app (the binary) legitimately depends on transit_pcap.
+# Threat model T45; checked by `transit-agent-firewall-test`.
+[[bans.deny]]
+name = "transit_pcap"
+wrappers = ["transit_app"]
+
+# ---------------------------------------------------------------------
+# Sources — only crates.io and trusted git.
+# ---------------------------------------------------------------------
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

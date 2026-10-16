@@ -1,0 +1,120 @@
+# Juniper Junos OS — read-only command policy.
+#
+# Schema: see src-tauri/crates/transit_policy/src/loader.rs for the
+# authoritative shape. Design rationale: see policies/junos.README.md.
+#
+# Default-deny on no-match. The `precedence` field below only governs
+# the "head matches both `allowed` and `blocked`" tiebreaker — a
+# command that matches nothing is ALWAYS denied regardless.
+---
+precedence: block-wins
+
+canonicalization:
+  # First-token aliases. Junos's CLI accepts these contractions
+  # natively (you can type `sh int br` and it expands to `show
+  # interfaces brief`), so the policy must reason about the
+  # canonical form. v1 covers single-token expansions only.
+  aliases:
+    sh: show
+    sho: show
+    shw: show
+    p: ping
+    tr: traceroute
+    mon: monitor
+
+# ---------------------------------------------------------------------
+# Head allow/block lists. Matched against the canonicalized command
+# head (everything before the first `|`).
+# ---------------------------------------------------------------------
+
+allowed:
+  - "^show( |$)" # the workhorse — operational status
+  - "^ping( |$)"
+  - "^traceroute( |$)"
+  - "^monitor( |$)" # `monitor traffic`, `monitor interface`, etc
+  - "^file list( |$)" # directory listing only (file delete/copy blocked)
+  - "^op( |$)" # operator scripts; conventionally read-only
+  - "^help " # interactive help
+
+blocked:
+  # Shell escape — drops to underlying FreeBSD. Fully bypasses the gate.
+  - "^start shell"
+  # System-level state changes.
+  - "^request system " # reboot, halt, snapshot, software add/del
+  - "^request " # belt-and-suspenders: catch any other request *
+  - "^restart "
+  - "^reboot"
+  - "^reload"
+  - "^reset "
+  # Configuration-mode entry + commits. Read-only mandate excludes
+  # everything below.
+  - "^configure"
+  - "^commit"
+  - "^edit "
+  - "^rollback"
+  - "^load "
+  - "^save "
+  - "^copy " # file ops with side effects
+  - "^file (copy|delete|rename|create) "
+  # Routing-engine state mutation.
+  - "^clear " # clears counters, ARP, BGP sessions, etc
+  - "^test " # runs config tests, can side-effect
+  # `monitor traffic … write-file <path>` persists a pcap to the device
+  # filesystem — a write that would otherwise ride the `^monitor` allow.
+  - '^monitor\b.*\bwrite-file\b'
+  # Session control. Quitting / logging out from a propose_command
+  # makes no sense and could mask intent.
+  - "^quit"
+  - "^exit"
+  - "^logout"
+
+# ---------------------------------------------------------------------
+# Pipe-stage policy. Each `| stage` after the head is matched
+# independently; any blocked stage trips the whole command, and an
+# unallowed stage default-denies.
+# ---------------------------------------------------------------------
+
+pipe_allowed:
+  - "^display set( |$)" # alternate output format
+  - "^display xml( |$)"
+  - "^display json( |$)"
+  - "^display inheritance( |$)"
+  - "^match " # filter
+  - "^except "
+  - "^find "
+  - "^count( |$)" # line count
+  - "^last( |$)" # last N lines
+  - "^last [0-9]+$" # `| last 50`
+  - "^no-more( |$)" # disable pager
+  - "^trim " # column trim
+
+pipe_blocked:
+  - "^save " # writes to a file — side effect
+  - "^compare" # config diff at config-mode prompts
+  - "^commit"
+  - "^request"
+
+# v6.1.x #1 — the PHRASEBOOK: canonical, economical, gate-ALLOWED forms
+# rendered into the agent's prompt as "Known-good forms". Prompt-side
+# only — the gate never reads this list; tests/phrasebook_gate.rs fails
+# the build if any entry would be denied. Curated from the allowed
+# corpus; keep entries ≤60 chars and the list ≤20.
+phrasebook:
+  - "show system uptime"
+  - "show version"
+  - "show interfaces terse"
+  - "show interfaces ge-0/0/0 extensive"
+  - "show chassis alarms"
+  - "show system alarms"
+  - "show log messages | last 50"
+  - "show log messages | match error"
+  - "show route summary"
+  - "show route protocol bgp"
+  - "show bgp summary"
+  - "show ospf neighbor"
+  - "show configuration | display set | match interfaces"
+  - "show configuration interfaces ge-0/0/0"
+  - "show system rollback compare 1 0"
+  - "show arp no-resolve"
+  - "ping 10.0.0.1 count 5"
+  - "traceroute 10.0.0.1"

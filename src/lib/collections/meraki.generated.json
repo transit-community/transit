@@ -1,0 +1,1732 @@
+{
+  "id": "meraki",
+  "name": "Meraki Dashboard",
+  "vendor": "meraki",
+  "bundled": true,
+  "variables": [],
+  "root": {
+    "id": "meraki-1394",
+    "name": "Meraki",
+    "requests": [],
+    "folders": [
+      {
+        "id": "meraki-1395",
+        "name": "Organization",
+        "requests": [
+          {
+            "id": "meraki-155",
+            "name": "List organizations (start here — id → {{organizationId}})",
+            "method": "GET",
+            "path": "organizations",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the organizations that the user has privileges on"
+          },
+          {
+            "id": "meraki-156",
+            "name": "List networks (id → {{networkId}})",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/networks",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the networks that the user has privileges on in an organization"
+          },
+          {
+            "id": "meraki-157",
+            "name": "List devices (serial → {{serial}})",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/devices",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the devices in an organization that have been assigned to a network."
+          },
+          {
+            "id": "meraki-88",
+            "name": "List switch stacks (id → {{switchStackId}})",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/stacks",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the switch stacks in a network"
+          },
+          {
+            "id": "meraki-29",
+            "name": "Summary top clients by usage",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/summary/top/clients/byUsage",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return metrics for organization's top 10 clients by data usage (in mb) over given time range."
+          },
+          {
+            "id": "meraki-30",
+            "name": "Summary top clients manufacturers by usage",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/summary/top/clients/manufacturers/byUsage",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return metrics for organization's top clients by data usage (in mb) over given time range, grouped by manufacturer."
+          },
+          {
+            "id": "meraki-31",
+            "name": "Summary top networks by status",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/summary/top/networks/byStatus",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the client and status overview information for the networks in an organization. Usage is measured in kilobytes and from the last seven days."
+          },
+          {
+            "id": "meraki-32",
+            "name": "Summary top SSIDs by usage",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/summary/top/ssids/byUsage",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return metrics for organization's top 10 ssids by data usage over given time range. Default unit is megabytes."
+          },
+          {
+            "id": "meraki-68",
+            "name": "Administered licensing subscription subscriptions compliance statuses",
+            "method": "GET",
+            "path": "administered/licensing/subscription/subscriptions/compliance/statuses",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get compliance status for requested subscriptions"
+          },
+          {
+            "id": "meraki-96",
+            "name": "Summary switch power history",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/summary/switch/power/history",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns the total PoE power draw for all switch ports in the organization over the requested timespan (by default the last 24 hours). The returned array is a ne"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "meraki-1396",
+        "name": "Network",
+        "requests": [
+          {
+            "id": "meraki-24",
+            "name": "Events event types",
+            "method": "GET",
+            "path": "networks/{{networkId}}/events/eventTypes",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the event type to human-readable description"
+          },
+          {
+            "id": "meraki-25",
+            "name": "Events",
+            "method": "GET",
+            "path": "networks/{{networkId}}/events",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the events for the network"
+          },
+          {
+            "id": "meraki-27",
+            "name": "Network health channel utilization",
+            "method": "GET",
+            "path": "networks/{{networkId}}/networkHealth/channelUtilization",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get the channel utilization over each radio for all APs in a network."
+          },
+          {
+            "id": "meraki-33",
+            "name": "Topology link layer",
+            "method": "GET",
+            "path": "networks/{{networkId}}/topology/linkLayer",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the LLDP and CDP information for all discovered devices and connections in a network. At least one MX or MS device must be in the network in order to build"
+          },
+          {
+            "id": "meraki-34",
+            "name": "Traffic",
+            "method": "GET",
+            "path": "networks/{{networkId}}/traffic",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the traffic analysis data for this network. Traffic analysis with hostname visibility must be enabled on the network."
+          },
+          {
+            "id": "meraki-38",
+            "name": "Policies global group policies appliance VLANs assignments by VLAN",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/policies/global/group/policies/appliance/vlans/assignments/byVlan",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List policies by appliance VLANs"
+          },
+          {
+            "id": "meraki-39",
+            "name": "Policies global group policies appliance VLANs assignments",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/policies/global/group/policies/appliance/vlans/assignments",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List appliance VLAN policy assignments"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "meraki-1397",
+        "name": "Devices",
+        "requests": [
+          {
+            "id": "meraki-3",
+            "name": "Devices overview by model",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/devices/overview/byModel",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Lists the count for each device model"
+          },
+          {
+            "id": "meraki-16",
+            "name": "Devices availabilities change history",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/devices/availabilities/changeHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the availability history information for devices in an organization."
+          },
+          {
+            "id": "meraki-17",
+            "name": "Devices power modules statuses by device",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/devices/powerModules/statuses/byDevice",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the most recent status information for power modules in rackmount MX and MS devices that support them. The data returned by this endpoint is updated every "
+          },
+          {
+            "id": "meraki-18",
+            "name": "Devices provisioning statuses",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/devices/provisioning/statuses",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the provisioning statuses information for devices in an organization."
+          },
+          {
+            "id": "meraki-19",
+            "name": "Devices statuses overview",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/devices/statuses/overview",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return an overview of current device statuses"
+          },
+          {
+            "id": "meraki-20",
+            "name": "Devices statuses",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/devices/statuses",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the status of every Meraki device in the organization"
+          },
+          {
+            "id": "meraki-21",
+            "name": "Devices system memory usage history by interval",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/devices/system/memory/usage/history/byInterval",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the memory utilization history in kB for devices in the organization."
+          },
+          {
+            "id": "meraki-22",
+            "name": "Devices uplinks addresses by device",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/devices/uplinks/addresses/byDevice",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the current uplink addresses for devices in an organization."
+          },
+          {
+            "id": "meraki-23",
+            "name": "Devices uplinks loss and latency",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/devices/uplinksLossAndLatency",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the uplink loss and latency for every MX in the organization from at latest 2 minutes ago"
+          },
+          {
+            "id": "meraki-26",
+            "name": "LLDP CDP",
+            "method": "GET",
+            "path": "devices/{{serial}}/lldpCdp",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List LLDP and CDP information for a device"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "meraki-1398",
+        "name": "Clients",
+        "requests": [
+          {
+            "id": "meraki-0",
+            "name": "Client policy",
+            "method": "GET",
+            "path": "networks/{{networkId}}/clients/{{clientId}}/policy",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the policy assigned to a client on the network. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses T"
+          },
+          {
+            "id": "meraki-1",
+            "name": "Clients search",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/clients/search",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the client details in an organization"
+          },
+          {
+            "id": "meraki-2",
+            "name": "Client splash authorization status",
+            "method": "GET",
+            "path": "networks/{{networkId}}/clients/{{clientId}}/splashAuthorizationStatus",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the splash authorization for a client, for each SSID they've associated with through splash. Only enabled SSIDs with Click-through splash enabled will be"
+          },
+          {
+            "id": "meraki-6",
+            "name": "Clients application usage",
+            "method": "GET",
+            "path": "networks/{{networkId}}/clients/applicationUsage",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the application usage data for clients. Usage data is in kilobytes. Clients can be identified by client keys or either the MACs or IPs depending on wheth"
+          },
+          {
+            "id": "meraki-7",
+            "name": "Clients bandwidth usage history",
+            "method": "GET",
+            "path": "networks/{{networkId}}/clients/bandwidthUsageHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns a timeseries of total traffic consumption rates for all clients on a network within a given timespan, in megabits per second."
+          },
+          {
+            "id": "meraki-8",
+            "name": "Clients bandwidth usage history",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/clients/bandwidthUsageHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return data usage (in megabits per second) over time for all clients in the given organization within a given time range."
+          },
+          {
+            "id": "meraki-9",
+            "name": "Clients overview",
+            "method": "GET",
+            "path": "networks/{{networkId}}/clients/overview",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return overview statistics for network clients"
+          },
+          {
+            "id": "meraki-10",
+            "name": "Clients overview",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/clients/overview",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return summary information around client data usage (in kb) across the given organization."
+          },
+          {
+            "id": "meraki-11",
+            "name": "Client traffic history",
+            "method": "GET",
+            "path": "networks/{{networkId}}/clients/{{clientId}}/trafficHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the client's network traffic data over time. Usage data is in kilobytes. This endpoint requires detailed traffic analysis to be enabled on the Network-wi"
+          },
+          {
+            "id": "meraki-12",
+            "name": "Clients usage histories",
+            "method": "GET",
+            "path": "networks/{{networkId}}/clients/usageHistories",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the usage histories for clients. Usage data is in kilobytes. Clients can be identified by client keys or either the MACs or IPs depending on whether the "
+          },
+          {
+            "id": "meraki-13",
+            "name": "Client usage history",
+            "method": "GET",
+            "path": "networks/{{networkId}}/clients/{{clientId}}/usageHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the client's daily usage history. Usage data is in kilobytes. Clients can be identified by a client key or either the MAC or IP depending on whether the "
+          },
+          {
+            "id": "meraki-14",
+            "name": "Clients",
+            "method": "GET",
+            "path": "devices/{{serial}}/clients",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the clients of a device, up to a maximum of a month ago. The usage of each client is returned in kilobytes. If the device is a switch, the switchport is re"
+          },
+          {
+            "id": "meraki-15",
+            "name": "Client",
+            "method": "GET",
+            "path": "networks/{{networkId}}/clients/{{clientId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the client associated with the given identifier. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses "
+          },
+          {
+            "id": "meraki-158",
+            "name": "Clients",
+            "method": "GET",
+            "path": "networks/{{networkId}}/clients",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the clients that have used this network in the timespan. The data is updated at most once every five minutes."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "meraki-1399",
+        "name": "Switch (MS)",
+        "requests": [
+          {
+            "id": "meraki-69",
+            "name": "Switch DHCP v4 servers seen",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/dhcp/v4/servers/seen",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the network's DHCPv4 servers seen within the selected timeframe (default 1 day)"
+          },
+          {
+            "id": "meraki-70",
+            "name": "Switch DHCP server policy ARP inspection warnings by device",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/dhcpServerPolicy/arpInspection/warnings/byDevice",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the devices that have a Dynamic ARP Inspection warning and their warnings"
+          },
+          {
+            "id": "meraki-71",
+            "name": "Switch ports by switch",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/switch/ports/bySwitch",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the switchports in an organization by switch"
+          },
+          {
+            "id": "meraki-72",
+            "name": "Switch port",
+            "method": "GET",
+            "path": "devices/{{serial}}/switch/ports/{{portId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a switch port"
+          },
+          {
+            "id": "meraki-73",
+            "name": "Switch ports",
+            "method": "GET",
+            "path": "devices/{{serial}}/switch/ports",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the switch ports for a switch"
+          },
+          {
+            "id": "meraki-74",
+            "name": "Switch routing interface DHCP",
+            "method": "GET",
+            "path": "devices/{{serial}}/switch/routing/interfaces/{{interfaceId}}/dhcp",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a layer 3 interface DHCP configuration for a switch"
+          },
+          {
+            "id": "meraki-75",
+            "name": "Switch routing interface",
+            "method": "GET",
+            "path": "devices/{{serial}}/switch/routing/interfaces/{{interfaceId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a layer 3 interface for a switch"
+          },
+          {
+            "id": "meraki-76",
+            "name": "Switch routing interfaces",
+            "method": "GET",
+            "path": "devices/{{serial}}/switch/routing/interfaces",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List layer 3 interfaces for a switch. Those for a stack may be found under switch stack routing."
+          },
+          {
+            "id": "meraki-77",
+            "name": "Switch routing multicast rendezvous point",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/routing/multicast/rendezvousPoints/{{rendezvousPointId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a multicast rendezvous point"
+          },
+          {
+            "id": "meraki-78",
+            "name": "Switch routing multicast rendezvous points",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/routing/multicast/rendezvousPoints",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List multicast rendezvous points"
+          },
+          {
+            "id": "meraki-79",
+            "name": "Switch routing multicast",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/routing/multicast",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return multicast settings for a network"
+          },
+          {
+            "id": "meraki-80",
+            "name": "Switch routing ospf",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/routing/ospf",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return layer 3 OSPF routing configuration"
+          },
+          {
+            "id": "meraki-81",
+            "name": "Switch routing static route",
+            "method": "GET",
+            "path": "devices/{{serial}}/switch/routing/staticRoutes/{{staticRouteId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a layer 3 static route for a switch"
+          },
+          {
+            "id": "meraki-82",
+            "name": "Switch routing static routes",
+            "method": "GET",
+            "path": "devices/{{serial}}/switch/routing/staticRoutes",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List layer 3 static routes for a switch"
+          },
+          {
+            "id": "meraki-83",
+            "name": "Switch stack routing interface DHCP",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/stacks/{{switchStackId}}/routing/interfaces/{{interfaceId}}/dhcp",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a layer 3 interface DHCP configuration for a switch stack"
+          },
+          {
+            "id": "meraki-84",
+            "name": "Switch stack routing interface",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/stacks/{{switchStackId}}/routing/interfaces/{{interfaceId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a layer 3 interface from a switch stack"
+          },
+          {
+            "id": "meraki-85",
+            "name": "Switch stack routing interfaces",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/stacks/{{switchStackId}}/routing/interfaces",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List layer 3 interfaces for a switch stack"
+          },
+          {
+            "id": "meraki-86",
+            "name": "Switch stack routing static route",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/stacks/{{switchStackId}}/routing/staticRoutes/{{staticRouteId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a layer 3 static route for a switch stack"
+          },
+          {
+            "id": "meraki-87",
+            "name": "Switch stack routing static routes",
+            "method": "GET",
+            "path": "networks/{{networkId}}/switch/stacks/{{switchStackId}}/routing/staticRoutes",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List layer 3 static routes for a switch stack"
+          },
+          {
+            "id": "meraki-89",
+            "name": "Switch ports clients overview by device",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/switch/ports/clients/overview/byDevice",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the number of clients for all switchports with at least one online client in an organization."
+          },
+          {
+            "id": "meraki-90",
+            "name": "Switch ports overview",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/switch/ports/overview",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns the counts of all active ports for the requested timespan, grouped by speed. An active port is a port that at any point during the timeframe is observed"
+          },
+          {
+            "id": "meraki-91",
+            "name": "Switch ports statuses by switch",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/switch/ports/statuses/bySwitch",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the switchports in an organization"
+          },
+          {
+            "id": "meraki-92",
+            "name": "Switch ports statuses packets",
+            "method": "GET",
+            "path": "devices/{{serial}}/switch/ports/statuses/packets",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the packet counters for all the ports of a switch"
+          },
+          {
+            "id": "meraki-93",
+            "name": "Switch ports statuses",
+            "method": "GET",
+            "path": "devices/{{serial}}/switch/ports/statuses",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the status for all the ports of a switch"
+          },
+          {
+            "id": "meraki-94",
+            "name": "Switch ports topology discovery by device",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/switch/ports/topology/discovery/byDevice",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List most recently seen LLDP/CDP discovery and topology information per switch port in an organization."
+          },
+          {
+            "id": "meraki-95",
+            "name": "Switch ports usage history by device by interval",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/switch/ports/usage/history/byDevice/byInterval",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the historical usage and traffic data of switchports in an organization."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "meraki-1400",
+        "name": "Wireless & captive portal (MR)",
+        "requests": [
+          {
+            "id": "meraki-4",
+            "name": "Splash asset",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/splash/assets/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a Splash Theme Asset"
+          },
+          {
+            "id": "meraki-5",
+            "name": "Splash themes",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/splash/themes",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List Splash Themes"
+          },
+          {
+            "id": "meraki-28",
+            "name": "Splash login attempts",
+            "method": "GET",
+            "path": "networks/{{networkId}}/splashLoginAttempts",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the splash login attempts for a network"
+          },
+          {
+            "id": "meraki-97",
+            "name": "Wireless air marshal rules",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/airMarshal/rules",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns the current Air Marshal rules for this organization"
+          },
+          {
+            "id": "meraki-98",
+            "name": "Wireless air marshal settings by network",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/airMarshal/settings/byNetwork",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns the current Air Marshal settings for this network"
+          },
+          {
+            "id": "meraki-99",
+            "name": "Wireless ethernet ports profile",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ethernet/ports/profiles/{{profileId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Show the AP port profile by ID for this network"
+          },
+          {
+            "id": "meraki-100",
+            "name": "Wireless ethernet ports profiles",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ethernet/ports/profiles",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the AP port profiles for this network"
+          },
+          {
+            "id": "meraki-101",
+            "name": "Wireless RF profiles assignments by device",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/rfProfiles/assignments/byDevice",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the RF profiles of an organization by device"
+          },
+          {
+            "id": "meraki-102",
+            "name": "Wireless RF profile",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/rfProfiles/{{rfProfileId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a RF profile"
+          },
+          {
+            "id": "meraki-103",
+            "name": "Wireless RF profiles",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/rfProfiles",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List RF profiles for this network"
+          },
+          {
+            "id": "meraki-104",
+            "name": "Wireless SSID bonjour forwarding",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/bonjourForwarding",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the Bonjour forwarding setting and rules for the SSID"
+          },
+          {
+            "id": "meraki-105",
+            "name": "Wireless SSID device type group policies",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/deviceTypeGroupPolicies",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the device type group policies for the SSID"
+          },
+          {
+            "id": "meraki-106",
+            "name": "Wireless SSID eap override",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/eapOverride",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the EAP overridden parameters for an SSID"
+          },
+          {
+            "id": "meraki-107",
+            "name": "Wireless SSIDs firewall isolation allowlist entries",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/ssids/firewall/isolation/allowlist/entries",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the L2 isolation allow list MAC entry in an organization"
+          },
+          {
+            "id": "meraki-108",
+            "name": "Wireless SSID firewall l3 firewall rules",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/firewall/l3FirewallRules",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the L3 firewall rules for an SSID on an MR network"
+          },
+          {
+            "id": "meraki-109",
+            "name": "Wireless SSID firewall l7 firewall rules",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/firewall/l7FirewallRules",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the L7 firewall rules for an SSID on an MR network"
+          },
+          {
+            "id": "meraki-110",
+            "name": "Wireless SSID hotspot20",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/hotspot20",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the Hotspot 2.0 settings for an SSID"
+          },
+          {
+            "id": "meraki-111",
+            "name": "Wireless SSID identity psk",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/identityPsks/{{identityPskId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return an Identity PSK"
+          },
+          {
+            "id": "meraki-112",
+            "name": "Wireless SSID identity psks",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/identityPsks",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List all Identity PSKs in a wireless network"
+          },
+          {
+            "id": "meraki-113",
+            "name": "Wireless SSIDs open roaming by network",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/ssids/openRoaming/byNetwork",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns an array of objects, each containing SSID OpenRoaming configs for the corresponding network"
+          },
+          {
+            "id": "meraki-114",
+            "name": "Wireless SSID schedules",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/schedules",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the outage schedule for the SSID"
+          },
+          {
+            "id": "meraki-115",
+            "name": "Wireless SSID splash settings",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/splash/settings",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Display the splash page settings for the given SSID"
+          },
+          {
+            "id": "meraki-116",
+            "name": "Wireless SSID traffic shaping rules",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/trafficShaping/rules",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Display the traffic shaping settings for a SSID on an MR network"
+          },
+          {
+            "id": "meraki-117",
+            "name": "Wireless SSID VPN",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}/vpn",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the VPN settings for the SSID."
+          },
+          {
+            "id": "meraki-118",
+            "name": "Wireless SSID",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a single MR SSID"
+          },
+          {
+            "id": "meraki-119",
+            "name": "Wireless SSIDs",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/ssids",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the MR SSIDs in a network"
+          },
+          {
+            "id": "meraki-120",
+            "name": "Wireless air marshal",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/airMarshal",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List Air Marshal scan results from a network"
+          },
+          {
+            "id": "meraki-121",
+            "name": "Wireless channel utilization history",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/channelUtilizationHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return AP channel utilization over time for a device or network client"
+          },
+          {
+            "id": "meraki-122",
+            "name": "Wireless client count history",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/clientCountHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return wireless client counts over time for a network, device, or network client"
+          },
+          {
+            "id": "meraki-123",
+            "name": "Wireless client connection stats",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/clients/{{clientId}}/connectionStats",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Aggregated connectivity info for a given client on this network. Clients are identified by their MAC."
+          },
+          {
+            "id": "meraki-124",
+            "name": "Wireless clients connection stats",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/clients/connectionStats",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Aggregated connectivity info for this network, grouped by clients"
+          },
+          {
+            "id": "meraki-125",
+            "name": "Wireless client connectivity events",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/clients/{{clientId}}/connectivityEvents",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the wireless connectivity events for a client within a network in the timespan."
+          },
+          {
+            "id": "meraki-126",
+            "name": "Wireless client latency history",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/clients/{{clientId}}/latencyHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the latency history for a client. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP. Th"
+          },
+          {
+            "id": "meraki-127",
+            "name": "Wireless client latency stats",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/clients/{{clientId}}/latencyStats",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Aggregated latency info for a given client on this network. Clients are identified by their MAC."
+          },
+          {
+            "id": "meraki-128",
+            "name": "Wireless clients latency stats",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/clients/latencyStats",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Aggregated latency info for this network, grouped by clients"
+          },
+          {
+            "id": "meraki-129",
+            "name": "Wireless clients overview by device",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/clients/overview/byDevice",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List access point client count at the moment in an organization"
+          },
+          {
+            "id": "meraki-130",
+            "name": "Wireless connection stats",
+            "method": "GET",
+            "path": "devices/{{serial}}/wireless/connectionStats",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Aggregated connectivity info for a given AP on this network"
+          },
+          {
+            "id": "meraki-131",
+            "name": "Wireless connection stats",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/connectionStats",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Aggregated connectivity info for this network"
+          },
+          {
+            "id": "meraki-132",
+            "name": "Wireless data rate history",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/dataRateHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return PHY data rates over time for a network, device, or network client"
+          },
+          {
+            "id": "meraki-133",
+            "name": "Wireless devices channel utilization by device",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/devices/channelUtilization/byDevice",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get average channel utilization for all bands in a network, split by AP"
+          },
+          {
+            "id": "meraki-134",
+            "name": "Wireless devices channel utilization by network",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/devices/channelUtilization/byNetwork",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get average channel utilization across all bands for all networks in the organization"
+          },
+          {
+            "id": "meraki-135",
+            "name": "Wireless devices channel utilization history by device by interval",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/devices/channelUtilization/history/byDevice/byInterval",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a time-series of average channel utilization for all bands, segmented by device."
+          },
+          {
+            "id": "meraki-136",
+            "name": "Wireless devices channel utilization history by network by interval",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/devices/channelUtilization/history/byNetwork/byInterval",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a time-series of average channel utilization for all bands"
+          },
+          {
+            "id": "meraki-137",
+            "name": "Wireless devices connection stats",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/devices/connectionStats",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Aggregated connectivity info for this network, grouped by node"
+          },
+          {
+            "id": "meraki-138",
+            "name": "Wireless devices ethernet statuses",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/devices/ethernet/statuses",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices."
+          },
+          {
+            "id": "meraki-139",
+            "name": "Wireless devices latency stats",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/devices/latencyStats",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Aggregated latency info for this network, grouped by node"
+          },
+          {
+            "id": "meraki-140",
+            "name": "Wireless devices packet loss by client",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/devices/packetLoss/byClient",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get average packet loss for the given timespan for all clients in the organization."
+          },
+          {
+            "id": "meraki-141",
+            "name": "Wireless devices packet loss by device",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/devices/packetLoss/byDevice",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get average packet loss for the given timespan for all devices in the organization. Does not include device's own traffic."
+          },
+          {
+            "id": "meraki-142",
+            "name": "Wireless devices packet loss by network",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/devices/packetLoss/byNetwork",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get average packet loss for the given timespan for all networks in the organization."
+          },
+          {
+            "id": "meraki-143",
+            "name": "Wireless devices power mode history",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/devices/power/mode/history",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a record of power mode changes for wireless devices in the organization. For each device, it provides a series of events with timestamps indicating when "
+          },
+          {
+            "id": "meraki-144",
+            "name": "Wireless devices system cpu load history",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/devices/system/cpu/load/history",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the CPU Load history for a list of wireless devices in the organization."
+          },
+          {
+            "id": "meraki-145",
+            "name": "Wireless devices wireless controllers by device",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/devices/wirelessControllers/byDevice",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List of Catalyst access points information"
+          },
+          {
+            "id": "meraki-146",
+            "name": "Wireless failed connections",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/failedConnections",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List of all failed client connection events on this network in a given time range"
+          },
+          {
+            "id": "meraki-147",
+            "name": "Wireless latency history",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/latencyHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return average wireless latency over time for a network, device, or network client"
+          },
+          {
+            "id": "meraki-148",
+            "name": "Wireless latency stats",
+            "method": "GET",
+            "path": "devices/{{serial}}/wireless/latencyStats",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Aggregated latency info for a given AP on this network"
+          },
+          {
+            "id": "meraki-149",
+            "name": "Wireless latency stats",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/latencyStats",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Aggregated latency info for this network"
+          },
+          {
+            "id": "meraki-150",
+            "name": "Wireless mesh statuses",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/meshStatuses",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List wireless mesh statuses for repeaters"
+          },
+          {
+            "id": "meraki-151",
+            "name": "Wireless signal quality history",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/signalQualityHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return signal quality (SNR/RSSI) over time for a device or network client"
+          },
+          {
+            "id": "meraki-152",
+            "name": "Wireless SSIDs statuses by device",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/wireless/ssids/statuses/byDevice",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List status information of all BSSIDs in your organization"
+          },
+          {
+            "id": "meraki-153",
+            "name": "Wireless status",
+            "method": "GET",
+            "path": "devices/{{serial}}/wireless/status",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the SSID statuses of an access point"
+          },
+          {
+            "id": "meraki-154",
+            "name": "Wireless usage history",
+            "method": "GET",
+            "path": "networks/{{networkId}}/wireless/usageHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return AP usage over time for a device or network client"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "meraki-1401",
+        "name": "Appliance & SD-WAN (MX)",
+        "requests": [
+          {
+            "id": "meraki-35",
+            "name": "Loss and latency history",
+            "method": "GET",
+            "path": "devices/{{serial}}/lossAndLatencyHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get the uplink loss percentage and latency in milliseconds, and goodput in kilobits per second for MX, MG and Z devices."
+          },
+          {
+            "id": "meraki-36",
+            "name": "Uplinks statuses",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/uplinks/statuses",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the uplink status of every Meraki MX, MG and Z series devices in the organization"
+          },
+          {
+            "id": "meraki-37",
+            "name": "Appliance connectivity monitoring destinations",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/connectivityMonitoringDestinations",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the connectivity testing destinations for an MX network"
+          },
+          {
+            "id": "meraki-40",
+            "name": "Appliance port",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/ports/{{portId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return per-port VLAN settings for a single secure router or security appliance port."
+          },
+          {
+            "id": "meraki-41",
+            "name": "Appliance ports",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/ports",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List per-port VLAN settings for all ports of a secure router or security appliance."
+          },
+          {
+            "id": "meraki-42",
+            "name": "Appliance RF profile",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/rfProfiles/{{rfProfileId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a RF profile"
+          },
+          {
+            "id": "meraki-43",
+            "name": "Appliance RF profiles",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/rfProfiles",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the RF profiles for this network"
+          },
+          {
+            "id": "meraki-44",
+            "name": "Appliance SSID",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/ssids/{{number}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a single MX SSID"
+          },
+          {
+            "id": "meraki-45",
+            "name": "Appliance SSIDs",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/ssids",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the MX SSIDs in a network"
+          },
+          {
+            "id": "meraki-46",
+            "name": "Appliance traffic shaping uplink bandwidth",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/trafficShaping/uplinkBandwidth",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns the uplink bandwidth limits for your MX network. This may not reflect the affected device's hardware capabilities.  For more information on your device'"
+          },
+          {
+            "id": "meraki-47",
+            "name": "Appliance traffic shaping uplink selection",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/trafficShaping/uplinkSelection",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Show uplink selection settings for an MX network"
+          },
+          {
+            "id": "meraki-48",
+            "name": "Appliance uplinks nat by network",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/appliance/uplinks/nat/byNetwork",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Fetch uplink NAT settings of each network in the organization"
+          },
+          {
+            "id": "meraki-49",
+            "name": "Appliance uplinks settings",
+            "method": "GET",
+            "path": "devices/{{serial}}/appliance/uplinks/settings",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the uplink settings for an MX appliance"
+          },
+          {
+            "id": "meraki-50",
+            "name": "Appliance VLANs settings",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/vlans/settings",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns the enabled status of VLANs for the network"
+          },
+          {
+            "id": "meraki-51",
+            "name": "Appliance VLAN",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/vlans/{{vlanId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a VLAN"
+          },
+          {
+            "id": "meraki-52",
+            "name": "Appliance VLANs",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/vlans",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the VLANs for a Security Appliance network"
+          },
+          {
+            "id": "meraki-53",
+            "name": "Appliance VPN bgp",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/vpn/bgp",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return a Hub BGP Configuration"
+          },
+          {
+            "id": "meraki-54",
+            "name": "Appliance VPN site to site ipsec peers slas",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/appliance/vpn/siteToSite/ipsec/peers/slas",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get the list of available IPsec SLA policies for an organization"
+          },
+          {
+            "id": "meraki-55",
+            "name": "Appliance VPN site to site VPN",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/vpn/siteToSiteVpn",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the site-to-site VPN settings of a network. Only valid for MX networks."
+          },
+          {
+            "id": "meraki-56",
+            "name": "Appliance VPN third party VPN peers",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/appliance/vpn/thirdPartyVPNPeers",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the third party VPN peers for an organization"
+          },
+          {
+            "id": "meraki-57",
+            "name": "Appliance VPN VPN firewall rules",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/appliance/vpn/vpnFirewallRules",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the firewall rules for an organization's site-to-site VPN"
+          },
+          {
+            "id": "meraki-58",
+            "name": "Appliance client security events",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/clients/{{clientId}}/security/events",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the security events for a client. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP."
+          },
+          {
+            "id": "meraki-59",
+            "name": "Appliance DHCP subnets",
+            "method": "GET",
+            "path": "devices/{{serial}}/appliance/dhcp/subnets",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Return the DHCP subnet information for an appliance"
+          },
+          {
+            "id": "meraki-60",
+            "name": "Appliance security events",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/security/events",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the security events for a network"
+          },
+          {
+            "id": "meraki-61",
+            "name": "Appliance security events",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/appliance/security/events",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the security events for an organization"
+          },
+          {
+            "id": "meraki-62",
+            "name": "Appliance uplinks statuses overview",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/appliance/uplinks/statuses/overview",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns an overview of uplink statuses"
+          },
+          {
+            "id": "meraki-63",
+            "name": "Appliance uplink statuses",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/appliance/uplink/statuses",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "List the uplink status of every Meraki MX and Z series appliances in the organization"
+          },
+          {
+            "id": "meraki-64",
+            "name": "Appliance uplinks usage by network",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/appliance/uplinks/usage/byNetwork",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get the sent and received bytes for each uplink of all MX and Z networks within an organization. If more than one device was active during the specified timespa"
+          },
+          {
+            "id": "meraki-65",
+            "name": "Appliance uplinks usage history",
+            "method": "GET",
+            "path": "networks/{{networkId}}/appliance/uplinks/usageHistory",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get the sent and received bytes for each uplink of a network."
+          },
+          {
+            "id": "meraki-66",
+            "name": "Appliance VPN stats",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/appliance/vpn/stats",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Show VPN history stat for networks in an organization"
+          },
+          {
+            "id": "meraki-67",
+            "name": "Appliance VPN statuses",
+            "method": "GET",
+            "path": "organizations/{{organizationId}}/appliance/vpn/statuses",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Show VPN status for networks in an organization"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "meraki-1402",
+        "name": "Common changes (writes)",
+        "requests": [
+          {
+            "id": "meraki-w901",
+            "name": "Blink device LEDs",
+            "method": "POST",
+            "path": "devices/{{serial}}/blinkLeds",
+            "headers": [],
+            "body": "{\n  \"duration\": 20\n}",
+            "destructive": true
+          },
+          {
+            "id": "meraki-w902",
+            "name": "Reboot device",
+            "method": "POST",
+            "path": "devices/{{serial}}/reboot",
+            "headers": [],
+            "body": null,
+            "destructive": true
+          },
+          {
+            "id": "meraki-w903",
+            "name": "Update device",
+            "method": "PUT",
+            "path": "devices/{{serial}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"\",\n  \"tags\": []\n}",
+            "destructive": true
+          },
+          {
+            "id": "meraki-w904",
+            "name": "Update switch port",
+            "method": "PUT",
+            "path": "devices/{{serial}}/switch/ports/{{portId}}",
+            "headers": [],
+            "body": "{\n  \"enabled\": true,\n  \"name\": \"\"\n}",
+            "destructive": true
+          },
+          {
+            "id": "meraki-w905",
+            "name": "Cycle switch ports",
+            "method": "POST",
+            "path": "devices/{{serial}}/switch/ports/cycle",
+            "headers": [],
+            "body": "{\n  \"ports\": [\n    \"1\"\n  ]\n}",
+            "destructive": true
+          },
+          {
+            "id": "meraki-w906",
+            "name": "Update SSID",
+            "method": "PUT",
+            "path": "networks/{{networkId}}/wireless/ssids/{{number}}",
+            "headers": [],
+            "body": "{\n  \"enabled\": true,\n  \"name\": \"\"\n}",
+            "destructive": true
+          },
+          {
+            "id": "meraki-w907",
+            "name": "Update appliance VLAN",
+            "method": "PUT",
+            "path": "networks/{{networkId}}/appliance/vlans/{{vlanId}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"\"\n}",
+            "destructive": true
+          },
+          {
+            "id": "meraki-w908",
+            "name": "Claim devices into network",
+            "method": "POST",
+            "path": "networks/{{networkId}}/devices/claim",
+            "headers": [],
+            "body": "{\n  \"serials\": []\n}",
+            "destructive": true
+          }
+        ],
+        "folders": []
+      }
+    ]
+  }
+}

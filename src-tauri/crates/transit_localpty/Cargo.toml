@@ -1,0 +1,57 @@
+[package]
+name = "transit_localpty"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "Local OS shell (PTY) transport for the Terminal surface."
+
+[lints]
+workspace = true
+
+[dependencies]
+transit_core.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+bytes.workspace = true
+time.workspace = true
+async-trait.workspace = true
+# Default working directory (the user's home) when a launch supplies none.
+dirs.workspace = true
+tokio = { version = "1", features = [
+    "sync",
+    "rt",
+    "macros",
+    "time",
+] }
+# Cross-platform PTY: spawns a child shell attached to a pseudo-terminal
+# (ConPTY on Windows, openpty/forkpty on Unix). Its reader/writer halves
+# are BLOCKING `std::io`, so the reader + control loops run on dedicated OS
+# threads (see session.rs) rather than tokio tasks — the deliberate
+# divergence from transit_console's async serial split, and the reason a
+# real `resize` (which serial has no analog for) lives on the control loop.
+#
+# ⚠️ PINNED to 0.8.x — do NOT bump to 0.9 without reading this. 0.9.0 added
+# PSUEDOCONSOLE_INHERIT_CURSOR to its CreatePseudoConsole flags, which makes
+# Windows conhost emit a cursor-position query (ESC[6n) at startup and BLOCK
+# the child's console I/O until the terminal replies. wezterm's own terminal
+# answers that query; Transit's pipeline (and any headless test) does not, so
+# every Windows shell wedged with no output/input/exit (v4.4.0 smoke test +
+# both CI failures, 2026-08-03). 0.8.1 passes only RESIZE_QUIRK |
+# WIN32_INPUT_MODE — no startup handshake. If a future version makes
+# INHERIT_CURSOR optional (or we add a DSR auto-responder), revisit.
+#
+# Licensing: portable-pty is MIT (part of the wezterm workspace), within
+# the deny.toml allow-list.
+portable-pty = "0.8.1"
+
+[dev-dependencies]
+serde_json.workspace = true
+tokio = { version = "1", features = [
+    "rt-multi-thread",
+    "macros",
+    "time",
+    "sync",
+] }

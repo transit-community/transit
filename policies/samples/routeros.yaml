@@ -1,0 +1,81 @@
+# Sample BYOP policy — MikroTik RouterOS v7
+# ===========================================
+# STATUS: template. Not loaded by Transit today — see README.md in
+# this folder. Review every pattern against YOUR environment and
+# RouterOS version before use; this is a conservative read-only
+# baseline, not a guarantee.
+#
+# Shape of the RouterOS CLI: commands are slash-paths with a trailing
+# verb, optionally followed by parameters:
+#   /ip address print          <- read
+#   /ip address add ...        <- write
+#   /system reboot             <- action
+# The gate matches the whole canonicalized line, so the allow list
+# anchors on a path ENDING in a read verb (print / export / monitor),
+# and the block list catches mutation verbs after any path plus the
+# high-impact /system and /tool targets outright.
+#
+# Threat focus (why each block exists):
+#   - mutation verbs (add/set/remove/enable/disable/edit/move/unset)
+#     after any path — the entire config-write surface.
+#   - `/system reboot|shutdown|reset-configuration` — outage / wipe.
+#   - `/system script` + `/system scheduler` + `/import` + `/execute`
+#     — arbitrary code execution on the device.
+#   - `/tool fetch` — downloads files TO the device (ingress channel).
+#   - `file=` anywhere — `print file=`, `export file=`, and sniffer
+#     captures all WRITE to flash storage; blocked unanchored.
+#   - `/password`, `/file` — credential changes / flash filesystem.
+#
+# RouterOS abbreviates path tokens mid-line (`/ip addr pr`); the
+# gate's alias map only canonicalizes the FIRST token, which is
+# always `/<path>` here — so abbreviated forms can't be normalized
+# and will simply default-deny. Propose full paths.
+
+mode: gated
+precedence: block-wins
+
+canonicalization:
+  aliases: {}
+
+allowed:
+  # Any path ending in `print`, with or without trailing arguments
+  # (`detail`, `where ...`). `print file=...` is caught by the
+  # unanchored `file=` block below (block-wins).
+  - "^/[a-z][a-z0-9 /-]* print( |$)"
+  # Screen-only config export: bare `export` at the end of a path or
+  # top-level. `export file=...` writes flash -> `file=` block wins.
+  - "^/[a-z][a-z0-9 /-]* export( |$)"
+  - "^/export( |$)"
+  # Live read-only monitors (stream until interrupted; the command
+  # capture times out harmlessly).
+  - "^/interface monitor-traffic "
+  - "^/tool monitor-traffic "
+  # Reachability.
+  - "^/ping( |$)"
+  - "^/tool ping( |$)"
+  - "^/tool traceroute( |$)"
+
+blocked:
+  # Mutation verbs after any path. Space-delimited so `print where
+  # disabled` (the FILTER keyword `disabled`) doesn't false-positive.
+  - " (add|set|remove|edit|move|enable|disable|unset|comment)( |$)"
+  # Outage / wipe / persistence.
+  - "^/system (reboot|shutdown|reset-configuration|backup|package|upgrade|routerboard|license)"
+  # Code execution.
+  - "^/system script"
+  - "^/system scheduler"
+  - "^/import"
+  - "^/execute"
+  - "^/console"
+  # Ingress / abuse-grade tools.
+  - "^/tool (fetch|bandwidth-test|traffic-generator|e-mail|sms)"
+  # Flash filesystem + credentials.
+  - "^/file"
+  - "^/password"
+  # Anything that writes output or captures to storage.
+  - "file="
+
+# RouterOS has no `|` pipeline (filtering is `print where ...`).
+# Empty pipe_allowed means any piped command is refused outright.
+pipe_allowed: []
+pipe_blocked: []

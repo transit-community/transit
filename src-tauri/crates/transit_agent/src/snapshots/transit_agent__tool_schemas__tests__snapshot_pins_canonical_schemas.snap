@@ -1,0 +1,183 @@
+---
+source: crates/transit_agent/src/tool_schemas.rs
+assertion_line: 380
+expression: bundle
+---
+- description: "List currently-open sessions. Call this first when you need to know which devices are reachable. Takes no input. Returns each session's id, device id, vendor, transport kind, and opened-at timestamp. Session ids are short stable aliases (\"s1\", \"s2\", …) — use them verbatim in every session_id parameter. The device id is the connection name the user chose for the device (e.g. \"R1\") — when the user refers to a device by name, match it against device_id to pick the session."
+  input_schema:
+    additionalProperties: false
+    properties: {}
+    type: object
+  name: list_open_sessions
+- description: "Read recent PTY output from an open session. Call this to observe what's already on the user's screen — config dumps, log lines, prompts. Output is filtered through the redaction filter before you see it (PEM keys, passwords, tokens replaced with [REDACTED:…] markers). PREFER a `match` needle over reading whole rings — it keeps only matching lines plus context and reports `total_matched`, so you spend context on the lines that answer the question. Cap plain reads with `max_bytes`."
+  input_schema:
+    additionalProperties: false
+    properties:
+      context_lines:
+        description: Lines of context kept around each match. Defaults to 2; capped at 10.
+        minimum: 0
+        type: integer
+      match:
+        description: "Keep only lines containing this LITERAL substring (case-sensitive, not a regex), plus context_lines around each hit. The result reports total_matched so you know what you did not see."
+        type: string
+      max_bytes:
+        description: Maximum bytes to return. Defaults to 16384.
+        minimum: 1
+        type: integer
+      session_id:
+        description: "Target session id from list_open_sessions (e.g. \"s1\")."
+        type: string
+    required:
+      - session_id
+    type: object
+  name: read_scrollback
+- description: "Propose a command to execute in a session. Every proposal runs through both the per-vendor policy gate AND a UI approval modal — both, never one or the other. The user can approve, deny, or approve-and-remember (a regex allowlist scoped to this chat session). On approval, the command runs and the captured output is returned (already redacted). A `capture=\"silence\"` attribute on the result envelope means the output ended on quiet with no prompt — the command may still be running; re-read the scrollback rather than inventing the missing tail. On deny / gate-block, `executed: false` plus a reason is returned so you can pivot."
+  input_schema:
+    additionalProperties: false
+    properties:
+      command:
+        description: Single command line. Read-only verbs only — write/config commands are denied at the gate.
+        type: string
+      session_id:
+        description: "Target session id from list_open_sessions (e.g. \"s1\")."
+        type: string
+    required:
+      - session_id
+      - command
+    type: object
+  name: propose_command
+- description: "Ask the user a clarifying question. Use this when you genuinely need information you can't derive from scrollback — never as a substitute for proposing a command. The user's reply is returned verbatim."
+  input_schema:
+    additionalProperties: false
+    properties:
+      question:
+        description: "Single, focused question. Multi-question prompts confuse the user."
+        type: string
+    required:
+      - question
+    type: object
+  name: ask_user
+- description: "Propose a read-only GET against an API/controller session (e.g. a UniFi controller shown by list_open_sessions). GET-ONLY: there is deliberately no `method` field — you cannot request a write. Like propose_command it runs the gate (GET-only + host-pin) AND a user approval modal — both, every call. `path` is relative to the controller's fixed API base (e.g. \"/v1/sites\"); the host is fixed to the controller. On approval the GET runs and the already-redacted JSON body is returned; on deny/decline `executed: false` plus a reason. Use this for API/controller sessions; use propose_command for SSH/console sessions."
+  input_schema:
+    additionalProperties: false
+    properties:
+      path:
+        description: "Path (with optional ?query) relative to the controller's API base, e.g. /v1/sites. GET only."
+        type: string
+      session_id:
+        description: "Target API session id from list_open_sessions (e.g. \"s2\")."
+        type: string
+    required:
+      - session_id
+      - path
+    type: object
+  name: propose_api_call
+- description: "Query an open packet capture. START WITH `{\"kind\": \"overview\"}` — it is a precomputed digest (protocol mix, top talkers, conversations, TCP health, DNS/TLS/HTTP summaries, and deterministic findings) that costs the same whether the capture holds a thousand packets or ten million. Then drill in: `packets` for rows matching a view filter, `conversations` for the flow table, `flow` for one conversation's story, `packet` for one packet's fields, `findings` for the full problem list, `timeline` for rates over time. Findings carry a ready-made filter showing their evidence — use it. Filters use Transit's syntax: `tcp.port == 443 and ip.src == 10.0.0.0/24 and dns.rcode != 0`. This tool reads a local file and changes nothing. It returns dissected fields and summaries only; packet payload is not available through it."
+  input_schema:
+    additionalProperties: false
+    properties:
+      capture_id:
+        description: Which open capture. Omit when only one is open.
+        type: string
+      query:
+        description: "What to ask. Pick one `kind`."
+        oneOf:
+          - additionalProperties: false
+            properties:
+              kind:
+                const: list
+            required:
+              - kind
+          - additionalProperties: false
+            properties:
+              kind:
+                const: overview
+            required:
+              - kind
+          - additionalProperties: false
+            properties:
+              filter:
+                description: "View filter, e.g. `tcp.port == 443`."
+                type: string
+              kind:
+                const: packets
+              limit:
+                maximum: 500
+                minimum: 1
+                type: integer
+              offset:
+                minimum: 0
+                type: integer
+            required:
+              - kind
+          - additionalProperties: false
+            properties:
+              by:
+                enum:
+                  - bytes
+                  - packets
+                  - duration
+                  - retransmits
+                  - start
+                type: string
+              kind:
+                const: conversations
+              limit:
+                maximum: 500
+                minimum: 1
+                type: integer
+            required:
+              - kind
+          - additionalProperties: false
+            properties:
+              flow_id:
+                minimum: 0
+                type: integer
+              kind:
+                const: flow
+            required:
+              - kind
+              - flow_id
+          - additionalProperties: false
+            properties:
+              kind:
+                const: packet
+              number:
+                minimum: 1
+                type: integer
+            required:
+              - kind
+              - number
+          - additionalProperties: false
+            properties:
+              kind:
+                const: findings
+              limit:
+                maximum: 500
+                minimum: 1
+                type: integer
+              severity:
+                enum:
+                  - info
+                  - low
+                  - med
+                  - high
+                type: string
+            required:
+              - kind
+          - additionalProperties: false
+            properties:
+              bucket_ms:
+                minimum: 1
+                type: integer
+              filter:
+                type: string
+              kind:
+                const: timeline
+            required:
+              - kind
+        type: object
+    required:
+      - query
+    type: object
+  name: query_capture

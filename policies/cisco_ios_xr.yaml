@@ -1,0 +1,131 @@
+# Cisco IOS-XR — read-only command policy.
+#
+# Schema: see src-tauri/crates/transit_policy/src/loader.rs.
+# Design rationale: see policies/cisco_ios_xr.README.md.
+#
+# Default-deny on no-match. The `precedence` field below only governs the
+# "head matches both `allowed` and `blocked`" tiebreaker — a command that
+# matches nothing is ALWAYS denied regardless.
+#
+# IOS-XR is Cisco's carrier-grade OS (ASR 9000, NCS, CRS, XRv). Its CLI
+# differs from classic IOS in three load-bearing ways this policy encodes:
+#   - Two-stage commit config model (`configure` → candidate → `commit`),
+#     so the save verb is `commit`, not `write` (XR has no `write`).
+#   - Distinct shell escapes: `run` (classic 32-bit/QNX task shell), `bash`
+#     (64-bit eXR Linux root shell), `script run` (XR-7.x on-box Python/bash
+#     automation), `attach location <node>` (per-node shell on the
+#     distributed control plane), and `admin` (System Admin VM).
+#   - `| utility <tool>` bridges output to underlying Linux utilities.
+#
+# IOS-XR shares classic IOS's grammar for the read-only surface, so the
+# `allowed` lane mirrors cisco_ios.yaml. Maintain the shell-escape blocks
+# as the XR-specific delta.
+---
+precedence: block-wins
+
+canonicalization:
+  # IOS-XR engineers contract `show` ubiquitously. `sh` → `show` is also
+  # load-bearing for safety: `sh run` must canonicalize to head `show run`
+  # (read-only show running-config), never collide with the `^run`
+  # shell-escape block. XR commits config (there is no `write` verb), so —
+  # unlike cisco_ios.yaml — there is no `wr` → `write` alias here.
+  aliases:
+    sh: show
+    sho: show
+    shw: show
+    p: ping
+    tr: traceroute
+
+# ---------------------------------------------------------------------
+# Head allow/block lists.
+# ---------------------------------------------------------------------
+
+allowed:
+  - "^show( |$)"
+  - "^ping( |$)"
+  - "^traceroute( |$)"
+  - "^dir( |$)" # directory listing (disk0:/harddisk:/etc.)
+  - "^more " # read-only file content
+  - "^terminal length " # pager control (session-local, non-persistent)
+  - "^terminal width " # terminal width (session-local)
+  - "^terminal monitor" # echo logs to this terminal (no device state change)
+  - "^terminal no monitor"
+
+blocked:
+  # XR has no enable/disable privilege-exec mode; these guard against
+  # mislabeled inventory / IOS muscle memory (default-deny covers them too —
+  # explicit for legibility).
+  - "^enable( |$)"
+  - "^disable( |$)"
+  # Two-stage commit config model.
+  - "^configure" # configure [terminal|exclusive|private]
+  - "^conf t" # contracted form, defense-in-depth
+  - "^commit" # candidate → running (the XR save verb)
+  # File / image / process / hardware mutation.
+  - "^copy "
+  - "^delete "
+  - "^rmdir "
+  - "^mkdir "
+  - "^format "
+  - "^move "
+  - "^install " # install add/activate/commit/replace/rollback/remove
+  - "^reload" # router reload / `reload location <node>`
+  - "^process " # process restart/shutdown/start
+  - "^hw-module " # line-card reset/shutdown/reload
+  - "^clear " # clears counters / protocol state / logs
+  - "^crypto " # key generate/zeroize
+  # ---- Shell / scripting escapes — the XR-critical blocks ----
+  - "^run( |$)" # classic 32-bit XR (QNX): task shell. NOT `show run` (head=show).
+  - "^bash" # 64-bit eXR: Linux bash as root.
+  - "^tclsh" # Tcl shell.
+  - "^script( |$)" # XR-7.x: `script run <name>` executes on-box Python/bash.
+  - "^admin" # System Admin VM (sysadmin plane → its own shell + config).
+  - "^attach" # `attach location <node>` → per-node shell (distributed arch).
+  # Session / mode manipulation (default-deny also covers these).
+  - "^logout"
+  - "^exit"
+  - "^quit"
+  - "^end"
+  # `show tech-support` dumps read-only to the terminal and is allowed,
+  # EXCEPT the file-writing forms: an explicit `file <dest>` keyword or a
+  # filesystem / transfer-URL destination token. block-wins makes this
+  # override the broad `^show` allow. Bare `show tech-support [component]`
+  # stays allowed. (This hardens beyond the sibling Cisco policies, which
+  # carry the write-a-techfile residual — backport tracked in the README.)
+  - '^show tech-support\b.*\b(file\b|disk[0-9]+:|harddisk:|bootflash:|nvram:|tftp:|ftp:|scp:|sftp:|rcp:|https?:)'
+
+# ---------------------------------------------------------------------
+# Pipe-stage policy. IOS-XR output modifiers:
+#   include / exclude / begin / count — pure read-only filters
+#   file / redirect — write output to a file/URL — BLOCKED
+#   utility <tool>  — bridge to underlying Linux utilities — BLOCKED
+#   tee / append    — display + save (IOS-classic verbs; blocked defensively)
+# ---------------------------------------------------------------------
+
+pipe_allowed:
+  - "^include "
+  - "^exclude "
+  - "^begin "
+  - "^count$" # read-only line count
+
+pipe_blocked:
+  - "^file( |$)" # `| file <path>` writes output to disk
+  - "^redirect " # writes output to file/URL
+  - "^utility " # `| utility <tool>` bridges to underlying Linux utilities
+  - "^tee " # display AND save
+  - "^append " # appends to file
+
+# v6.1.x #1 — phrasebook (see junos.yaml for the contract; gate-tested).
+phrasebook:
+  - "show version"
+  - "show ipv4 interface brief"
+  - "show interfaces GigabitEthernet0/0/0/0"
+  - "show logging | include %"
+  - "show running-config interface GigabitEthernet0/0/0/0"
+  - "show route summary"
+  - "show bgp summary"
+  - "show ospf neighbor"
+  - "show cdp neighbors detail"
+  - "show arp"
+  - "ping 10.0.0.1"
+  - "traceroute 10.0.0.1"

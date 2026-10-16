@@ -1,0 +1,28 @@
+# Force LF line endings on every OS regardless of the user's local
+# `core.autocrlf` setting. Prettier (.prettierrc.json `endOfLine: lf`)
+# enforces LF; without this file, Windows checkouts get CRLF and the
+# `format:check` CI step fails on every text file.
+
+* text=auto eol=lf
+
+# Binary files — never touch line endings.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.icns binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+
+# Keep platform-specific shell scripts as-is.
+*.sh text eol=lf
+*.bash text eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf

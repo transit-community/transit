@@ -1,0 +1,94 @@
+# Sample BYOP policy — HP ProCurve / Aruba (legacy ProVision CLI)
+# ================================================================
+# STATUS: template. Save this file (as-is or edited) into your OWN
+# BYOP user policy folder — Settings → Policies → "User policy folder"
+# in Transit, or set $TRANSIT_USER_POLICIES to that folder's path —
+# and restart Transit. Do NOT drop it into this repo's `policies/`
+# directory; that's the bundled set. Review every pattern against
+# YOUR switch's firmware (K/KA/WB trains differ in command surface)
+# before trusting it.
+#
+# IMPORTANT — do not add a `vendor:` key to this file. The vendor tag
+# comes from the FILENAME stem (`hp_procurve.yaml` -> vendor
+# `hp_procurve`), and the loader rejects any unrecognized top-level
+# key, so a `vendor:` line would fail the whole file to load.
+#
+# Shape of the ProVision CLI relevant here:
+#   show / display   — read-only state and config rendering
+#   configure         — enters config mode; every write starts here
+#   copy              — moves config/firmware to or from flash, tftp,
+#                        usb, xmodem — a write OR exfiltration channel
+#                        in either direction
+#   write memory      — persists the running config to flash
+#   erase             — wipes startup-config or the whole flash
+#   reload / boot     — reboots the switch
+#   menu              — drops into the menu-driven UI, which breaks
+#                        the CLI-prompt heuristic Transit's command
+#                        capture relies on
+#
+# Threat focus (why each block exists):
+#   - `^configure` / alias `conf` — config-mode entry, the load-bearing
+#     block. ProVision accepts `conf` as an unambiguous abbreviation.
+#   - `^copy` — writes to flash/startup-config OR exfiltrates config /
+#     firmware off the box via tftp/usb/xmodem. Blocked outright;
+#     reads stay available via `show running-config`.
+#   - `^write` — `write memory` persists a running-config change.
+#   - `^erase` — wipes startup-config or the whole flash.
+#   - `^reload` / `^boot` — outage.
+#   - `^menu` — switches the session out of command-line mode.
+#   - `^debug` — flips on protocol-event logging (a state change, not
+#     a pure read).
+#   - `^setmib` — SNMP MIB writes.
+#   - `^test` — cable/loopback tests can flap a live link.
+
+mode: gated
+precedence: block-wins
+
+canonicalization:
+  aliases:
+    conf: configure
+
+allowed:
+  # Config + state reads. Secrets in `show running-config` render as
+  # hashed/encrypted strings; Transit's redaction filter also masks
+  # secret-shaped output before it reaches the model.
+  - "^show( |$)"
+  - "^display( |$)"
+  # Named diagnostics this team actually runs.
+  - "^show\\s+tech-support( |$)"
+  - "^show\\s+running-config( |$)"
+  - "^show\\s+ip\\s+route( |$)"
+  - "^show\\s+interfaces( |$)"
+  - "^show\\s+qos\\s+info-all( |$)"
+  # Reachability checks — non-destructive.
+  - "^ping( |$)"
+  - "^traceroute( |$)"
+
+blocked:
+  # Config-mode entry.
+  - "^configure( |$)"
+  # Flash / firmware / config transfer, either direction.
+  - "^copy( |$)"
+  # Persist a running-config change.
+  - "^write( |$)"
+  # Wipe.
+  - "^erase( |$)"
+  # Outage.
+  - "^reload( |$)"
+  - "^boot( |$)"
+  # Drops out of CLI mode entirely.
+  - "^menu( |$)"
+  # State-changing diagnostics.
+  - "^debug( |$)"
+  - "^setmib( |$)"
+  - "^test( |$)"
+
+# ProVision supports Cisco-style pipe filters on `show`/`display`
+# output. Allow only read-only filtering stages; anything else
+# (there is no file-redirect stage on ProVision `show`, but default-
+# deny covers any future one) is refused.
+pipe_allowed:
+  - "^include( |$)"
+  - "^exclude( |$)"
+  - "^begin( |$)"
+pipe_blocked: []

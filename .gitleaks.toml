@@ -1,0 +1,64 @@
+# Gitleaks config for Transit.
+#
+# Auto-detected by `gitleaks detect` when run from the repo root. CI
+# uses the default invocation so no workflow change is needed.
+
+title = "Transit gitleaks config"
+
+[extend]
+useDefault = true
+
+# Allowlist for documented false positives.
+#
+# Single `[allowlist]` block (not the `[[allowlists]]` array form)
+# because the CI-pinned gitleaks 8.21.2 silently ignores the array
+# syntax — the build trips on synthetic test fixtures that newer
+# gitleaks (8.22+) skips.
+#
+# Path-only — no `regexes` constraint. The default-rules' `private-key`
+# scanner captures the base64 *body* inside a PEM block as the secret,
+# not the `-----BEGIN ...-----` markers, so a marker-shaped regex
+# wouldn't match the secret it's trying to allow. Constraining by
+# path alone is the right knob: every file listed below exists
+# *specifically* to contain synthetic secret-shaped strings — that's
+# their entire purpose. A real secret accidentally checked into a
+# different file still trips gitleaks normally.
+#
+# Listed files:
+#   - inventory loader's inline-secret pre-scan + the bad-fixture
+#     it's supposed to refuse
+#   - agent redaction filter's PEM-block module + handler tests
+#   - agent redaction filter's pattern catalogue tests + corpus
+#     (PEM blocks, RFC 7519 example JWT, published AWS placeholders)
+[allowlist]
+description = "Synthetic secret-shaped strings in security tests"
+paths = [
+  '''src-tauri/crates/transit_core/tests/fixtures/inventory/bad_inline_private_key\.toml''',
+  '''src-tauri/crates/transit_core/src/inventory/loader\.rs''',
+  '''src-tauri/crates/transit_agent/src/redaction/pem\.rs''',
+  '''src-tauri/crates/transit_agent/src/redaction/mod\.rs''',
+  '''src-tauri/crates/transit_agent/src/redaction/catalogue\.rs''',
+  '''src-tauri/crates/transit_agent/src/redaction/conversation_redactor\.rs''',
+  '''src-tauri/crates/transit_agent/tests/redaction_corpus\.rs''',
+  '''src-tauri/crates/transit_agent/tests/redaction_proptest\.rs''',
+  # default_dispatcher.rs gained a redact-before-trim test (security
+  # review D-3c) whose fixture is a synthetic RSA key block straddling
+  # the scrollback tail window — same synthetic-secret rationale.
+  '''src-tauri/crates/transit_agent/tests/default_dispatcher\.rs''',
+  # Phase 6 prompt-injection corpus — synthetic device-output
+  # strings combining injection text with secret-shaped content
+  # (PEM blocks, RFC 7519 example JWT, published AWS placeholders,
+  # vendor-encrypted-password syntax). The whole file's purpose is
+  # to verify redaction strips these; gitleaks would block the
+  # security headline test from compiling.
+  '''src-tauri/crates/transit_agent/tests/prompt_injection_corpus\.rs''',
+  # v6.0.0 PCaps — the HTTP dissector's credential-redaction test
+  # (`credential_headers_never_reach_the_field_tree`) builds requests
+  # carrying an `Authorization: Basic …` value, a session cookie, and an
+  # API key, then asserts none of them appears anywhere in the
+  # dissection. The fixture is RFC 7617's own published example
+  # (`QWxhZGRpbjpvcGVuIHNlc2FtZQ==` — base64 of "Aladdin:open sesame").
+  # A lower-entropy stand-in would weaken the test that exists to keep
+  # cleartext credentials out of the model's context (threat model T45).
+  '''src-tauri/crates/transit_pcap/src/dissect/app/http\.rs''',
+]

@@ -1,0 +1,55 @@
+[package]
+name = "transit_pcap"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "Packet-capture reader, dissector, index, filter engine and analysis for the PCaps surface."
+
+[lints]
+workspace = true
+
+[dependencies]
+base64.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+# Capture ids handed to the frontend and to the agent's CaptureSource.
+uuid.workspace = true
+# Live-capture supervision needs a process reaper + a stats ticker; the
+# index/query side is entirely synchronous and takes none of this.
+tokio = { version = "1", features = ["process", "sync", "rt", "macros", "time", "io-util"] }
+
+# Zero-copy L2-L4 parsing: Ethernet / 802.1Q stacking / IPv4 options /
+# IPv6 extension-header chains / fragmentation / TCP / UDP / ICMP. The
+# edge cases in that list are exactly where hand-rolled packet parsers
+# grow CVEs, so this one dependency is worth its weight; the application
+# layer above it is ours (dissect/app).
+#
+# Licensing: MIT OR Apache-2.0, both already on the deny.toml allow-list.
+# Pulls only `arrayvec` (MIT OR Apache-2.0) as a new transitive.
+etherparse = "0.21"
+
+# `.pcap.gz` files are common (anything that has been through a bug
+# tracker or an email attachment). We decompress to a temp file on open
+# so every downstream path — random-access packet fetch included — sees a
+# plain seekable file. MIT OR Apache-2.0; `flate2` and its `miniz_oxide`
+# backend are already in the tree via the release/updater stack.
+flate2 = "1"
+
+# Temp files for the gz-decompress path and for live-capture output dirs.
+tempfile.workspace = true
+
+# The pcap / pcapng readers are OURS (src/reader/) rather than a crate.
+# Both formats are small, frozen, and fully specified, and we need three
+# things off-the-shelf readers do not give us: byte offsets for every
+# packet (so detail views re-dissect ONE packet instead of holding the
+# whole capture in memory), tolerance for the truncated tail of a capture
+# that is still being written, and total control over bounds checking in
+# what is by definition an untrusted-input parser.
+
+[dev-dependencies]
+proptest.workspace = true
+tempfile.workspace = true
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }

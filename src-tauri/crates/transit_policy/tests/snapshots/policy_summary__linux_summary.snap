@@ -1,0 +1,10 @@
+---
+source: crates/transit_policy/tests/policy_summary.rs
+assertion_line: 104
+expression: render(&s)
+---
+precedence: BlockWins
+allowed:
+blocked:
+pipe_allowed:
+pipe_blocked:

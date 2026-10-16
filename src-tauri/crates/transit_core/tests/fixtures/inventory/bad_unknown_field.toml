@@ -1,0 +1,12 @@
+# expect: Err::ParseFailed
+unknown_root_field = "this should not be allowed (deny_unknown_fields)"
+
+[[device]]
+id = "x"
+host = "h"
+vendor = "junos"
+auth = "p"
+
+[auth.p]
+username = "u"
+secret = { backend = "ssh_agent" }

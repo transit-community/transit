@@ -1,0 +1,615 @@
+{
+  "id": "fortimanager",
+  "name": "FortiManager",
+  "vendor": "fortimanager",
+  "bundled": true,
+  "variables": [],
+  "root": {
+    "id": "fortimanager-0",
+    "name": "FortiManager",
+    "requests": [],
+    "folders": [
+      {
+        "id": "fortimanager-1",
+        "name": "Log in first",
+        "requests": [
+          {
+            "id": "fortimanager-2",
+            "name": "Login",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"id\": 1,\n  \"method\": \"exec\",\n  \"params\": [\n    {\n      \"data\": {\n        \"user\": \"{{username}}\",\n        \"passwd\": \"{{password}}\"\n      },\n      \"url\": \"/sys/login/user\"\n    }\n  ]\n}",
+            "destructive": true,
+            "capture": [
+              {
+                "from": "body",
+                "key": "session",
+                "into": "fmg_session"
+              }
+            ]
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "fortimanager-3",
+        "name": "System & ADOMs",
+        "requests": [
+          {
+            "id": "fortimanager-4",
+            "name": "System status",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/sys/status\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-5",
+            "name": "System interfaces",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/cli/global/system/interface\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-6",
+            "name": "List ADOMs",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/dvmdb/adom\",\n      \"option\": \"object member\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-7",
+            "name": "Single ADOM info",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/dvmdb/adom/{{adom}}\",\n      \"option\": \"object member\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-41",
+            "name": "Add ADOM",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"add\",\n  \"params\": [\n    {\n      \"data\": [\n        {\n          \"name\": \"{{adom}}\"\n        }\n      ],\n      \"url\": \"/dvmdb/adom\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-42",
+            "name": "Delete ADOM",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"delete\",\n  \"params\": [\n    {\n      \"url\": \"/dvmdb/adom/{{adom}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "fortimanager-8",
+        "name": "Managed devices & groups",
+        "requests": [
+          {
+            "id": "fortimanager-9",
+            "name": "List devices",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/dvmdb/device\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-10",
+            "name": "List unauthorized devices",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"filter\": [\n        [\n          \"mgmt_mode\",\n          \"==\",\n          \"unreg\"\n        ]\n      ],\n      \"url\": \"/dvmdb/device\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-11",
+            "name": "Device info",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/dvmdb/device/{{device}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-12",
+            "name": "Get device groups",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"filter\": [\n        [\n          \"type\",\n          \"==\",\n          \"0\"\n        ]\n      ],\n      \"option\": [\n        \"object member\"\n      ],\n      \"url\": \"/dvmdb/group\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-43",
+            "name": "Register device",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"exec\",\n  \"params\": [\n    {\n      \"data\": {\n        \"adom\": \"{{adom}}\",\n        \"device\": {\n          \"adm_usr\": \"{{device_admin}}\",\n          \"adm_pass\": [\n            \"{{device_password}}\"\n          ],\n          \"ip\": \"{{device_ip}}\",\n          \"mgmt_mode\": \"fmg\",\n          \"desc\": \"API test\",\n          \"name\": \"{{device}}\"\n        },\n        \"flags\": [\n          \"create_task\",\n          \"nonblocking\"\n        ]\n      },\n      \"url\": \"/dvm/cmd/add/device\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-44",
+            "name": "Authorize device",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"exec\",\n  \"params\": [\n    {\n      \"data\": {\n        \"adom\": \"{{adom}}\",\n        \"device\": {\n          \"adm_usr\": \"{{device_admin}}\",\n          \"adm_pass\": [\n            \"{{device_password}}\"\n          ],\n          \"device action\": \"promote_unreg\",\n          \"name\": \"{{device}}\"\n        }\n      },\n      \"url\": \"/dvm/cmd/add/device\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-45",
+            "name": "Move device to ADOM",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"add\",\n  \"params\": [\n    {\n      \"data\": {\n        \"name\": \"{{device}}\",\n        \"vdom\": \"{{vdom}}\"\n      },\n      \"url\": \"/dvmdb/adom/{{adom_new}}/object member\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-46",
+            "name": "Delete device",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"exec\",\n  \"params\": [\n    {\n      \"data\": {\n        \"adom\": \"{{adom}}\",\n        \"device\": \"{{device}}\",\n        \"flags\": [\n          \"create_task\",\n          \"nonblocking\"\n        ]\n      },\n      \"url\": \"/dvm/cmd/del/device\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-47",
+            "name": "Add device to group",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"add\",\n  \"params\": [\n    {\n      \"data\": [\n        {\n          \"name\": \"{{device}}\",\n          \"vdom\": \"root\"\n        }\n      ],\n      \"url\": \"/dvmdb/group/{{group}}/object member\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-48",
+            "name": "Remove device from group",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"delete\",\n  \"params\": [\n    {\n      \"data\": [\n        {\n          \"name\": \"{{device}}\",\n          \"vdom\": \"root\"\n        }\n      ],\n      \"url\": \"/dvmdb/group/{{group}}/object member\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-49",
+            "name": "Install general configuration to device",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"exec\",\n  \"params\": [\n    {\n      \"data\": [\n        {\n          \"adom\": \"{{adom}}\",\n          \"scope\": [\n            {\n              \"name\": \"{{device}}\",\n              \"vdom\": \"root\"\n            }\n          ]\n        }\n      ],\n      \"url\": \"/securityconsole/install/device\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "fortimanager-13",
+        "name": "Policy packages & hit counts",
+        "requests": [
+          {
+            "id": "fortimanager-14",
+            "name": "Last hitcounts results",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/sys/task/result\",\n      \"data\": {\n        \"taskid\": \"{{lastTask}}\"\n      }\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-15",
+            "name": "List policy packages",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/pm/pkg/adom/{{adom}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-16",
+            "name": "List firewall policies",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/pm/config/adom/{{adom}}/pkg/{{policy_package}}/firewall/policy\",\n      \"fields\": [\n        \"obj seq\",\n        \"status\",\n        \"policyid\",\n        \"srcintf\",\n        \"dstintf\",\n        \"srcaddr\",\n        \"dstaddr\",\n        \"action\",\n        \"schedule\",\n        \"service\",\n        \"users\",\n        \"logtraffic\",\n        \"nat\",\n        \"name\",\n        \"comments\",\n        \"extra info\"\n      ]\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-50",
+            "name": "Refresh policy hit counts",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"exec\",\n  \"params\": [\n    {\n      \"data\": {\n        \"adom\": \"{{adom}}\",\n        \"pkg\": \"{{policy_package}}\"\n      },\n      \"url\": \"/sys/hitcount\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-51",
+            "name": "Install policy package",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"exec\",\n  \"params\": [\n    {\n      \"data\": {\n        \"adom\": \"root\",\n        \"pkg\": \"{{policy_package}}\",\n        \"scope\": [\n          {\n            \"name\": \"{{device}}\",\n            \"vdom\": \"root\"\n          }\n        ]\n      },\n      \"url\": \"/securityconsole/install/package\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-52",
+            "name": "Reinstall policy package",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"exec\",\n  \"params\": [\n    {\n      \"data\": {\n        \"adom\": \"root\",\n        \"target\": [\n          {\n            \"pkg\": \"{{policy_package}}\",\n            \"scope\": [\n              {\n                \"name\": \"{{device}}\",\n                \"vdom\": \"root\"\n              }\n            ]\n          }\n        ]\n      },\n      \"url\": \"/securityconsole/reinstall/package\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "fortimanager-17",
+        "name": "Firewall objects",
+        "requests": [
+          {
+            "id": "fortimanager-18",
+            "name": "List firewall addresses",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/pm/config/adom/{{adom}}/obj/firewall/address\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-19",
+            "name": "List firewall services",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/pm/config/adom/{{adom}}/obj/firewall/service/custom\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-20",
+            "name": "List firewall services with OR filter",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"filter\": [\n        [\n          \"tcp-portrange\",\n          \"in\",\n          \"80\",\n          \"443\"\n        ],\n        [\n          \"udp-portrange\",\n          \"==\",\n          \"53\"\n        ],\n        [\n          \"udp-portrange\",\n          \"==\",\n          \"161\"\n        ]\n      ],\n      \"url\": \"/pm/config/adom/{{adom}}/obj/firewall/service/custom\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-21",
+            "name": "List firewall services with AND filter",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"filter\": [\n        [\n          \"tcp-portrange\",\n          \"in\",\n          \"80\",\n          \"443\"\n        ],\n        \"&&\",\n        [\n          \"udp-portrange\",\n          \"==\",\n          \"53\"\n        ]\n      ],\n      \"url\": \"/pm/config/adom/{{adom}}/obj/firewall/service/custom\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-22",
+            "name": "List firewall service groups",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/pm/config/adom/{{adom}}/obj/firewall/service/group\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-53",
+            "name": "Create firewall address",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"set\",\n  \"params\": [\n    {\n      \"data\": [\n        {\n          \"name\": \"{{address_name}}\",\n          \"type\": \"ipmask\",\n          \"subnet\": \"{{address_ip}}/32\"\n        }\n      ],\n      \"url\": \"/pm/config/adom/{{adom}}/obj/firewall/address\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-54",
+            "name": "Delete firewall address",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"delete\",\n  \"params\": [\n    {\n      \"url\": \"/pm/config/adom/{{adom}}/obj/firewall/address/{{address_name}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-55",
+            "name": "Create firewall service group",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"set\",\n  \"params\": [\n    {\n      \"data\": [\n        {\n          \"name\": \"{{firewall_servicegroup_name}}\",\n          \"member\": [\n            \"POP3\",\n            \"SMTP\",\n            \"IMAP\"\n          ]\n        }\n      ],\n      \"url\": \"/pm/config/adom/{{adom}}/obj/firewall/service/group\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-56",
+            "name": "Delete firewall service group",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"delete\",\n  \"params\": [\n    {\n      \"url\": \"/pm/config/adom/{{adom}}/obj/firewall/service/group/{{firewall_servicegroup_name}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": true
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "fortimanager-23",
+        "name": "SD-WAN & interfaces",
+        "requests": [
+          {
+            "id": "fortimanager-24",
+            "name": "SD-WAN to normalized mapping",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/pm/config/adom/{{adom}}/obj/dynamic/virtual-wan-link/members\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-25",
+            "name": "List profiles",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/pm/wanprof/adom/{{adom}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-26",
+            "name": "Profile detail",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/pm/config/adom/{{adom}}/wanprof/{{sdwan_profile}}/system/sdwan\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-27",
+            "name": "Get member interfaces in zone",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"filter\": [\n        [\n          \"zone\",\n          \"==\",\n          \"{{sdwan_zone}}\"\n        ]\n      ],\n      \"url\": \"/pm/config/adom/{{adom}}/wanprof/{{sdwan_profile}}/system/sdwan/members\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-28",
+            "name": "Interface mapping",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"filter\": [\n        [\n          \"name\",\n          \"==\",\n          \"{{normalized_iface}}\"\n        ]\n      ],\n      \"url\": \"/pm/config/adom/{{adom}}/obj/dynamic/interface\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-29",
+            "name": "Device interface mapping",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/pm/config/adom/{{adom}}/obj/dynamic/interface/{{normalized_iface}}/dynamic_mapping\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-30",
+            "name": "Platform interface mapping",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/pm/config/adom/{{adom}}/obj/dynamic/interface/{{normalized_iface}}/platform_mapping/{{device_platform}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-57",
+            "name": "Change profile assignment to devices",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"update\",\n  \"params\": [\n    {\n      \"data\": {\n        \"scope member\": [\n          {\n            \"name\": \"{{device}}\",\n            \"vdom\": \"{{vdom}}\"\n          }\n        ]\n      },\n      \"url\": \"/pm/wanprof/adom/{{adom}}/{{sdwan_profile}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-58",
+            "name": "Add member interface to zone",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"add\",\n  \"params\": [\n    {\n      \"data\": {\n        \"zone\": \"{{sdwan_zone}}\",\n        \"interface\": \"{{normalized_iface}}\",\n        \"gateway\": \"1.2.3.4\",\n        \"priority\": 10,\n        \"cost\": 20,\n        \"status\": \"enable\"\n      },\n      \"url\": \"/pm/config/adom/{{adom}}/wanprof/{{sdwan_profile}}/system/sdwan/members\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-59",
+            "name": "Delete member interface",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"delete\",\n  \"params\": [\n    {\n      \"url\": \"/pm/config/adom/{{adom}}/wanprof/{{sdwan_profile}}/system/sdwan/members/{{sdwan_member_id}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "fortimanager-31",
+        "name": "Meta fields",
+        "requests": [
+          {
+            "id": "fortimanager-32",
+            "name": "Get VDOM meta fields",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/dvmdb/_meta_fields/vdom\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-33",
+            "name": "Get VDOM meta values",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"meta fields\": [\n        \"*\"\n      ],\n      \"url\": \"/dvmdb/adom/{{adom}}/device/{{device}}/vdom/{{vdom}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-60",
+            "name": "Create VDOM meta field",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"add\",\n  \"params\": [\n    {\n      \"data\": {\n        \"importance\": \"optional\",\n        \"length\": 255,\n        \"name\": \"{{meta_vdom_field_name}}\",\n        \"status\": \"enable\"\n      },\n      \"url\": \"/dvmdb/_meta_fields/vdom\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-61",
+            "name": "Set VDOM meta value",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"set\",\n  \"params\": [\n    {\n      \"data\": {\n        \"meta fields\": {\n          \"{{meta_vdom_field_name}}\": \"{{meta_vdom_field_value}}\"\n        }\n      },\n      \"url\": \"/dvmdb/adom/{{adom}}/device/{{device}}/vdom/{{vdom}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "fortimanager-34",
+        "name": "IPSec VPN",
+        "requests": [
+          {
+            "id": "fortimanager-35",
+            "name": "List IPSec phase1s",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"pm/config/device/{{device}}/vdom/{{vdom}}/vpn/ipsec/phase1-interface\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-36",
+            "name": "List IPSec phase2s",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"pm/config/device/{{device}}/vdom/{{vdom}}/vpn/ipsec/phase2-interface\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-62",
+            "name": "Create IPSec phase1",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"set\",\n  \"params\": [\n    {\n      \"data\": [\n        {\n          \"name\": \"{{ipsec_name}}\",\n          \"remote-gw\": \"5.5.5.5\",\n          \"interface\": [\n            \"wan1\"\n          ],\n          \"type\": \"static\",\n          \"mode\": \"main\",\n          \"peertype\": \"any\",\n          \"proposal\": [\n            \"aes128-sha256\"\n          ],\n          \"dhgrp\": [\n            \"14\",\n            \"5\"\n          ],\n          \"psksecret\": \"pwdpwdpwd\"\n        }\n      ],\n      \"url\": \"pm/config/device/{{device}}/vdom/{{vdom}}/vpn/ipsec/phase1-interface\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-63",
+            "name": "Delete IPSec phase1",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"delete\",\n  \"params\": [\n    {\n      \"url\": \"pm/config/device/{{device}}/vdom/{{vdom}}/vpn/ipsec/phase1-interface/{{ipsec_name}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-64",
+            "name": "Create IPSec phase2",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"set\",\n  \"params\": [\n    {\n      \"data\": [\n        {\n          \"name\": \"{{ipsec_name}}\",\n          \"phase1name\": \"{{ipsec_name}}\",\n          \"proposal\": [\n            \"aes128-sha256\"\n          ],\n          \"dhgrp\": [\n            \"14\",\n            \"5\"\n          ],\n          \"src-subnet\": [\n            \"10.10.10.0\",\n            \"255.255.255.0\"\n          ],\n          \"dst-subnet\": [\n            \"20.20.20.0\",\n            \"255.255.255.0\"\n          ]\n        }\n      ],\n      \"url\": \"pm/config/device/{{device}}/vdom/{{vdom}}/vpn/ipsec/phase2-interface\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-65",
+            "name": "Delete IPSec phase2",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"delete\",\n  \"params\": [\n    {\n      \"url\": \"pm/config/device/{{device}}/vdom/{{vdom}}/vpn/ipsec/phase2-interface/{{ipsec_name}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "fortimanager-37",
+        "name": "Scripts & tasks",
+        "requests": [
+          {
+            "id": "fortimanager-38",
+            "name": "List scripts",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"data\": {\n        \"adom\": \"{{adom}}\"\n      },\n      \"url\": \"/dvmdb/script\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-39",
+            "name": "Last task status",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/task/task/{{lastTask}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-40",
+            "name": "List scripts outputs",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/dvmdb/global/script/log/summary\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortimanager-66",
+            "name": "Create script",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"set\",\n  \"params\": [\n    {\n      \"data\": {\n        \"target\": \"device_database\",\n        \"type\": \"cli\",\n        \"name\": \"{{script}}\",\n        \"content\": \"config system global\\nset admintimeout 400\\nend\\n\"\n      },\n      \"url\": \"/dvmdb/script\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-67",
+            "name": "Run script",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"exec\",\n  \"params\": [\n    {\n      \"data\": {\n        \"adom\": \"{{adom}}\",\n        \"package\": \"{{policy_package}}\",\n        \"scope\": [\n          {\n            \"name\": \"{{device}}\",\n            \"vdom\": \"{{vdom}}\"\n          }\n        ],\n        \"script\": \"{{script}}\"\n      },\n      \"url\": \"/dvmdb/script/execute\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortimanager-68",
+            "name": "Delete script",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"delete\",\n  \"params\": [\n    {\n      \"data\": {\n        \"adom\": \"{{adom}}\"\n      },\n      \"url\": \"/dvmdb/script/{{script}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          }
+        ],
+        "folders": []
+      }
+    ]
+  }
+}

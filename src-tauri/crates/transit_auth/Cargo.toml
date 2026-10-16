@@ -1,0 +1,46 @@
+[package]
+name = "transit_auth"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "The sole crate that reads or holds device credentials. No other crate may bypass this boundary."
+
+[lints]
+workspace = true
+
+[features]
+# Real-OS keystore round-trip tests. CI runs with this on; local dev
+# skips by default (bare Linux without Secret Service would fail
+# without explanatory setup).
+integration-tests = []
+
+[dependencies]
+transit_core.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+secrecy.workspace = true
+zeroize.workspace = true
+async-trait.workspace = true
+tokio = { version = "1", features = ["sync", "process", "macros", "rt", "time"] }
+keyring = { workspace = true, features = [
+    "apple-native",
+    "windows-native",
+    "sync-secret-service",
+] }
+# russh's agent client (`russh::keys::agent::client::AgentClient`) is
+# the canonical SSH agent implementation; pulling russh in directly
+# avoids re-implementing the wire protocol. This is the single
+# allowed inversion of "transit_auth has no transport deps" — the
+# agent is a credential surface, not transport.
+russh.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+tokio = { version = "1", features = ["sync", "macros", "rt", "time", "test-util"] }
+# Ephemeral key generation for the ssh_key backend tests — mirrors
+# russh's own pattern (`PrivateKey::random(&mut rand::rng(), …)`).
+# Already in the lock via transit_ssh's dev-deps, so no new crate.
+rand = { version = "0.10", features = ["thread_rng"] }

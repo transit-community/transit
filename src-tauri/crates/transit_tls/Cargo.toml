@@ -1,0 +1,32 @@
+[package]
+name = "transit_tls"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "Centralized TLS trust-anchor selection for every outbound HTTPS client (OS store vs. webpki-only; per-host pins for self-signed controllers)."
+
+[lints]
+workspace = true
+
+[dependencies]
+reqwest.workspace = true
+# We hand reqwest an explicit rustls ClientConfig so the trust source is
+# the OS store (rustls-platform-verifier) or webpki-only, per the
+# `[network] strict_tls` setting. See threat-model T27.
+rustls.workspace = true
+rustls-platform-verifier.workspace = true
+webpki-roots.workspace = true
+# SHA-256 of a leaf cert's DER — the fingerprint the user verifies + pins for
+# a self-signed API controller (`PinAwareVerifier`, threat-model T40).
+sha2 = "0.10"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "net"] }
+# Local TLS server fixture for the Strict-TLS handshake test
+# (tests/tls_trust.rs): rcgen mints a self-signed localhost cert and
+# tokio-rustls serves it, so we can assert both trust modes reject an
+# untrusted cert. Versions track rustls 0.23.
+rcgen = "0.14"
+tokio-rustls = "0.26"

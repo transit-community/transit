@@ -1,0 +1,147 @@
+# Arista EOS — read-only command policy.
+#
+# Schema: see src-tauri/crates/transit_policy/src/loader.rs.
+# Design rationale: see policies/arista_eos.README.md.
+#
+# Default-deny on no-match. The `precedence` field below only governs
+# the "head matches both `allowed` and `blocked`" tiebreaker — a
+# command that matches nothing is ALWAYS denied regardless.
+#
+# Arista EOS uses a Cisco-IOS-style CLI; ~90% of the surface mirrors
+# policies/cisco_ios.yaml. The differences live in the shell-escape
+# blocks: EOS runs on a Fedora userland, so `bash` is the primary
+# escape (it drops to a root shell) and the embedded `python` /
+# `python2` / `python3` interpreters are direct gate-bypass routes
+# that don't exist on classic IOS.
+---
+precedence: block-wins
+
+canonicalization:
+  # Arista engineers ubiquitously contract `show` and `write`,
+  # same muscle memory as Cisco. Without alias expansion, `wr mem`
+  # bypasses `^write` by missing the canonical form.
+  aliases:
+    sh: show
+    sho: show
+    shw: show
+    wr: write
+    wri: write
+    p: ping
+    tr: traceroute
+
+# ---------------------------------------------------------------------
+# Head allow/block lists.
+# ---------------------------------------------------------------------
+
+allowed:
+  - "^show( |$)"
+  - "^ping( |$)"
+  - "^traceroute( |$)"
+  - "^dir( |$)" # directory listing on flash:/etc
+  - "^more " # read-only file content
+  - "^terminal length " # pager control (read-only effect)
+  - "^terminal monitor" # echo logs to terminal (no device state change)
+  - "^terminal no monitor"
+
+blocked:
+  # Privileged-mode escalation.
+  - "^enable( |$)"
+  - "^disable( |$)"
+  # Configuration-mode entry.
+  - "^configure"
+  - "^conf t"
+  # Saves and file mutations.
+  - "^write" # `write`, `wr mem`, `wr terminal`
+  - "^copy "
+  - "^delete "
+  - "^erase "
+  - "^format "
+  - "^boot "
+  # `show tech-support ... <file|fs:|url:>` writes a techfile to the
+  # device or off-box; the destination token overrides the broad `^show`
+  # allow. Backported from cisco_ios_xr.yaml.
+  - '^show tech-support\b.*\b(file\b|flash:|disk[0-9]+:|harddisk:|bootflash:|logflash:|volatile:|slot[0-9]+:|usb[0-9]+:|nvram:|tftp:|ftp:|scp:|sftp:|rcp:|https?:)'
+  # Reload / reset / clear.
+  - "^reload"
+  - "^reset "
+  - "^clear "
+  # ---- Arista-specific shell + scripting escapes ----
+  # `bash` drops to the underlying Fedora root shell. THE single most
+  # important block on EOS — once in bash, the gate is fully bypassed
+  # and an attacker has root on the box.
+  - "^bash" # `bash`, `bash sudo`, `bash -c ...`
+  # Embedded Python interpreters — same blast radius as `bash`,
+  # different entry point. All three forms exist on modern EOS.
+  - "^python( |$)"
+  - "^python2( |$)"
+  - "^python3( |$)"
+  # `event-handler` is Arista's analog to Cisco IOS's `event manager`.
+  # Defining or invoking a handler runs arbitrary scripts.
+  - "^event-handler "
+  # TerminAttr / state-streaming agent control + manual daemon launch.
+  # Both can run arbitrary processes outside the CLI's read-only
+  # contract.
+  - "^agent "
+  - "^daemon "
+  # Session / mode manipulation.
+  - "^logout"
+  - "^exit"
+  - "^quit"
+  - "^end" # exits config mode (defense in depth)
+
+# ---------------------------------------------------------------------
+# Pipe-stage policy. EOS pipe verbs:
+#   include / exclude / begin / section / count — pure filters
+#   json — output formatter (read-only)
+#   redirect / tee / append — write to local file or URL — BLOCKED
+#   awk — runs arbitrary awk scripts, which can write files / spawn
+#         subshells via `system()` — BLOCKED
+# ---------------------------------------------------------------------
+
+pipe_allowed:
+  - "^include "
+  - "^exclude "
+  - "^begin "
+  - "^section "
+  - "^count$"
+  - "^json$" # Arista-specific: JSON output format (read-only)
+  - "^format " # output formatter
+  # EOS's own per-command pager bypass. Read-only by construction: it
+  # suppresses the `--More--` pager and can neither write a file nor
+  # escape a mode, which is what separates it from `tee` / `redirect` /
+  # `append` in pipe_blocked below.
+  #
+  # Load-bearing for capture reliability, not a convenience. The agent's
+  # output capture waits for quiescence, and a `--More--` prompt is
+  # silent while it waits for a keypress — so a paginated command stalls
+  # until the 30s timeout and returns truncated output. `terminal length
+  # 0` at connect is the other half of this, but it depends on device
+  # state and can be lost (it was silently discarded on every EOS
+  # session until the 2026-09-02 readiness fix, and a persistent global
+  # `terminal length` in someone's running-config can still override the
+  # session value). `| no-more` cannot be lost that way.
+  - "^no-more$"
+
+pipe_blocked:
+  - "^redirect " # writes output to file/URL
+  - "^tee " # both display AND save
+  - "^append " # appends to file
+  - "^awk " # arbitrary awk scripts can write files / spawn shells
+
+# v6.1.x #1 — phrasebook (see junos.yaml for the contract; gate-tested).
+phrasebook:
+  - "show version"
+  - "show interfaces status"
+  - "show ip interface brief"
+  - "show logging last 50"
+  - "show running-config | section interface"
+  - "show running-config | no-more"
+  - "show ip route summary"
+  - "show ip bgp summary"
+  - "show ip ospf neighbor"
+  - "show lldp neighbors detail"
+  - "show mac address-table"
+  - "show spanning-tree summary"
+  - "show processes top once"
+  - "ping 10.0.0.1"
+  - "traceroute 10.0.0.1"

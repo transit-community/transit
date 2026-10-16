@@ -1,0 +1,2161 @@
+{
+  "id": "apstra",
+  "name": "Juniper Apstra",
+  "vendor": "apstra",
+  "bundled": true,
+  "variables": [],
+  "root": {
+    "id": "apstra-0",
+    "name": "Apstra",
+    "requests": [],
+    "folders": [
+      {
+        "id": "apstra-1",
+        "name": "Log in first",
+        "requests": [
+          {
+            "id": "apstra-2",
+            "name": "Log in",
+            "method": "POST",
+            "path": "/api/aaa/login",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+            "destructive": true,
+            "description": "After posting a user's valid credentials to this endpoint, a token is returned that can be used for future API requests by putting it in the header.",
+            "capture": [
+              {
+                "from": "body",
+                "key": "token",
+                "into": "apstraToken"
+              }
+            ]
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "apstra-3",
+        "name": "Blueprints & fabric",
+        "requests": [
+          {
+            "id": "apstra-4",
+            "name": "List blueprints",
+            "method": "GET",
+            "path": "/api/blueprints",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "List all blueprint ids present in the system Each item may have additional properties specific to design."
+          },
+          {
+            "id": "apstra-5",
+            "name": "Blueprint details",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Return nodes, relationships and metadata of blueprint"
+          },
+          {
+            "id": "apstra-6",
+            "name": "Fabric nodes",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/nodes",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get all nodes in the blueprint."
+          },
+          {
+            "id": "apstra-7",
+            "name": "Fabric node",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/nodes/{{node_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get specific node in blueprint"
+          },
+          {
+            "id": "apstra-8",
+            "name": "Blueprint validation errors",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/errors",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get Blueprint validation errors"
+          },
+          {
+            "id": "apstra-9",
+            "name": "Blueprint lock status",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/lock-status",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get lock status of the blueprint"
+          },
+          {
+            "id": "apstra-10",
+            "name": "Blueprint revisions",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/revisions",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of blueprint revisions eligible to rollback to"
+          },
+          {
+            "id": "apstra-103",
+            "name": "Create blueprint",
+            "method": "POST",
+            "path": "/api/blueprints",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"design\": \"<string>\",\n  \"init_type\": null,\n  \"id\": null,\n  \"label\": null\n}",
+            "destructive": true,
+            "description": "Create a new blueprint from a design template."
+          },
+          {
+            "id": "apstra-104",
+            "name": "Update blueprint",
+            "method": "PATCH",
+            "path": "/api/blueprints/{{blueprint_id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"relationships\": {},\n  \"nodes\": {}\n}",
+            "destructive": true,
+            "description": "Patch nodes and relationships of the staged blueprint."
+          },
+          {
+            "id": "apstra-105",
+            "name": "Delete blueprint",
+            "method": "DELETE",
+            "path": "/api/blueprints/{{blueprint_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete the blueprint specified by {blueprint_id}."
+          },
+          {
+            "id": "apstra-106",
+            "name": "Create fabric node",
+            "method": "POST",
+            "path": "/api/blueprints/{{blueprint_id}}/nodes",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"type\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new node in the staged blueprint."
+          },
+          {
+            "id": "apstra-107",
+            "name": "Update fabric node",
+            "method": "PATCH",
+            "path": "/api/blueprints/{{blueprint_id}}/nodes/{{node_id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"label\": \"<string>\",\n  \"tags\": [\n    \"<string>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Update properties of a specific node in the staged blueprint."
+          },
+          {
+            "id": "apstra-108",
+            "name": "Delete fabric node",
+            "method": "DELETE",
+            "path": "/api/blueprints/{{blueprint_id}}/nodes/{{node_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a specific node from the staged blueprint."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "apstra-11",
+        "name": "Systems & devices",
+        "requests": [
+          {
+            "id": "apstra-12",
+            "name": "Managed systems",
+            "method": "GET",
+            "path": "/api/systems",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "A list of all devices in AOS is returned"
+          },
+          {
+            "id": "apstra-13",
+            "name": "System details",
+            "method": "GET",
+            "path": "/api/systems/{{system_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get information about a system specified by {system_id}"
+          },
+          {
+            "id": "apstra-14",
+            "name": "System resource utilization",
+            "method": "GET",
+            "path": "/api/systems/{{system_id}}/utilization",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get resource utilization information of systems by {system_id}"
+          },
+          {
+            "id": "apstra-15",
+            "name": "System deployment status",
+            "method": "GET",
+            "path": "/api/systems/{{system_id}}/configuration",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get device deployment status for device specified by system id"
+          },
+          {
+            "id": "apstra-16",
+            "name": "Systems in blueprint",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/systems",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get status of systems in blueprint"
+          },
+          {
+            "id": "apstra-17",
+            "name": "System agents",
+            "method": "GET",
+            "path": "/api/system-agents",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "A list of all system agents in AOS is returned"
+          },
+          {
+            "id": "apstra-18",
+            "name": "System agent",
+            "method": "GET",
+            "path": "/api/system-agents/{{agent_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get information about a system agent specified by {agent_id}"
+          },
+          {
+            "id": "apstra-19",
+            "name": "Agent job history",
+            "method": "GET",
+            "path": "/api/system-agents/{{agent_id}}/job-history",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get a specified agent's job history, in reverse chronological order"
+          },
+          {
+            "id": "apstra-20",
+            "name": "Agent last job log",
+            "method": "GET",
+            "path": "/api/system-agents/{{agent_id}}/last-job-log",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get job logs of for the current active-job (and if not active - the last run job)"
+          },
+          {
+            "id": "apstra-21",
+            "name": "Agent job log",
+            "method": "GET",
+            "path": "/api/system-agents/{{agent_id}}/job-logs/{{job_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get the logs of a job."
+          },
+          {
+            "id": "apstra-22",
+            "name": "Device OS images",
+            "method": "GET",
+            "path": "/api/device-os/images",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Return a list of device OS images with detailed information"
+          },
+          {
+            "id": "apstra-23",
+            "name": "Device OS image",
+            "method": "GET",
+            "path": "/api/device-os/images/{{image_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Returns 404 if no image exists for the specified ID."
+          },
+          {
+            "id": "apstra-24",
+            "name": "Supported platforms",
+            "method": "GET",
+            "path": "/api/device-os/platforms",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          },
+          {
+            "id": "apstra-25",
+            "name": "Device OS disk usage",
+            "method": "GET",
+            "path": "/api/device-os/stats",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          },
+          {
+            "id": "apstra-26",
+            "name": "ZTP device statuses",
+            "method": "GET",
+            "path": "/api/ztp/device",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          },
+          {
+            "id": "apstra-27",
+            "name": "ZTP device status",
+            "method": "GET",
+            "path": "/api/ztp/device/{{ip_address}}/status",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get the ZTP status of a given device"
+          },
+          {
+            "id": "apstra-28",
+            "name": "ZTP device logs",
+            "method": "GET",
+            "path": "/api/ztp/{{ip_address}}/logs",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get the ZTP logs of a device"
+          },
+          {
+            "id": "apstra-29",
+            "name": "ZTP services",
+            "method": "GET",
+            "path": "/api/ztp/service",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          },
+          {
+            "id": "apstra-30",
+            "name": "ZTP service status",
+            "method": "GET",
+            "path": "/api/ztp/service/{{service_name}}/status",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get the server status of the ZTP service"
+          },
+          {
+            "id": "apstra-31",
+            "name": "Virtual infra managers",
+            "method": "GET",
+            "path": "/api/virtual-infra-managers",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "A list of all virtual infra managers in AOS is returned"
+          },
+          {
+            "id": "apstra-32",
+            "name": "Virtual infra manager",
+            "method": "GET",
+            "path": "/api/virtual-infra-managers/{{manager_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "A list of all virtual infra managers in AOS is returned"
+          },
+          {
+            "id": "apstra-33",
+            "name": "vCenters",
+            "method": "GET",
+            "path": "/api/virtual-infra-managers/{{manager_id}}/vcenters",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get data of all vcenters associated with virtual infra manager."
+          },
+          {
+            "id": "apstra-34",
+            "name": "vCenter",
+            "method": "GET",
+            "path": "/api/virtual-infra-managers/{{manager_id}}/vcenters/{{vcenter_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get vcenter data associated to a virtual infra manager."
+          },
+          {
+            "id": "apstra-109",
+            "name": "Create system",
+            "method": "POST",
+            "path": "/api/systems",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"device_key\": \"<string>\",\n  \"user_config\": {\n    \"admin_state\": \"<string>\",\n    \"aos_hcl_model\": \"<string>\",\n    \"location\": null\n  }\n}",
+            "destructive": true,
+            "description": "Onboard a new managed device (system) into AOS."
+          },
+          {
+            "id": "apstra-110",
+            "name": "Update system",
+            "method": "PUT",
+            "path": "/api/systems/{{system_id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"user_config\": {\n    \"admin_state\": \"<string>\",\n    \"aos_hcl_model\": \"<string>\",\n    \"location\": null\n  }\n}",
+            "destructive": true,
+            "description": "Modify a managed system (e.g. change admin_state) specified by {system_id}."
+          },
+          {
+            "id": "apstra-111",
+            "name": "Delete system",
+            "method": "DELETE",
+            "path": "/api/systems/{{system_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a managed system specified by {system_id}."
+          },
+          {
+            "id": "apstra-112",
+            "name": "Create system agent",
+            "method": "POST",
+            "path": "/api/system-agents",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"management_ip\": \"<string>\",\n  \"agent_type\": \"<string>\",\n  \"profile\": null,\n  \"username\": null,\n  \"force_package_install\": null,\n  \"install_requirements\": null,\n  \"open_options\": null,\n  \"enable_monitor\": null,\n  \"id\": null,\n  \"password\": null,\n  \"packages\": null,\n  \"job_on_create\": null,\n  \"label\": null,\n  \"platform\": null,\n  \"operation_mode\": \"full_control\"\n}",
+            "destructive": true,
+            "description": "Create a new system agent to onboard/manage a device."
+          },
+          {
+            "id": "apstra-113",
+            "name": "Update system agent",
+            "method": "PATCH",
+            "path": "/api/system-agents/{{agent_id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"username\": null,\n  \"profile\": null,\n  \"force_package_install\": null,\n  \"install_requirements\": null,\n  \"open_options\": null,\n  \"enable_monitor\": null,\n  \"password\": null,\n  \"packages\": null,\n  \"label\": null,\n  \"platform\": null,\n  \"management_ip\": null,\n  \"operation_mode\": null\n}",
+            "destructive": true,
+            "description": "Modify a system agent configuration specified by {agent_id}."
+          },
+          {
+            "id": "apstra-114",
+            "name": "Delete system agent",
+            "method": "DELETE",
+            "path": "/api/system-agents/{{agent_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a system agent specified by {agent_id}."
+          },
+          {
+            "id": "apstra-115",
+            "name": "Upgrade device OS",
+            "method": "POST",
+            "path": "/api/system-agents/{{agent_id}}/dos-upgrade",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"image_id\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Upgrade the Device OS (platform) of the device managed by {agent_id}."
+          },
+          {
+            "id": "apstra-116",
+            "name": "Create virtual infra manager",
+            "method": "POST",
+            "path": "/api/virtual-infra-managers",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"username\": \"<string>\",\n  \"management_ip\": \"<string>\",\n  \"virtual_infra_type\": \"<string>\",\n  \"password\": \"<string>\",\n  \"vcenter_info\": null,\n  \"id\": null\n}",
+            "destructive": true,
+            "description": "Register a new virtual infra manager (e.g. vCenter)."
+          },
+          {
+            "id": "apstra-117",
+            "name": "Delete virtual infra manager",
+            "method": "DELETE",
+            "path": "/api/virtual-infra-managers/{{manager_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a virtual infra manager specified by {manager_id}."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "apstra-35",
+        "name": "Interfaces & cabling",
+        "requests": [
+          {
+            "id": "apstra-36",
+            "name": "Interface counters",
+            "method": "GET",
+            "path": "/api/systems/{{system_id}}/counters",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Gets interface counters for specified system"
+          },
+          {
+            "id": "apstra-37",
+            "name": "Transceiver counters",
+            "method": "GET",
+            "path": "/api/systems/{{system_id}}/services/xcvr/data",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Gets transceiver counters for specified system"
+          },
+          {
+            "id": "apstra-38",
+            "name": "Fabric relationships",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/relationships",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get all or matching relationships in the blueprint"
+          },
+          {
+            "id": "apstra-39",
+            "name": "Fabric relationship",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/relationships/{{relationship_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get specific relationship in the blueprint"
+          },
+          {
+            "id": "apstra-40",
+            "name": "Port aliases",
+            "method": "GET",
+            "path": "/api/port-aliases",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get all port aliases present in AOS"
+          },
+          {
+            "id": "apstra-41",
+            "name": "Port alias",
+            "method": "GET",
+            "path": "/api/port-aliases/{{alias_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get a port alias with the given id"
+          },
+          {
+            "id": "apstra-118",
+            "name": "Create port alias",
+            "method": "POST",
+            "path": "/api/port-aliases",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"value\": \"<string>\",\n  \"label\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new port alias."
+          },
+          {
+            "id": "apstra-119",
+            "name": "Update port alias",
+            "method": "PUT",
+            "path": "/api/port-aliases/{{alias_id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"value\": \"<string>\",\n  \"label\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Update a port alias with the given id."
+          },
+          {
+            "id": "apstra-120",
+            "name": "Delete port alias",
+            "method": "DELETE",
+            "path": "/api/port-aliases/{{alias_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a port alias with the given id."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "apstra-42",
+        "name": "Anomalies & health",
+        "requests": [
+          {
+            "id": "apstra-43",
+            "name": "All anomalies",
+            "method": "GET",
+            "path": "/api/anomalies",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieives all anomalies."
+          },
+          {
+            "id": "apstra-44",
+            "name": "Blueprint anomalies",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/anomalies",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieves all anomalies for the blueprint specified by {blueprint_id}."
+          },
+          {
+            "id": "apstra-45",
+            "name": "Anomalies per node",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/anomalies_nodes_count",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieves a count of anomalies per each node in blueprint with id {blueprint_id}"
+          },
+          {
+            "id": "apstra-46",
+            "name": "Anomalies per role",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/anomalies_services_count",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieves the number of anomalies per each 2-tuple of role and anomaly_type in the blueprint specified by {blueprint_id}."
+          },
+          {
+            "id": "apstra-47",
+            "name": "Device anomalies",
+            "method": "GET",
+            "path": "/api/systems/{{system_id}}/anomalies",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieves all anomalies for the system specified by {system_id}."
+          },
+          {
+            "id": "apstra-48",
+            "name": "Anomalous IBA stages",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/iba/anomalous-stages",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "For probes in the given blueprint, return all stages with specified tags and their anomaly count."
+          },
+          {
+            "id": "apstra-49",
+            "name": "IBA probes",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/probes",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get all configured probes for the given blueprint by the specified {blueprint_id}."
+          },
+          {
+            "id": "apstra-50",
+            "name": "IBA probe",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/probes/{{probe_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Returns details of the probe by the specified {blueprint_id} and {probe_id}."
+          },
+          {
+            "id": "apstra-51",
+            "name": "IBA probe messages",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/probes/{{probe_id}}/messages",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Returns a list of probe messages by the specified {blueprint_id} and {probe_id}."
+          },
+          {
+            "id": "apstra-52",
+            "name": "Predefined IBA probes",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/iba/predefined-probes",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "List all the predefined probes according to the blueprint design."
+          },
+          {
+            "id": "apstra-53",
+            "name": "IBA dashboards",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/iba/dashboards",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get all dashboards for the given blueprint by the specified {blueprint_id}."
+          },
+          {
+            "id": "apstra-54",
+            "name": "IBA widgets",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/iba/widgets",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get all widgets for the given blueprint by the specified {blueprint_id}."
+          },
+          {
+            "id": "apstra-55",
+            "name": "Anomaly heatmap",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/iba/widgets/{{widget_id}}/anomaly-heatmap",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "For the given heatmap specified by {blueprint_id} and {widget_id}, report table data, i.e. number of matching items and number of their anomalies for each cell specified by a\u2026"
+          },
+          {
+            "id": "apstra-56",
+            "name": "Telemetry processors",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/telemetry/processors",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Returns a list of available processor types for a particular blueprint with the given {blueprint_id}."
+          },
+          {
+            "id": "apstra-57",
+            "name": "Telemetry services",
+            "method": "GET",
+            "path": "/api/telemetry/services",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get telemetry service name to devices enabled and devices with last run error mapping"
+          },
+          {
+            "id": "apstra-58",
+            "name": "Telemetry service",
+            "method": "GET",
+            "path": "/api/telemetry/services/{{service_name}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get specified telemetry service info on all systems with this service enabled."
+          },
+          {
+            "id": "apstra-59",
+            "name": "System telemetry services",
+            "method": "GET",
+            "path": "/api/systems/{{system_id}}/services",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "List enabled telemetry services on specified device."
+          },
+          {
+            "id": "apstra-60",
+            "name": "System telemetry service",
+            "method": "GET",
+            "path": "/api/systems/{{system_id}}/services/{{service_name}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get specified telemetry service info on specified device."
+          },
+          {
+            "id": "apstra-61",
+            "name": "System telemetry service data",
+            "method": "GET",
+            "path": "/api/systems/{{system_id}}/services/{{service_name}}/data",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get status of service specified by {service_name} on system specified by {system_id} Depending on the type of service a different type of response is given."
+          },
+          {
+            "id": "apstra-62",
+            "name": "Streaming telemetry stats",
+            "method": "GET",
+            "path": "/api/streaming-stats",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          },
+          {
+            "id": "apstra-63",
+            "name": "Streaming endpoint stats",
+            "method": "GET",
+            "path": "/api/streaming-stats/{{endpoint_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed statistics for a streaming endpoint"
+          },
+          {
+            "id": "apstra-64",
+            "name": "Cluster nodes",
+            "method": "GET",
+            "path": "/api/cluster/nodes",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve the list of slave nodes available in the AOS cluster along with its status."
+          },
+          {
+            "id": "apstra-65",
+            "name": "Cluster node status",
+            "method": "GET",
+            "path": "/api/cluster/nodes/{{node_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve the status for AOS slave node {node_id}"
+          },
+          {
+            "id": "apstra-66",
+            "name": "Cluster node errors",
+            "method": "GET",
+            "path": "/api/cluster/nodes/{{node_id}}/errors",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieves the errors for node {node_id} in the AOS cluster."
+          },
+          {
+            "id": "apstra-67",
+            "name": "Server operation mode",
+            "method": "GET",
+            "path": "/api/cluster/operation-mode",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          },
+          {
+            "id": "apstra-68",
+            "name": "Recent events",
+            "method": "GET",
+            "path": "/api/events",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get the most recent events, with a maximum specified by 'max'"
+          },
+          {
+            "id": "apstra-69",
+            "name": "Recent alert events",
+            "method": "GET",
+            "path": "/api/alert-events",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get the most recent events, with a maximum specified by 'max'"
+          },
+          {
+            "id": "apstra-70",
+            "name": "Audit events",
+            "method": "GET",
+            "path": "/api/audit/events",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "apstra-71",
+        "name": "Config & deployment",
+        "requests": [
+          {
+            "id": "apstra-boot1",
+            "name": "Get all config templates",
+            "method": "GET",
+            "path": "/api/design/config-templates",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "All configuration templates \u2014 a template id fills {{id}}."
+          },
+          {
+            "id": "apstra-72",
+            "name": "Deploy status",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/deploy",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get deploy status of given version of the blueprint"
+          },
+          {
+            "id": "apstra-73",
+            "name": "Configuration deployment status",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/configuration",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get status of configuration deployment for blueprint and all associated systems specified by {blueprint_id}\","
+          },
+          {
+            "id": "apstra-74",
+            "name": "Staged vs deployed diff",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/diff",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve diff between staged and deployed blueprint."
+          },
+          {
+            "id": "apstra-75",
+            "name": "Diff computation status",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/diff-status",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve the computation status of the diff between staged and deployed/operation blueprint."
+          },
+          {
+            "id": "apstra-76",
+            "name": "Config preview summary",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/preview-config-summary",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Used only during AOS upgrade, to preview or summarize the device configs"
+          },
+          {
+            "id": "apstra-77",
+            "name": "Snapshots",
+            "method": "GET",
+            "path": "/api/snapshots",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Returns a list of AOS snapshots, including detail statistics."
+          },
+          {
+            "id": "apstra-78",
+            "name": "Snapshot",
+            "method": "GET",
+            "path": "/api/snapshots/{{snapshot_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get detail information of a snapshot specified by {snapshot_id}"
+          },
+          {
+            "id": "apstra-79",
+            "name": "Server version",
+            "method": "GET",
+            "path": "/api/versions/server",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          },
+          {
+            "id": "apstra-80",
+            "name": "API version",
+            "method": "GET",
+            "path": "/api/versions/api",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          },
+          {
+            "id": "apstra-81",
+            "name": "Build version",
+            "method": "GET",
+            "path": "/api/versions/build",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          },
+          {
+            "id": "apstra-82",
+            "name": "Supported features",
+            "method": "GET",
+            "path": "/api/features",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          },
+          {
+            "id": "apstra-121",
+            "name": "Deploy blueprint",
+            "method": "PUT",
+            "path": "/api/blueprints/{{blueprint_id}}/deploy",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"version\": \"<integer>\",\n  \"description\": null\n}",
+            "destructive": true,
+            "description": "Commit/deploy the given staged version of the blueprint to the fabric."
+          },
+          {
+            "id": "apstra-122",
+            "name": "Create config template",
+            "method": "POST",
+            "path": "/api/design/config-templates",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"text\": \"<string>\",\n  \"label\": \"<string>\",\n  \"id\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new configuration template."
+          },
+          {
+            "id": "apstra-123",
+            "name": "Update config template",
+            "method": "PUT",
+            "path": "/api/design/config-templates/{{id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"text\": \"<string>\",\n  \"label\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Modify an existing configuration template."
+          },
+          {
+            "id": "apstra-124",
+            "name": "Delete config template",
+            "method": "DELETE",
+            "path": "/api/design/config-templates/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a configuration template."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "apstra-83",
+        "name": "Tasks & jobs",
+        "requests": [
+          {
+            "id": "apstra-84",
+            "name": "Blueprint tasks",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/tasks",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get list of tasks executed on blueprint with given ID."
+          },
+          {
+            "id": "apstra-85",
+            "name": "Blueprint task",
+            "method": "GET",
+            "path": "/api/blueprints/{{blueprint_id}}/tasks/{{task_id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get details of a given task executed on blueprint with given ID."
+          },
+          {
+            "id": "apstra-86",
+            "name": "Agents with pending jobs",
+            "method": "GET",
+            "path": "/api/system-agent-jobs/pending-jobs",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          },
+          {
+            "id": "apstra-87",
+            "name": "Agents with active jobs",
+            "method": "GET",
+            "path": "/api/system-agent-jobs/active-jobs",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Response: 200"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "apstra-88",
+        "name": "Resources & addressing",
+        "requests": [
+          {
+            "id": "apstra-89",
+            "name": "ASN pools",
+            "method": "GET",
+            "path": "/api/resources/asn-pools",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Shows all ASN pools in the system."
+          },
+          {
+            "id": "apstra-90",
+            "name": "ASN pool",
+            "method": "GET",
+            "path": "/api/resources/asn-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Show ASN pool specified by {id}."
+          },
+          {
+            "id": "apstra-91",
+            "name": "IPv4 pools",
+            "method": "GET",
+            "path": "/api/resources/ip-pools",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Shows all IP address pools in the system."
+          },
+          {
+            "id": "apstra-92",
+            "name": "IPv4 pool",
+            "method": "GET",
+            "path": "/api/resources/ip-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Show IP address pool specified by {id}."
+          },
+          {
+            "id": "apstra-93",
+            "name": "IPv6 pools",
+            "method": "GET",
+            "path": "/api/resources/ipv6-pools",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Shows all IP address pools in the system."
+          },
+          {
+            "id": "apstra-94",
+            "name": "IPv6 pool",
+            "method": "GET",
+            "path": "/api/resources/ipv6-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Show IP address pool specified by {id}."
+          },
+          {
+            "id": "apstra-95",
+            "name": "VLAN pools",
+            "method": "GET",
+            "path": "/api/resources/vlan-pools",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Shows all VLAN pools in the system."
+          },
+          {
+            "id": "apstra-96",
+            "name": "VLAN pool",
+            "method": "GET",
+            "path": "/api/resources/vlan-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Show VLAN pool specified by {id}."
+          },
+          {
+            "id": "apstra-97",
+            "name": "VNI pools",
+            "method": "GET",
+            "path": "/api/resources/vni-pools",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Shows all VNI pools in the system."
+          },
+          {
+            "id": "apstra-98",
+            "name": "VNI pool",
+            "method": "GET",
+            "path": "/api/resources/vni-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Show VNI pool specified by {id}."
+          },
+          {
+            "id": "apstra-99",
+            "name": "Integer pools",
+            "method": "GET",
+            "path": "/api/resources/integer-pools",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Shows all integer pools in the system."
+          },
+          {
+            "id": "apstra-100",
+            "name": "Integer pool",
+            "method": "GET",
+            "path": "/api/resources/integer-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Show integer pool specified by {id}."
+          },
+          {
+            "id": "apstra-101",
+            "name": "Device pools",
+            "method": "GET",
+            "path": "/api/resources/device-pools",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Shows all device pools in the system."
+          },
+          {
+            "id": "apstra-102",
+            "name": "Device pool",
+            "method": "GET",
+            "path": "/api/resources/device-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Show device pool specified by {id}."
+          },
+          {
+            "id": "apstra-125",
+            "name": "Create ASN pool",
+            "method": "POST",
+            "path": "/api/resources/asn-pools",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"display_name\": \"<string>\",\n  \"ranges\": [\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    },\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    }\n  ],\n  \"status\": \"<string>\",\n  \"used\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"used_percentage\": \"<float>\",\n  \"total\": \"<string>\",\n  \"id\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new ASN pool."
+          },
+          {
+            "id": "apstra-126",
+            "name": "Update ASN pool",
+            "method": "PUT",
+            "path": "/api/resources/asn-pools/{{id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"display_name\": \"<string>\",\n  \"ranges\": [\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    },\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    }\n  ],\n  \"status\": \"<string>\",\n  \"used\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"used_percentage\": \"<float>\",\n  \"total\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Modify an existing ASN pool specified by {id}."
+          },
+          {
+            "id": "apstra-127",
+            "name": "Delete ASN pool",
+            "method": "DELETE",
+            "path": "/api/resources/asn-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an ASN pool specified by {id}."
+          },
+          {
+            "id": "apstra-128",
+            "name": "Create IPv4 pool",
+            "method": "POST",
+            "path": "/api/resources/ip-pools",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"subnets\": [\n    {\n      \"network\": \"<string>\",\n      \"status\": \"<string>\",\n      \"total\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\"\n    },\n    {\n      \"network\": \"<string>\",\n      \"status\": \"<string>\",\n      \"total\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\"\n    }\n  ],\n  \"display_name\": \"<string>\",\n  \"status\": \"<string>\",\n  \"used\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"used_percentage\": \"<float>\",\n  \"total\": \"<string>\",\n  \"id\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new IPv4 address pool."
+          },
+          {
+            "id": "apstra-129",
+            "name": "Update IPv4 pool",
+            "method": "PUT",
+            "path": "/api/resources/ip-pools/{{id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"subnets\": [\n    {\n      \"network\": \"<string>\",\n      \"status\": \"<string>\",\n      \"total\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\"\n    },\n    {\n      \"network\": \"<string>\",\n      \"status\": \"<string>\",\n      \"total\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\"\n    }\n  ],\n  \"display_name\": \"<string>\",\n  \"status\": \"<string>\",\n  \"used\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"used_percentage\": \"<float>\",\n  \"total\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Modify an existing IPv4 address pool specified by {id}."
+          },
+          {
+            "id": "apstra-130",
+            "name": "Delete IPv4 pool",
+            "method": "DELETE",
+            "path": "/api/resources/ip-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an IPv4 address pool specified by {id}."
+          },
+          {
+            "id": "apstra-131",
+            "name": "Create IPv6 pool",
+            "method": "POST",
+            "path": "/api/resources/ipv6-pools",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"subnets\": [\n    {\n      \"network\": \"<string>\",\n      \"status\": \"<string>\"\n    },\n    {\n      \"network\": \"<string>\",\n      \"status\": \"<string>\"\n    }\n  ],\n  \"display_name\": \"<string>\",\n  \"status\": \"<string>\",\n  \"id\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Create a new IPv6 address pool."
+          },
+          {
+            "id": "apstra-132",
+            "name": "Update IPv6 pool",
+            "method": "PUT",
+            "path": "/api/resources/ipv6-pools/{{id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"subnets\": [\n    {\n      \"network\": \"<string>\",\n      \"status\": \"<string>\"\n    },\n    {\n      \"network\": \"<string>\",\n      \"status\": \"<string>\"\n    }\n  ],\n  \"display_name\": \"<string>\",\n  \"status\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Modify an existing IPv6 address pool specified by {id}."
+          },
+          {
+            "id": "apstra-133",
+            "name": "Delete IPv6 pool",
+            "method": "DELETE",
+            "path": "/api/resources/ipv6-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an IPv6 address pool specified by {id}."
+          },
+          {
+            "id": "apstra-134",
+            "name": "Create VLAN pool",
+            "method": "POST",
+            "path": "/api/resources/vlan-pools",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"display_name\": \"<string>\",\n  \"ranges\": [\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    },\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    }\n  ],\n  \"status\": \"<string>\",\n  \"used\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"used_percentage\": \"<float>\",\n  \"total\": \"<string>\",\n  \"id\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new VLAN pool."
+          },
+          {
+            "id": "apstra-135",
+            "name": "Update VLAN pool",
+            "method": "PUT",
+            "path": "/api/resources/vlan-pools/{{id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"display_name\": \"<string>\",\n  \"ranges\": [\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    },\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    }\n  ],\n  \"status\": \"<string>\",\n  \"used\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"used_percentage\": \"<float>\",\n  \"total\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Modify an existing VLAN pool specified by {id}."
+          },
+          {
+            "id": "apstra-136",
+            "name": "Delete VLAN pool",
+            "method": "DELETE",
+            "path": "/api/resources/vlan-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a VLAN pool specified by {id}."
+          },
+          {
+            "id": "apstra-137",
+            "name": "Create VNI pool",
+            "method": "POST",
+            "path": "/api/resources/vni-pools",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"display_name\": \"<string>\",\n  \"ranges\": [\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    },\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    }\n  ],\n  \"status\": \"<string>\",\n  \"used\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"used_percentage\": \"<float>\",\n  \"total\": \"<string>\",\n  \"id\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new VNI pool."
+          },
+          {
+            "id": "apstra-138",
+            "name": "Update VNI pool",
+            "method": "PUT",
+            "path": "/api/resources/vni-pools/{{id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": "{\n  \"display_name\": \"<string>\",\n  \"ranges\": [\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    },\n    {\n      \"last\": \"<integer>\",\n      \"first\": \"<integer>\",\n      \"status\": \"<string>\",\n      \"used\": \"<string>\",\n      \"used_percentage\": \"<float>\",\n      \"total\": \"<string>\"\n    }\n  ],\n  \"status\": \"<string>\",\n  \"used\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"used_percentage\": \"<float>\",\n  \"total\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Modify an existing VNI pool specified by {id}."
+          },
+          {
+            "id": "apstra-139",
+            "name": "Delete VNI pool",
+            "method": "DELETE",
+            "path": "/api/resources/vni-pools/{{id}}",
+            "headers": [
+              {
+                "key": "AuthToken",
+                "value": "{{apstraToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a VNI pool specified by {id}."
+          }
+        ],
+        "folders": []
+      }
+    ]
+  }
+}

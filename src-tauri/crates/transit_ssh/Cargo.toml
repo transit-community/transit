@@ -1,0 +1,67 @@
+[package]
+name = "transit_ssh"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "russh-based PTY transport for device sessions."
+
+[lints]
+workspace = true
+
+[features]
+# Real OpenSSH integration tests via Docker. Off by default; CI flips
+# it on for the Linux runner only.
+docker-tests = []
+
+[dependencies]
+transit_core.workspace = true
+transit_auth.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+async-trait.workspace = true
+russh.workspace = true
+bytes.workspace = true
+# `expose_secret` at the russh boundary — transit_ssh hands the raw
+# &str into russh's `authenticate_password` (and the keyboard-interactive
+# responder for hosts that require it, e.g. ESXi) and drops the borrow at
+# scope exit. This is the only place outside transit_auth where a
+# secret is touched, and it's structurally minimal.
+secrecy.workspace = true
+tokio = { version = "1", features = [
+    "sync",
+    "net",
+    "io-util",
+    "time",
+    "macros",
+    "rt",
+    "process",
+] }
+toml.workspace = true
+tempfile.workspace = true
+dirs.workspace = true
+subtle.workspace = true
+time.workspace = true
+
+[dev-dependencies]
+tokio = { version = "1", features = [
+    "test-util",
+    "rt-multi-thread",
+    "io-std",
+    "macros",
+] }
+# Ephemeral ed25519 host key for the in-process server in the
+# keyboard-interactive integration test — mirrors russh's own test
+# pattern (`PrivateKey::random(&mut rand::rng(), …)`). Generated per
+# run, so no private key is committed to the repo. Version + feature
+# match russh's dev-dep (rand 0.10 → rand_core 0.10, what ssh-key 0.7's
+# `CryptoRng` bound wants); already in the lock, so no new crate is pulled.
+rand = { version = "0.10", features = ["thread_rng"] }
+
+# `connect-cli` example — manual smoke-test binary for the
+# Connection + Session API without launching Tauri.
+[[example]]
+name = "connect-cli"
+path = "examples/connect-cli.rs"

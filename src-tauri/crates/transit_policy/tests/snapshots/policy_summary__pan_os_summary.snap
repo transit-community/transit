@@ -1,0 +1,52 @@
+---
+source: crates/transit_policy/tests/policy_summary.rs
+assertion_line: 98
+expression: render(&s)
+---
+precedence: BlockWins
+allowed:
+  - ^show( |$)
+  - ^ping( |$)
+  - ^traceroute( |$)
+  - ^less [a-z0-9._-]+-log( |$)
+  - ^tail (follow (yes|no) |lines [0-9]+ )*[a-z0-9._-]+-log( |$)
+  - ^find command( |$)
+  - ^grep ([a-z]+ [a-z0-9]+ )*[a-z0-9._-]+-log 
+  - ^view-config 
+  - ^set cli pager 
+  - ^set cli terminal 
+  - ^set cli timeout 
+blocked:
+  - ^configure( |$)
+  - ^edit 
+  - ^delete 
+  - ^commit
+  - ^load 
+  - ^save 
+  - ^revert 
+  - ^rename 
+  - ^move 
+  - ^copy 
+  - ^scp 
+  - ^tftp 
+  - ^ftp 
+  - ^clear 
+  - ^debug software shell
+  - ^debug system 
+  - ^request restart
+  - ^request shutdown
+  - ^request system 
+  - ^request platform-software 
+  - ^request high-availability 
+  - ^request password-hash 
+  - ^exit
+  - ^quit
+  - ^logout
+  - ^run 
+pipe_allowed:
+  - ^match 
+  - ^except 
+  - ^count$
+pipe_blocked:
+  - ^redirect 
+  - ^tee

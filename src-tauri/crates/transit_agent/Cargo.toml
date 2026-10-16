@@ -1,0 +1,59 @@
+[package]
+name = "transit_agent"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "LLM tool surface, redaction filter, and Conversation state. Cannot depend on transit_auth."
+
+[lints]
+workspace = true
+
+# IMPORTANT: this crate must NOT depend on transit_auth (the sole secret
+# holder). Enforced by `deny.toml` ban and the
+# `transit-agent-firewall-test` skill. Adding such a dependency here is a
+# security regression.
+
+[dependencies]
+transit_core.workspace = true
+transit_policy.workspace = true
+transit_tls.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+regex.workspace = true
+async-trait = "0.1"
+# Compile-time variant-count assertion on the four-tool surface.
+# Together with the trybuild compile-fail tests, this makes "exactly
+# four tools" a typed invariant — not a comment.
+static_assertions = "1.1"
+# LLM-streaming deps: reqwest + SSE decoding for the direct provider
+# clients (llm/direct.rs) and the local (BYOM) clients. Keys arrive by
+# value as `SecretString`; this crate never reads a keychain.
+reqwest.workspace = true
+eventsource-stream.workspace = true
+futures.workspace = true
+# Provider keys are held as `SecretString` for their whole life here;
+# secrecy's redacted Debug + zeroize-on-drop are the point.
+secrecy.workspace = true
+
+tokio = { version = "1", features = ["macros", "rt", "sync", "time"] }
+tokio-stream.workspace = true
+# Used in agent_loop.rs to mint synthetic tool_use ids when the
+# AgentLoop is exercised against a stub LlmClient that doesn't
+# carry provider-emitted ids. Production paths use the real model
+# id; the tokio test utilities sit alongside.
+uuid.workspace = true
+# RFC 3339 parsing of the Anthropic Models API `created_at` (list_models).
+# Already in the tree (transit_app); `parsing` is additive.
+time = { workspace = true, features = ["parsing"] }
+
+[dev-dependencies]
+trybuild.workspace = true
+proptest.workspace = true
+insta.workspace = true
+# Loopback HTTP fixtures for the ollama LlmClient tests (end-to-end
+# NDJSON streaming + the redirect-not-followed security pin).
+wiremock.workspace = true

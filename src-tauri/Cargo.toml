@@ -1,0 +1,335 @@
+[workspace]
+resolver = "2"
+members = [
+    ".",
+    "crates/transit_core",
+    "crates/transit_auth",
+    "crates/transit_policy",
+    "crates/transit_ssh",
+    "crates/transit_agent",
+    "crates/transit_tls",
+    "crates/transit_console",
+    "crates/transit_api",
+    "crates/transit_localpty",
+    "crates/transit_files",
+    "crates/transit_pcap",
+]
+
+[workspace.package]
+version = "6.5.9"
+edition = "2021"
+# The oldest toolchain Transit actually builds on, derived from the highest
+# MSRV in our own dependency graph (tauri → plist, plus image/time/darling/
+# serde_what-have-you all sit at 1.88). It was 1.77.2 until 2026-08-20, which
+# was fiction — 167 resolved deps already demanded more, so a 1.77.2 build
+# died in cargo before touching our code. The toolchain CI and dev actually
+# use is pinned separately in ../rust-toolchain.toml; this field is the floor,
+# not the pin. Note no member opts in via `rust-version.workspace = true`, so
+# cargo enforces nothing here today — it is documentation plus the value
+# clippy's MSRV-gated lints read (which is what lets the `as_chunks` calls in
+# commands.rs / transit_pcap stand without an allow).
+rust-version = "1.88"
+authors = ["Transit Community Edition contributors"]
+license = "Apache-2.0"
+repository = "https://github.com/transit-community/transit"
+
+[workspace.lints.rust]
+# `deny` rather than `forbid` so individual items can `#[allow]` with
+# a documented SAFETY: rationale. Current opt-outs:
+# - `transit_ssh/src/connection.rs` — `AssumeSendFuture`, two
+#   item-scoped allows (rustc higher-ranked-lifetime workaround; the
+#   Send+Sync soundness premise is machine-checked by a `const`
+#   assertion beside the `unsafe impl`).
+# - `transit_ssh/tests/dockerized_openssh.rs` — test-only allow for
+#   `std::env::set_var` (unsafe in Rust 2024+).
+# Adding another opt-out requires a security-audit skill pass.
+unsafe_code = "deny"
+
+[workspace.dependencies]
+# Shared external deps
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+log = "0.4"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+# Rolling file sink for the opt-in diagnostic log (Settings → Developers).
+# Same org and release train as tracing-subscriber; MIT.
+tracing-appender = "0.2"
+secrecy = "0.10"
+zeroize = { version = "1.8", features = ["derive"] }
+thiserror = "2.0"
+anyhow = "1.0"
+# System font-database scan for the Settings → Terminal font picker
+# (v1.0.2). Pure-Rust (ttf-parser underneath); licenses all within
+# the deny.toml allowlist (MIT + Apache-2.0/MIT + Zlib transitives).
+fontdb = "0.23"
+
+# Tauri
+tauri = { version = "2.11.2" }
+tauri-plugin-log = "2"
+# Clipboard plugin — mediates clipboard reads via the Rust process so
+# the macOS WKWebView clipboard-read permission gate doesn't silently
+# block our quick-copy-paste handlers. Required for paste-from-
+# clipboard on right/middle-click; copy-via-`writeText` would have
+# worked without the plugin but going through the same surface keeps
+# the success/failure semantics consistent.
+tauri-plugin-clipboard-manager = "2"
+# Opener plugin — opens URLs in the OS default browser (the About tab's
+# repository links). Tauri 2's webview does NOT route
+# `window.open(url, "_blank")` to the system browser; the opener IPC
+# bridges to `xdg-open` / `open` / `cmd /c start` per platform.
+tauri-plugin-opener = "2"
+# Dialog plugin — native Save As / Open File dialogs. Frontend use via
+# the @tauri-apps/plugin-dialog wrapper (session export, settings
+# bundle, pcap open, import); `capabilities/default.json` grants
+# `dialog:allow-save` + `dialog:allow-open` (no open-multiple /
+# message / ask). v6.3.0's `save_chat_snippet` also drives the Save
+# dialog RUST-side (DialogExt) — deliberately path-less IPC, see
+# chat_snippet.rs.
+tauri-plugin-dialog = "2"
+# Age (`age-encryption.org`) — modern symmetric/asymmetric file
+# encryption used by Phase 8b's encrypted session-export option.
+# Passphrase-encrypted files decrypt with `age -d` from the CLI.
+# MIT OR Apache-2.0.
+# Held at 0.11 in the monthly cargo bump: age 0.12 pulls ml-kem 0.2.1,
+# which fails to compile against the tree's kem 0.3.0 (russh's ML-KEM KEX).
+# Revisit when age's ml-kem dep aligns with kem 0.3.
+age = "0.11"
+
+# Inventory + parsing
+toml = "1.1"
+# Per-vendor policy YAML loader. Actively-maintained fork of the
+# (now-archived) serde_yaml + serde_yml lineage — see
+# https://github.com/bourumir-wyngs/serde-yaml-bw and RUSTSEC-2025-0068
+# (serde_yml advisory). Compatible with `serde::Deserialize` and
+# `#[serde(deny_unknown_fields)]` so a typo'd policy file fails the
+# load loudly at startup.
+serde_yaml_bw = "2.5"
+# Pre-match canonicalization in transit_policy: NFC-normalize commands
+# before regex matching so e.g. fullwidth `ｓｈｏｗ` collapses to `show`.
+unicode-normalization = "0.1"
+toml_edit = "0.25"
+regex = "1"
+dirs = "6"
+tempfile = "3"
+# Bulk connection import parsers (connection-import feature). roxmltree:
+# read-only XML DOM for SecureCRT SCRTConfig.xml (MIT OR Apache-2.0).
+# csv: RFC4180 quoting for the CSV importer (Unlicense OR MIT → cargo-deny
+# resolves to MIT; no deny.toml change). Both land in transit_core only.
+roxmltree = "0.21"
+csv = "1.3"
+
+# Secret backends
+async-trait = "0.1"
+keyring = "3"
+
+# HTTP client for the direct provider clients, the BYOM endpoint
+# clients and the API-controller transport. rustls-tls keeps us off
+# native OpenSSL (consistent across all 3 OSes); `stream` is needed
+# for SSE response bodies.
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream", "json"] }
+# Strict-TLS trust-anchor control for every outbound HTTPS client
+# (config.toml `[network] strict_tls`). We override reqwest's bundled roots
+# via `use_preconfigured_tls`: strict=false (default) → rustls-platform-verifier
+# (OS trust store, honoring a corporate TLS-inspection CA in the keychain /
+# Windows store); strict=true → webpki-roots only (public web PKI). `rustls`
+# builds the ClientConfig. See transit_tls + threat-model T27.
+# Versions track reqwest's rustls 0.23 so the use_preconfigured_tls downcast
+# stays valid.
+rustls = "0.23"
+rustls-platform-verifier = "0.7"
+webpki-roots = "1"
+url = "2.5"
+futures = "0.3"
+# SSE event-stream parser. Layered over `reqwest`'s `bytes_stream` to
+# decode `data: ...\n\n` frames into typed events. Used by transit_agent's
+# LlmClient impls to consume Anthropic + OpenAI streaming responses.
+eventsource-stream = "0.2"
+# OS RNG. Already in the dep graph transitively via reqwest's rustls;
+# declared here so the public surface is auditable.
+getrandom = "0.4"
+# tokio is a workspace dep so every crate shares a single version.
+tokio = { version = "1", features = ["sync", "rt", "macros", "time"] }
+# UnboundedReceiverStream wrapper used by transit_agent's
+# AgentLoop to surface its event mpsc channel as a futures Stream.
+# Bumping the patch line here is fine; tokio-stream tracks tokio's
+# minor version.
+tokio-stream = "0.1"
+
+# SSH transport. russh is pre-1.0 with periodic API churn — pin
+# loosely on the current minor; expect to migrate ~yearly.
+russh = "0.63"
+
+# `bytes::Bytes` for zero-copy PTY-byte plumbing. Already pulled in
+# transitively via russh; declared here so the public Session API
+# is auditable.
+bytes = "1"
+
+# Used by the SSH IPC commands to base64-encode PTY output bytes
+# for Tauri events (and decode keystroke bytes from the frontend).
+# Already pulled in transitively via tauri.
+base64 = "0.23"
+
+# Session IDs handed back to the frontend. Already in the dep
+# graph via tauri-plugin-log et al.
+uuid = { version = "1", features = ["v4", "serde"] }
+
+# Constant-time comparison for host-key fingerprints. Already in
+# the dep graph transitively; declared here so it stays auditable.
+subtle = "2"
+
+# RFC3339 timestamps for known_hosts entries. Already pulled in
+# transitively via tauri's cookie crate.
+time = { version = "0.3", features = ["formatting", "macros"] }
+
+# Test deps
+insta = { version = "1.41", features = ["yaml"] }
+trybuild = "1.0"
+proptest = "1"
+# In-process HTTP mock server for hermetic HTTP-client tests. Used via
+# wiremock::MockServer::start() inside tokio tests to canned-respond
+# controller and provider endpoints without touching the network.
+# Pinned major-version against the active 0.6 line.
+wiremock = "0.6"
+
+# Internal crates
+transit_core = { path = "crates/transit_core" }
+transit_auth = { path = "crates/transit_auth" }
+transit_policy = { path = "crates/transit_policy" }
+transit_ssh = { path = "crates/transit_ssh" }
+transit_agent = { path = "crates/transit_agent" }
+transit_tls = { path = "crates/transit_tls" }
+transit_console = { path = "crates/transit_console" }
+# Phase 1a (v4.0.0) — read-only-capable REST transport + agent GET-gate for
+# API sessions (UniFi first). Owned by transit_app; MUST NOT be reachable from
+# transit_agent (deny.toml). Adds no new external deps — reuses reqwest + the
+# centralized OS-trust TLS builder in transit_tls.
+transit_api = { path = "crates/transit_api" }
+# v4.4.0 — local OS shell (PTY) transport for the Terminal surface. Owned by
+# transit_app; a HUMAN-ONLY surface, deliberately NOT reachable from
+# transit_agent and NOT composed into the agent's unified session sources
+# (structural agent-blindness — the local terminal surface design notes (not included in this repository)).
+# Uses portable-pty (declared in the crate; MIT).
+transit_localpty = { path = "crates/transit_localpty" }
+# v5.0.0 — SFTP browse + transfer engine for the Files surface. Owned by
+# transit_app; a HUMAN-ONLY surface, deliberately NOT reachable from
+# transit_agent and NOT composed into the agent's unified session sources
+# (structural agent-blindness — the files pane sftp design notes (not included in this repository),
+# threat model T43; enforced by a deny.toml crate ban). Transport-agnostic:
+# depends on neither transit_ssh nor transit_auth — transit_app hands it an
+# already-open subsystem stream. Uses russh-sftp (declared in the crate;
+# Apache-2.0).
+transit_files = { path = "crates/transit_files" }
+# v6.0.0 — packet-capture reader, dissectors, index, filter engine and
+# analysis for the PCaps surface. Owned by transit_app.
+#
+# Unlike transit_localpty / transit_files, this surface IS visible to the
+# agent — that is the point of the feature. Visibility is granted the same
+# way scrollback's is, and costs the firewall nothing: `transit_agent`
+# owns a `CaptureSource` TRAIT plus the agent-facing answer types, and
+# `transit_app` implements it over this engine. So the agent depends on
+# the shape of an answer, never on the engine, the file, or the OS capture
+# process — and `deny.toml` bans this crate outside transit_app to keep
+# that a dep-graph property rather than a review comment.
+# Threat model T44/T45.
+transit_pcap = { path = "crates/transit_pcap" }
+
+[package]
+name = "transit_app"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "Cross-platform GUI SSH client with embedded agentic AI for read-only network operations"
+
+[lints]
+workspace = true
+
+[lib]
+name = "transit_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.1", features = [] }
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+log.workspace = true
+tauri.workspace = true
+tauri-plugin-log.workspace = true
+tauri-plugin-clipboard-manager.workspace = true
+tauri-plugin-opener.workspace = true
+tauri-plugin-dialog.workspace = true
+age.workspace = true
+tempfile.workspace = true
+url.workspace = true
+dirs.workspace = true
+toml.workspace = true
+# `net` + `io-util`: the one-shot loopback listener for Sign in with
+# ChatGPT (chatgpt_auth.rs).
+tokio = { workspace = true, features = ["net", "io-util"] }
+bytes.workspace = true
+base64.workspace = true
+uuid.workspace = true
+time.workspace = true
+tracing.workspace = true
+# Used by `chat::drive_stream` to consume `LlmStream` (BoxStream) via
+# `StreamExt::next()`. Already in the workspace via reqwest +
+# auditable.
+futures.workspace = true
+
+# Workspace member crates
+transit_core.workspace = true
+transit_auth = { workspace = true }
+transit_policy.workspace = true
+transit_ssh.workspace = true
+transit_agent.workspace = true
+transit_console.workspace = true
+# v4.0.0 — the REST transport + agent GET-gate for API sessions. Used by
+# commands.rs's api_send_request (human path) and the agent dispatch.
+# transit_app owns it; transit_agent must NOT depend on it (deny.toml).
+transit_api.workspace = true
+# The one TLS trust builder — the ChatGPT token exchange rides it.
+transit_tls.workspace = true
+# HTTP for the ChatGPT token exchange / refresh (chatgpt_auth.rs); the
+# client itself comes from transit_tls.
+reqwest.workspace = true
+# v4.4.0 — local OS shell (PTY) transport for the Terminal surface (human-only).
+transit_localpty.workspace = true
+# v5.0.0 — SFTP browse + transfer engine for the Files surface (human-only).
+transit_files.workspace = true
+# v6.0.0 — the packet-capture engine behind the PCaps surface. Owned here;
+# `transit_agent` reaches it only through the `CaptureSource` trait it owns
+# itself (deny.toml bans the crate outside transit_app).
+transit_pcap.workspace = true
+
+# secrecy is needed in commands.rs to wrap the enroll_secret payload
+# at the IPC boundary (Risk #6 in the Phase 2a plan).
+secrecy.workspace = true
+# Keyring access for the provider_keys module — the user's provider
+# API keys live in the OS keychain under a dedicated service
+# name so they're scoped separately from SSH credentials in
+# transit_auth.
+keyring.workspace = true
+# SHA-256 for the PKCE code challenge (chatgpt_auth.rs). Already in the
+# tree via transit_tls.
+sha2 = "0.10"
+# Phase 6's `agent_dispatch` module — `regex` for the per-chat
+# always-allow allowlist (compiled once on Approve-and-remember,
+# matched per propose_command), `async-trait` for the
+# `ApprovalChannel` + `SessionExecutor` trait shapes the
+# dispatcher composes.
+regex.workspace = true
+async-trait.workspace = true
+# v1.0.2 font picker — `fonts::list_monospace_fonts` enumerates the
+# OS font database (family names only; nothing secret-adjacent).
+fontdb.workspace = true
+
+[dev-dependencies]
+# In-process HTTP mock for the ChatGPT token-endpoint tests (chatgpt_auth.rs).
+wiremock.workspace = true
+# `chat::tests` builds a stub `LlmClient` impl and the trait uses
+# `#[async_trait]`, so the impl block needs the same attribute.
+async-trait = "0.1"

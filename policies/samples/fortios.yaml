@@ -1,0 +1,111 @@
+# Sample BYOP policy — Fortinet FortiOS (FortiGate firewalls)
+# =============================================================
+# STATUS: template. Not loaded by Transit today — see README.md in
+# this folder. Review every pattern against YOUR environment and
+# FortiOS version before use; this is a conservative read-only
+# baseline, not a guarantee.
+#
+# Shape of the FortiOS CLI: four top-level trees matter here.
+#   get / show     — read-only state and config rendering
+#   diagnose       — mixed: mostly read, some verbs mutate or disrupt
+#   execute        — the action verb: ping lives here, so do reboot,
+#                    restore, and the shell escape
+#   config         — enters configuration mode; every config edit
+#                    starts with this word
+#
+# Threat focus (why each block exists):
+#   - `^config` — config-mode entry; the single highest-value block.
+#   - `execute shell` — full shell escape (where the build allows it).
+#   - `execute backup` — WRITES the running config to a remote host
+#     (TFTP/USB): an exfiltration channel, not a read.
+#   - `execute restore` / `factoryreset` / `reboot` / `shutdown` /
+#     `erase` / `formatlogdisk` — outage or wipe.
+#   - `execute ssh` / `execute telnet` — lateral movement from the
+#     firewall into the rest of the network.
+#   - `execute batch` — replays config commands, config-mode by
+#     another name.
+#   - `execute log delete*` / `execute log roll` — anti-forensics
+#     (log reading stays allowed via `filter`/`display`).
+#
+# FortiOS accepts unambiguous PREFIX abbreviations for every token
+# (`conf sys int` == `config system interface`). The gate only
+# canonicalizes the FIRST token via the alias map below — so blocked
+# verbs are covered in abbreviated form, but mid-line abbreviations
+# in allowed commands simply default-deny (harmless: propose the
+# full form instead).
+
+mode: gated
+precedence: block-wins
+
+canonicalization:
+  aliases:
+    conf: config
+    exec: execute
+    diag: diagnose
+    sh: show
+    g: get
+
+allowed:
+  # State + config reads. `show` renders config (secrets appear as
+  # encrypted blobs; Transit's redaction filter masks secret-shaped
+  # output before the model sees it).
+  - "^get( |$)"
+  - "^show( |$)"
+  # Read-only diagnose verbs in common operational use. `diagnose`
+  # is deliberately NOT allowed wholesale — several subtrees mutate
+  # state (`diagnose ip arp delete`, `diagnose sys kill`,
+  # `diagnose sys session clear`).
+  - "^diagnose sys status"
+  - "^diagnose sys top( |$)" # streams until 'q'; read-only — capture times out harmlessly
+  - "^diagnose sys session list"
+  - "^diagnose hardware "
+  - "^diagnose ip arp list"
+  - "^diagnose ip route "
+  - "^diagnose vpn tunnel list"
+  - "^diagnose firewall statistic show"
+  # Reachability checks + log reading (filter sets a session-local
+  # view; display prints it).
+  - "^execute ping( |$)"
+  - "^execute ping6( |$)"
+  - "^execute traceroute( |$)"
+  - "^execute log filter "
+  - "^execute log display( |$)"
+
+blocked:
+  # Config-mode entry — the load-bearing block.
+  - "^config( |$)"
+  # Shell escape + lateral movement.
+  - "^execute shell"
+  - "^execute ssh( |$)"
+  - "^execute telnet( |$)"
+  # Outage / wipe / restore.
+  - "^execute reboot"
+  - "^execute shutdown"
+  - "^execute factoryreset"
+  - "^execute restore"
+  - "^execute erase"
+  - "^execute formatlogdisk"
+  - "^execute set-next-reboot"
+  # Config writes by other names.
+  - "^execute batch"
+  - "^execute cfg"
+  - "^execute backup"
+  - "^execute usb"
+  - "^execute update-now"
+  - "^execute date"
+  - "^execute time"
+  - "^execute disconnect-admin-session"
+  # Anti-forensics (log reads stay allowed above).
+  - "^execute log delete"
+  - "^execute log roll"
+  # Disruptive diagnose verbs (belt-and-braces: nothing in `allowed`
+  # matches these anyway, but a named deny reason beats default-deny).
+  - "^diagnose sys kill"
+  - "^diagnose sys session clear"
+  - "^diagnose ip arp delete"
+
+# FortiOS supports a grep-style output filter after `|`. Allow only
+# that; any other pipe stage default-denies.
+pipe_allowed:
+  - "^grep( |$)"
+pipe_blocked: []

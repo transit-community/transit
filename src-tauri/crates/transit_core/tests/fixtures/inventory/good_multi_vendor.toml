@@ -1,0 +1,41 @@
+# expect: Ok
+[[device]]
+id = "vEX1"
+host = "192.0.2.35"
+vendor = "junos"
+auth = "lab-pw"
+
+[[device]]
+id = "vEX2"
+host = "192.0.2.101"
+port = 2222
+vendor = "junos"
+auth = "lab-key"
+
+[[device]]
+id = "core-sw1"
+host = "10.10.10.5"
+vendor = "cisco_ios_xe"
+auth = "prod-op"
+
+[[device]]
+id = "edge-arista-1"
+host = "10.10.20.1"
+vendor = "arista_eos"
+auth = "ci-env"
+
+[auth.lab-pw]
+username = "alice"
+secret = { backend = "keyring", key = "transit/lab-pw" }
+
+[auth.lab-key]
+username = "alice"
+secret = { backend = "ssh_agent" }
+
+[auth.prod-op]
+username = "netadmin"
+secret = { backend = "op", reference = "op://Network/CoreSwitch/password" }
+
+[auth.ci-env]
+username = "ci-runner"
+secret = { backend = "env", var = "TRANSIT_CI_PW" }

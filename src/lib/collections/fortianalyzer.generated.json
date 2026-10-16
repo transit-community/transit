@@ -1,0 +1,194 @@
+{
+  "id": "fortianalyzer",
+  "name": "FortiAnalyzer",
+  "vendor": "fortianalyzer",
+  "bundled": true,
+  "variables": [],
+  "root": {
+    "id": "fortianalyzer-0",
+    "name": "FortiAnalyzer",
+    "requests": [],
+    "folders": [
+      {
+        "id": "fortianalyzer-1",
+        "name": "Log in first",
+        "requests": [
+          {
+            "id": "fortianalyzer-2",
+            "name": "Login",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"id\": 1,\n  \"method\": \"exec\",\n  \"params\": [\n    {\n      \"data\": {\n        \"user\": \"{{username}}\",\n        \"passwd\": \"{{password}}\"\n      },\n      \"url\": \"/sys/login/user\"\n    }\n  ]\n}",
+            "destructive": true,
+            "capture": [
+              {
+                "from": "body",
+                "key": "session",
+                "into": "fmg_session"
+              }
+            ]
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "fortianalyzer-3",
+        "name": "System",
+        "requests": [
+          {
+            "id": "fortianalyzer-4",
+            "name": "System status",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/sys/status\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortianalyzer-5",
+            "name": "System interfaces",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/cli/global/system/interface\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortianalyzer-20",
+            "name": "Backup to FTP server",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"exec\",\n  \"params\": [\n    {\n      \"url\": \"/sys/backup\",\n      \"data\": {\n        \"filename\": \"backup_ftp_api.bak\",\n        \"server\": \"192.168.1.10\",\n        \"port\": 21,\n        \"service\": \"ftp\",\n        \"passwd\": \"file-password\",\n        \"username\": \"ftp-user\",\n        \"userpasswd\": \"ftp-password\"\n      }\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 16\n}",
+            "destructive": true
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "fortianalyzer-6",
+        "name": "ADOMs & devices",
+        "requests": [
+          {
+            "id": "fortianalyzer-7",
+            "name": "List ADOMs",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/dvmdb/adom\",\n      \"option\": \"object member\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortianalyzer-8",
+            "name": "ADOM info",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/dvmdb/adom/{{adom}}\",\n      \"option\": \"object member\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortianalyzer-9",
+            "name": "List devices",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/dvmdb/device\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortianalyzer-10",
+            "name": "Device info",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"url\": \"/dvmdb/device/{{device}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortianalyzer-11",
+            "name": "List device groups",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"filter\": [\n        [\n          \"type\",\n          \"==\",\n          \"0\"\n        ]\n      ],\n      \"option\": [\n        \"object member\"\n      ],\n      \"url\": \"/dvmdb/group\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": false
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "fortianalyzer-12",
+        "name": "Reports & logs",
+        "requests": [
+          {
+            "id": "fortianalyzer-13",
+            "name": "List report layout folders",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"apiver\": 3,\n      \"data\": {\n        \"folder-id\": 0,\n        \"parent-id\": 0\n      },\n      \"url\": \"/report/adom/{{adom}}/config/layout-folder\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortianalyzer-14",
+            "name": "List report layouts",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"apiver\": 3,\n      \"url\": \"/report/adom/{{adom}}/config/layout\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortianalyzer-15",
+            "name": "List report charts",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"apiver\": 3,\n      \"url\": \"/report/adom/{{adom}}/config/chart\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortianalyzer-16",
+            "name": "List report datasets",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"apiver\": 3,\n      \"url\": \"/report/adom/{{adom}}/config/dataset\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": false
+          },
+          {
+            "id": "fortianalyzer-17",
+            "name": "Fetch log search results",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"method\": \"get\",\n  \"params\": [\n    {\n      \"apiver\": 3,\n      \"limit\": 100,\n      \"offset\": 0,\n      \"url\": \"/logview/adom/{{adom}}/logsearch/{{tid}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"id\": 1\n}",
+            "destructive": false,
+            "description": "Fetch results of a submitted log search by task id (tid); submit the search first to obtain the tid."
+          },
+          {
+            "id": "fortianalyzer-18",
+            "name": "Create report layout folder",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"add\",\n  \"params\": [\n    {\n      \"apiver\": 3,\n      \"data\": {\n        \"folder-name\": \"{{folder_name}}\"\n      },\n      \"url\": \"/report/adom/{{adom}}/config/layout-folder\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          },
+          {
+            "id": "fortianalyzer-19",
+            "name": "Delete report layout folder",
+            "method": "POST",
+            "path": "/jsonrpc",
+            "headers": [],
+            "body": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"delete\",\n  \"params\": [\n    {\n      \"apiver\": 3,\n      \"url\": \"/report/adom/{{adom}}/config/layout-folder/{{lastLayoutFolderId}}\"\n    }\n  ],\n  \"session\": \"{{fmg_session}}\",\n  \"verbose\": 1,\n  \"id\": 1\n}",
+            "destructive": true
+          }
+        ],
+        "folders": []
+      }
+    ]
+  }
+}

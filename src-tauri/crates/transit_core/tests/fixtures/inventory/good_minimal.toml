@@ -1,0 +1,11 @@
+# expect: Ok
+[[device]]
+id = "vEX1"
+host = "192.0.2.35"
+port = 22
+vendor = "junos"
+auth = "lab-pw"
+
+[auth.lab-pw]
+username = "alice"
+secret = { backend = "keyring", key = "transit/lab-pw" }

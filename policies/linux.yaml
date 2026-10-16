@@ -1,0 +1,28 @@
+# Generic Linux/Unix server — UNRESTRICTED command policy.
+#
+# Schema: see src-tauri/crates/transit_policy/src/loader.rs.
+# Design rationale: see policies/linux.README.md.
+#
+# A Linux server has no enumerable safe-command surface: the operational
+# CLI is the entire UNIX command space. An honest "allow `ls`, block
+# `rm -rf /`" blocklist would be both infinite and false-confidence —
+# we'd miss the next thousand destructive verbs and the user would
+# trust the gate anyway.
+#
+# `mode: unrestricted` skips the regex gate entirely. The
+# `ApprovalDispatcher` carries the burden:
+#   1. Per-command modal is mandatory. Every propose_command emits a
+#      banner the user has to click through. No silent execution.
+#   2. The "always allow regex" shortcut is STRUCTURALLY REFUSED on
+#      this decision path — the per-step approval Rule 3 spirit
+#      survives even with an ungated command space.
+#   3. The `warning` string below is rendered verbatim in the modal
+#      every time, so each approval is informed.
+#
+# Threat model: T_UNRESTRICTED_VENDOR in docs/security/threat-model.md.
+---
+mode: unrestricted
+warning: |
+  Generic Linux/Unix server — Transit cannot enforce a read-only
+  command gate. Verify every command before approving. The "always
+  allow" shortcut is disabled for this device class.

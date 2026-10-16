@@ -1,0 +1,32 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Minimal explicit permission set. Each entry is justified in CLAUDE.md (Section: capabilities). Adding a permission here requires the transit-security-audit skill to pass.",
+  "windows": ["main"],
+  "permissions": [
+    "core:app:default",
+    "core:event:default",
+    "core:window:default",
+    "core:webview:default",
+    "core:resources:default",
+    "core:menu:default",
+    "core:tray:default",
+    "core:image:default",
+    "core:path:default",
+    "clipboard-manager:allow-read-text",
+    "clipboard-manager:allow-write-text",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "https://github.com/transit-community/*"
+        },
+        {
+          "url": "https://auth.openai.com/*"
+        }
+      ]
+    },
+    "dialog:allow-save",
+    "dialog:allow-open"
+  ]
+}

@@ -1,0 +1,137 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@config "../tailwind.config.ts";
+
+/* ---------------------------------------------------------------------
+ * Bundled terminal fonts (v6.1.0)
+ *
+ * These ship WITH Transit rather than relying on what the machine has,
+ * for a reason that is specific to the macOS webview: WKWebView refuses
+ * to serve user-INSTALLED fonts to web content as an anti-fingerprinting
+ * measure (Safari 12+, unannounced). Since xterm.js draws through a
+ * canvas, it inherits that restriction — so on macOS, installing a font
+ * does nothing for Transit no matter how correctly it is installed, and
+ * an app-served @font-face is the ONLY way to offer a non-Apple face.
+ *
+ * Both are SIL Open Font License 1.1; the licence texts ship alongside
+ * the files in `src/assets/fonts/` (see docs/security/licenses.md).
+ *
+ * Regular + Bold only: xterm.js renders SGR bold, and a real bold beats
+ * a synthesized one. `font-display: block` because a terminal that
+ * briefly paints in a fallback metric then reflows is worse than one
+ * that paints a few ms later at the right cell width.
+ * ------------------------------------------------------------------ */
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("./assets/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: block;
+  src: url("./assets/fonts/JetBrainsMono-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Cascadia Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("./assets/fonts/CascadiaMono-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Cascadia Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: block;
+  src: url("./assets/fonts/CascadiaMono-Bold.woff2") format("woff2");
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.5rem;
+
+    /* Per-device accent palette (Phase 1 color coding). Mode-based, NOT
+       part of any theme's `chrome` map — applyTheme never overrides these,
+       so they switch on the .dark class alone and every theme inherits
+       them. Resolved in the UI via hsl(var(--device-<token>)); single
+       source of truth for the token set is src/lib/deviceColors.ts. */
+    --device-red: 0 72% 48%;
+    --device-amber: 38 92% 45%;
+    --device-green: 142 60% 38%;
+    --device-blue: 215 90% 48%;
+    --device-purple: 270 65% 52%;
+    --device-cyan: 190 85% 40%;
+    --device-slate: 215 15% 45%;
+  }
+
+  /* Transit brand palette (2026-07 refresh) — MUST mirror
+     TRANSIT_DEFAULT.chrome in src/lib/themes/themes.ts so the pre-JS
+     first paint matches the applied default theme (useApplyTheme
+     overrides these vars at runtime for every other theme). */
+  .dark {
+    --background: 240 5% 4.1%;
+    --foreground: 0 0% 98%;
+    --card: 240 11% 9.2%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 11% 9.2%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 215 99% 58%;
+    --primary-foreground: 240 5% 4.1%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 4% 56%;
+    --accent: 215 20% 12%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 215 99% 58%;
+
+    /* Per-device accent palette (dark). Mirrors the :root tokens, tuned
+       brighter for dark backgrounds. See src/lib/deviceColors.ts. */
+    --device-red: 0 72% 55%;
+    --device-amber: 38 92% 55%;
+    --device-green: 142 65% 45%;
+    --device-blue: 215 90% 58%;
+    --device-purple: 270 70% 62%;
+    --device-cyan: 190 85% 50%;
+    --device-slate: 215 15% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}

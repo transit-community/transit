@@ -1,0 +1,361 @@
+{
+  "generatedFrom": "NetBox REST API 4.6.8-Docker-5.0.2 (4.6) OpenAPI (/api/schema/)",
+  "note": "DERIVED from a NetBox instance's OpenAPI schema by scripts/gen-netbox-collection.mjs — do not edit by hand.",
+  "id": "netbox",
+  "name": "NetBox",
+  "vendor": "netbox",
+  "bundled": true,
+  "variables": [],
+  "root": {
+    "id": "netbox-root",
+    "name": "NetBox",
+    "requests": [],
+    "folders": [
+      {
+        "id": "netbox-start-here",
+        "name": "Start here",
+        "requests": [
+          {
+            "id": "netbox-get-status",
+            "name": "NetBox status & version (start here)",
+            "method": "GET",
+            "path": "status/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Instance version + plugins — confirms the token works and which NetBox you're talking to."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "netbox-circuits",
+        "name": "Circuits",
+        "requests": [
+          {
+            "id": "netbox-get-circuits-circuits",
+            "name": "List circuits (id → {{circuitId}})",
+            "method": "GET",
+            "path": "circuits/circuits/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of circuit objects."
+          },
+          {
+            "id": "netbox-get-circuits-circuits-cid-cid",
+            "name": "Find circuit by CID",
+            "method": "GET",
+            "path": "circuits/circuits/?cid={{cid}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of circuit objects."
+          },
+          {
+            "id": "netbox-get-circuits-circuits-site-id-siteid",
+            "name": "Circuits at a site",
+            "method": "GET",
+            "path": "circuits/circuits/?site_id={{siteId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of circuit objects."
+          },
+          {
+            "id": "netbox-get-circuits-circuits-circuitid",
+            "name": "Get circuit",
+            "method": "GET",
+            "path": "circuits/circuits/{{circuitId}}/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a circuit object."
+          },
+          {
+            "id": "netbox-get-circuits-circuit-terminations-circuit-id-circuit",
+            "name": "Terminations of a circuit (→ site/endpoint of {{circuitId}})",
+            "method": "GET",
+            "path": "circuits/circuit-terminations/?circuit_id={{circuitId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "The circuit-outage pivot: which site + termination points {{circuitId}} lands on — then list that site's devices."
+          },
+          {
+            "id": "netbox-get-circuits-providers",
+            "name": "List providers",
+            "method": "GET",
+            "path": "circuits/providers/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of provider objects."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "netbox-devices-dcim",
+        "name": "Devices (DCIM)",
+        "requests": [
+          {
+            "id": "netbox-get-dcim-devices",
+            "name": "List devices (id → {{deviceId}})",
+            "method": "GET",
+            "path": "dcim/devices/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of device objects."
+          },
+          {
+            "id": "netbox-get-dcim-devices-site-id-siteid",
+            "name": "Devices at a site",
+            "method": "GET",
+            "path": "dcim/devices/?site_id={{siteId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of device objects."
+          },
+          {
+            "id": "netbox-get-dcim-devices-role-id-roleid",
+            "name": "Devices by role",
+            "method": "GET",
+            "path": "dcim/devices/?role_id={{roleId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of device objects."
+          },
+          {
+            "id": "netbox-get-dcim-devices-name-ic-name",
+            "name": "Find device by name (contains)",
+            "method": "GET",
+            "path": "dcim/devices/?name__ic={{name}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of device objects."
+          },
+          {
+            "id": "netbox-get-dcim-devices-tag-tag",
+            "name": "Devices by tag",
+            "method": "GET",
+            "path": "dcim/devices/?tag={{tag}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of device objects."
+          },
+          {
+            "id": "netbox-get-dcim-devices-q-query",
+            "name": "Search devices",
+            "method": "GET",
+            "path": "dcim/devices/?q={{query}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of device objects."
+          },
+          {
+            "id": "netbox-get-dcim-devices-fields-id-name-status-primary-ip4-s",
+            "name": "List devices (compact)",
+            "method": "GET",
+            "path": "dcim/devices/?fields=id,name,status,primary_ip4,site,role",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "fields= trims each object to the named fields — prefer this when you only need identity + reachability."
+          },
+          {
+            "id": "netbox-get-dcim-devices-deviceid",
+            "name": "Get device (primary IP, platform, site, rack)",
+            "method": "GET",
+            "path": "dcim/devices/{{deviceId}}/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a device object."
+          },
+          {
+            "id": "netbox-get-dcim-interfaces-device-id-deviceid",
+            "name": "Interfaces of a device",
+            "method": "GET",
+            "path": "dcim/interfaces/?device_id={{deviceId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Each interface carries its cable and connected endpoint — the physical-topology hop."
+          },
+          {
+            "id": "netbox-get-dcim-cables-cableid",
+            "name": "Get cable (both terminations)",
+            "method": "GET",
+            "path": "dcim/cables/{{cableId}}/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a cable object."
+          },
+          {
+            "id": "netbox-get-dcim-device-roles",
+            "name": "List device roles (id → {{roleId}})",
+            "method": "GET",
+            "path": "dcim/device-roles/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of device role objects."
+          },
+          {
+            "id": "netbox-get-dcim-platforms",
+            "name": "List platforms",
+            "method": "GET",
+            "path": "dcim/platforms/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of platform objects."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "netbox-sites-dcim",
+        "name": "Sites (DCIM)",
+        "requests": [
+          {
+            "id": "netbox-get-dcim-sites",
+            "name": "List sites (id → {{siteId}})",
+            "method": "GET",
+            "path": "dcim/sites/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of site objects."
+          },
+          {
+            "id": "netbox-get-dcim-sites-slug-siteslug",
+            "name": "Find site by slug",
+            "method": "GET",
+            "path": "dcim/sites/?slug={{siteSlug}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of site objects."
+          },
+          {
+            "id": "netbox-get-dcim-sites-siteid",
+            "name": "Get site",
+            "method": "GET",
+            "path": "dcim/sites/{{siteId}}/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a site object."
+          },
+          {
+            "id": "netbox-get-dcim-regions",
+            "name": "List regions",
+            "method": "GET",
+            "path": "dcim/regions/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of region objects."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "netbox-ipam",
+        "name": "IPAM",
+        "requests": [
+          {
+            "id": "netbox-get-ipam-ip-addresses-address-address",
+            "name": "Who has this IP? (find by address)",
+            "method": "GET",
+            "path": "ipam/ip-addresses/?address={{address}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of IP address objects."
+          },
+          {
+            "id": "netbox-get-ipam-ip-addresses-device-id-deviceid",
+            "name": "IPs assigned to a device",
+            "method": "GET",
+            "path": "ipam/ip-addresses/?device_id={{deviceId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of IP address objects."
+          },
+          {
+            "id": "netbox-get-ipam-prefixes",
+            "name": "List prefixes (id → {{prefixId}})",
+            "method": "GET",
+            "path": "ipam/prefixes/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of prefix objects."
+          },
+          {
+            "id": "netbox-get-ipam-prefixes-contains-address",
+            "name": "Prefixes containing an IP",
+            "method": "GET",
+            "path": "ipam/prefixes/?contains={{address}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of prefix objects."
+          },
+          {
+            "id": "netbox-get-ipam-prefixes-site-id-siteid",
+            "name": "Prefixes at a site",
+            "method": "GET",
+            "path": "ipam/prefixes/?site_id={{siteId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of prefix objects."
+          },
+          {
+            "id": "netbox-get-ipam-prefixes-prefixid",
+            "name": "Get prefix",
+            "method": "GET",
+            "path": "ipam/prefixes/{{prefixId}}/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a prefix object."
+          },
+          {
+            "id": "netbox-get-ipam-vlans-site-id-siteid",
+            "name": "VLANs at a site",
+            "method": "GET",
+            "path": "ipam/vlans/?site_id={{siteId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of VLAN objects."
+          },
+          {
+            "id": "netbox-get-ipam-vrfs",
+            "name": "List VRFs",
+            "method": "GET",
+            "path": "ipam/vrfs/",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of VRF objects."
+          }
+        ],
+        "folders": []
+      }
+    ]
+  }
+}

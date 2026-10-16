@@ -1,0 +1,32 @@
+# The Rust toolchain Transit builds with — CI, local dev, and release alike.
+#
+# WHY THIS FILE EXISTS. Without it every cargo invocation followed whatever
+# `stable` happened to be that hour, so a Rust release could turn `main` red
+# with zero code change: 1.98.0 shipped on 2026-08-20 with a new
+# warn-by-default lint, and because CI runs clippy with `-D warnings`, three
+# green PRs became a red main between one run and the next. Pinning makes a
+# toolchain upgrade a deliberate PR — the new lints land on a branch, which is
+# where a build is supposed to break.
+#
+# HOW TO BUMP. Edit `channel` below, run `cargo clippy --workspace
+# --all-targets -- -D warnings` (plus `--target x86_64-pc-windows-gnu` for the
+# Windows-cfg code, CLAUDE.md §27), fix what the new release complains about,
+# and open that as its own PR. Don't bump it as a drive-by inside a feature
+# branch — the point is that toolchain churn is legible on its own.
+#
+# NOT THE SAME AS THE MSRV. `src-tauri/Cargo.toml`'s `rust-version` is the
+# oldest toolchain we build on (1.88, set by our dependency graph). This is the
+# one we actually use. The floor may sit below the pin; it must never sit above
+# it.
+#
+# `components` is load-bearing: CI's rustup step primes `stable`, so on any day
+# where stable has moved past the pin, rustup fetches the pinned toolchain on
+# first use and needs to be told to bring clippy and rustfmt along with it.
+# Targets are deliberately absent — every release leg builds for its own host
+# triple, and a non-host target (the windows-gnu lint sweep) is a
+# `rustup target add` on the pinned toolchain rather than a download every
+# machine pays for.
+[toolchain]
+channel = "1.98.0"
+components = ["clippy", "rustfmt"]
+profile = "minimal"

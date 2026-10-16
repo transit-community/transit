@@ -1,0 +1,53 @@
+---
+source: crates/transit_policy/tests/policy_summary.rs
+assertion_line: 95
+expression: render(&s)
+---
+precedence: BlockWins
+allowed:
+  - ^show( |$)
+  - ^ping( |$)
+  - ^traceroute( |$)
+  - ^dir( |$)
+  - ^more 
+  - ^terminal length 
+  - ^terminal monitor
+  - ^terminal no monitor
+  - ^where 
+blocked:
+  - ^enable( |$)
+  - ^disable( |$)
+  - ^configure
+  - ^conf t
+  - ^write
+  - ^copy 
+  - ^delete 
+  - ^erase 
+  - ^format 
+  - ^archive 
+  - ^boot 
+  - ^show tech-support\b.*\b(file\b|flash:|disk[0-9]+:|harddisk:|bootflash:|logflash:|volatile:|slot[0-9]+:|usb[0-9]+:|nvram:|tftp:|ftp:|scp:|sftp:|rcp:|https?:)
+  - ^reload
+  - ^reset 
+  - ^clear 
+  - ^guestshell 
+  - ^app-hosting 
+  - ^request platform software 
+  - ^tclsh
+  - ^tclquit
+  - ^event manager run 
+  - ^logout
+  - ^exit
+  - ^quit
+  - ^end
+pipe_allowed:
+  - ^include 
+  - ^exclude 
+  - ^begin 
+  - ^section 
+  - ^count$
+  - ^format 
+pipe_blocked:
+  - ^redirect 
+  - ^tee 
+  - ^append

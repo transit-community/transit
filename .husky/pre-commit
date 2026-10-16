@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+# Pre-commit: run lint-staged for fast per-file checks, then gitleaks
+# to catch any secrets that snuck into staged content. Both must pass.
+
+npx lint-staged
+gitleaks protect --staged --redact -v

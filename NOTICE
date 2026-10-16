@@ -1,0 +1,8 @@
+Transit Community Edition
+Copyright 2026 Knox Hutchinson
+
+This product is the open-source edition of the Transit desktop client,
+forked from the proprietary release 6.5.9. It includes software developed
+by the contributors listed in the repository history and third-party
+components under their own licenses (see docs/security/licenses.md and
+src/assets/fonts/*-OFL.txt).

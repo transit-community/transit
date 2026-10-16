@@ -1,0 +1,15 @@
+# expect: Err::InlineSecret
+# A literal PEM block embedded in a comment still trips the prescan.
+# -----BEGIN OPENSSH PRIVATE KEY-----
+# (content)
+# -----END OPENSSH PRIVATE KEY-----
+
+[[device]]
+id = "x"
+host = "h"
+vendor = "junos"
+auth = "p"
+
+[auth.p]
+username = "u"
+secret = { backend = "ssh_agent" }

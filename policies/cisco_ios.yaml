@@ -1,0 +1,118 @@
+# Cisco IOS — read-only command policy.
+#
+# Schema: see src-tauri/crates/transit_policy/src/loader.rs.
+# Design rationale: see policies/cisco_ios.README.md.
+#
+# Default-deny on no-match. The `precedence` field below only governs
+# the "head matches both `allowed` and `blocked`" tiebreaker — a
+# command that matches nothing is ALWAYS denied regardless.
+#
+# Cisco IOS-XE shares ~95% of this surface; cisco_ios_xe.yaml adds a
+# few platform-specific blocks (guestshell, app-hosting). Maintain
+# them as a pair when adding new entries here.
+---
+precedence: block-wins
+
+canonicalization:
+  # Cisco engineers ubiquitously contract `show` and `write`.
+  # `wr` -> `write` is critical: bare `wr` saves running-config to
+  # NVRAM, which is a config write we must block. The alias
+  # canonicalizes the head so `^write` catches both `wr` and `wr mem`.
+  aliases:
+    sh: show
+    sho: show
+    shw: show
+    wr: write
+    wri: write
+    p: ping
+    tr: traceroute
+
+# ---------------------------------------------------------------------
+# Head allow/block lists.
+# ---------------------------------------------------------------------
+
+allowed:
+  - "^show( |$)"
+  - "^ping( |$)"
+  - "^traceroute( |$)"
+  - "^dir( |$)" # directory listing on flash:/disk0:/etc
+  - "^more " # read-only file content
+  - "^terminal length " # pager control (read-only effect)
+  - "^terminal monitor" # echo logs to terminal (no device state change)
+  - "^terminal no monitor"
+  - "^where " # show outgoing connections (read-only)
+
+blocked:
+  # Privileged-mode escalation. `enable` itself is read-only-ish but
+  # opens the door to write commands; explicitly block to make the
+  # gate's intent unambiguous to the LLM.
+  - "^enable( |$)"
+  - "^disable( |$)"
+  # Configuration-mode entry + commits.
+  - "^configure"
+  - "^conf t" # contracted form, just in case
+  # Saves and file mutations.
+  - "^write" # `write`, `wr mem`, `wr terminal`
+  - "^copy " # tftp/ftp/etc copies + writes to flash
+  - "^delete "
+  - "^erase "
+  - "^format "
+  - "^archive " # archive config — writes
+  - "^boot " # alters boot variables
+  # `show tech-support ... <file|fs:|url:>` writes a techfile to the
+  # device or off-box; the destination token overrides the broad `^show`
+  # allow. Backported from cisco_ios_xr.yaml.
+  - '^show tech-support\b.*\b(file\b|flash:|disk[0-9]+:|harddisk:|bootflash:|logflash:|volatile:|slot[0-9]+:|usb[0-9]+:|nvram:|tftp:|ftp:|scp:|sftp:|rcp:|https?:)'
+  # Reload / reset / clear.
+  - "^reload"
+  - "^reset "
+  - "^clear "
+  # Shell / scripting escapes — fully bypass the gate.
+  - "^tclsh" # IOS Tcl shell (built-in)
+  - "^tclquit"
+  - "^event manager run " # EEM applets can run arbitrary actions
+  # Session / mode manipulation.
+  - "^logout"
+  - "^exit"
+  - "^quit"
+  - "^end" # exits config mode (only relevant if you got there, defense-in-depth)
+
+# ---------------------------------------------------------------------
+# Pipe-stage policy. Cisco IOS pipe verbs:
+#   include / exclude / begin / section / count — pure filters
+#   redirect / tee / append — write to local file or URL — BLOCKED
+# ---------------------------------------------------------------------
+
+pipe_allowed:
+  - "^include "
+  - "^exclude "
+  - "^begin "
+  - "^section "
+  - "^count$"
+  - "^format " # output formatter
+
+pipe_blocked:
+  - "^redirect " # writes output to file/URL
+  - "^tee " # both display AND save
+  - "^append " # appends to file
+
+# v6.1.x #1 — phrasebook (see junos.yaml for the contract; gate-tested).
+phrasebook:
+  - "show version"
+  - "show ip interface brief"
+  - "show interfaces status"
+  - "show interfaces GigabitEthernet0/1"
+  - "show logging | include %"
+  - "show running-config | section interface"
+  - "show running-config interface GigabitEthernet0/1"
+  - "show ip route summary"
+  - "show ip route 10.0.0.0"
+  - "show ip bgp summary"
+  - "show ip ospf neighbor"
+  - "show cdp neighbors detail"
+  - "show arp"
+  - "show mac address-table"
+  - "show spanning-tree summary"
+  - "show processes cpu sorted"
+  - "ping 10.0.0.1"
+  - "traceroute 10.0.0.1"

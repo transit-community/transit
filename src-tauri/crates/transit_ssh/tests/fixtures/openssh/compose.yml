@@ -1,0 +1,31 @@
+# OpenSSH server fixture for transit_ssh dockerized integration tests.
+# Brought up + torn down by `tests/dockerized_openssh.rs`. Linux-only;
+# macOS / Windows runners skip the test suite entirely.
+#
+# linuxserver/openssh-server is the de-facto easy-mode SSH server
+# image — small, well-documented, supports both password and key
+# auth via env vars, accepts an `SSHD_CONFIG` mount for per-test
+# overrides (cipher allowlist test).
+services:
+  openssh:
+    image: linuxserver/openssh-server:9.7_p1-r4-ls172
+    container_name: transit-test-openssh
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Etc/UTC"
+      USER_NAME: "testuser"
+      # Used by the password-auth test. The test passes this same
+      # value via SecretRef::Env { var: "TRANSIT_TEST_OPENSSH_PASSWORD" }.
+      USER_PASSWORD: "transit-test-password-123"
+      PASSWORD_ACCESS: "true"
+      SUDO_ACCESS: "false"
+      LOG_STDOUT: "true"
+    ports:
+      - "127.0.0.1:2222:2222"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "2222"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 5s

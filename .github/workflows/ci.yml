@@ -1,0 +1,390 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded in-progress runs on the same PR (a new push supersedes the
+# old run) — fixes the duplicate-run churn. The event_name guard means
+# push-to-main and release builds are never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"
+  # CI-only debug-info cut.
+  # Nobody attaches a debugger to CI artifacts; skipping debuginfo
+  # shrinks compile + link time (biggest win on the Windows leg's PDB
+  # generation) and the cache footprint. Test-failure backtraces still
+  # print frames, just without line numbers. `test` inherits `dev`, but
+  # both are set explicitly so a future profile edit can't silently
+  # re-enable debuginfo in CI. Local builds are unaffected.
+  CARGO_PROFILE_DEV_DEBUG: 0
+  CARGO_PROFILE_TEST_DEBUG: 0
+
+jobs:
+  ci:
+    name: ${{ matrix.name }}
+    # Per-leg wall-clock cap: a hung leg fails fast instead of riding the
+    # 6-hour default.
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        # `name` is the status-check identity; `os` is the runner image.
+        include:
+          - { name: ubuntu-latest, os: ubuntu-24.04 }
+          - { name: macos-latest, os: macos-15 }
+          - { name: windows-latest, os: windows-2025 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # full history for gitleaks scan
+
+      # Retries + per-connection Acquire timeouts + an archive.ubuntu.com
+      # failover: a degraded regional apt mirror should cost minutes, not
+      # an afternoon — normal duration for this step is well under 2 min.
+      - name: Install Linux system deps
+        if: matrix.name == 'ubuntu-latest'
+        timeout-minutes: 15
+        run: |
+          # timeout(1) around EACH apt call is the piece that makes the
+          # failover reachable: the Acquire timeouts only catch a mirror
+          # that goes idle, but the observed failure mode was a
+          # mirror serving bytes SLOWLY — apt never errors, it just eats
+          # the whole step budget. A hard 5-minute bound per call turns a
+          # crawl into a fast failure that triggers the mirror flip below.
+          run_apt() {
+            sudo timeout -k 15 300 apt-get -o Acquire::Retries=3 \
+              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 "$@"
+          }
+          apt_deps() {
+            run_apt update
+            run_apt install -y \
+              libwebkit2gtk-4.1-dev \
+              libgtk-3-dev \
+              libsoup-3.0-dev \
+              libjavascriptcoregtk-4.1-dev
+          }
+          if ! apt_deps; then
+            echo "::warning::apt failed on the runner's default in-cloud mirror — failing over to archive.ubuntu.com"
+            # The regional mirror hostname does NOT live in sources.list on
+            # these images: sources point at mirror+file:/etc/apt/apt-mirrors.txt
+            # and THAT file carries the per-region URLs, so it must be in
+            # this list.
+            sudo sed -i \
+              -e 's|[a-z0-9-]*\.ec2\.archive\.ubuntu\.com|archive.ubuntu.com|g' \
+              -e 's|azure\.archive\.ubuntu\.com|archive.ubuntu.com|g' \
+              /etc/apt/apt-mirrors.txt \
+              /etc/apt/sources.list \
+              /etc/apt/sources.list.d/*.list \
+              /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+            echo "post-failover apt sources:"
+            grep -rhE "ubuntu\.com" /etc/apt/apt-mirrors.txt \
+              /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null | sort -u | head -8
+            apt_deps
+          fi
+
+      # The macOS runner image ships Homebrew's rustup pre-
+      # installed at /opt/homebrew/bin/rustup, along with proxy
+      # symlinks (cargo, cargo-fmt, rustc, rustfmt, ...) that
+      # misroute subcommands to rustup-init. Result:
+      #   $ cargo fmt --check
+      #   error: error: unexpected argument 'fmt' found
+      #   Usage: rustup-init[EXE] [OPTIONS]
+      # dtolnay/rust-toolchain's bootstrap only runs when
+      # `command -v rustup` fails, so the broken Homebrew install
+      # gets reused. Remove it here so the next step installs fresh
+      # at ~/.cargo via https://sh.rustup.rs.
+      - name: Clear Homebrew Rust on macOS (avoid rustup-init proxy misroute)
+        if: matrix.name == 'macos-latest'
+        run: |
+          sudo rm -f \
+            /opt/homebrew/bin/rustup \
+            /opt/homebrew/bin/rustup-init \
+            /opt/homebrew/bin/cargo \
+            /opt/homebrew/bin/cargo-fmt \
+            /opt/homebrew/bin/cargo-clippy \
+            /opt/homebrew/bin/clippy-driver \
+            /opt/homebrew/bin/rustc \
+            /opt/homebrew/bin/rustdoc \
+            /opt/homebrew/bin/rustfmt \
+            /opt/homebrew/bin/rust-gdb \
+            /opt/homebrew/bin/rust-lldb
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Verify cargo resolves to rustup-managed toolchain
+        run: |
+          which cargo
+          cargo --version
+          cargo fmt --version
+
+      - name: Cache Rust workspace
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@4cef1412cce204788f482e778a0b9187f9626a29 # v2
+        with:
+          tool: cargo-deny
+
+      # gitleaks is a Go binary, not a Rust crate — taiki-e/install-action's
+      # cargo-binstall + cargo-install fallbacks both fail on x86_64 Linux.
+      # Install per-OS from the official release tarball / package manager.
+      - name: Install gitleaks (Linux)
+        if: matrix.name == 'ubuntu-latest'
+        run: |
+          curl -fsSL https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz \
+            | sudo tar -xzv -C /usr/local/bin gitleaks
+          gitleaks version
+
+      - name: Install gitleaks (macOS)
+        if: matrix.name == 'macos-latest'
+        run: |
+          brew install gitleaks
+          gitleaks version
+
+      - name: Install gitleaks (Windows)
+        if: matrix.name == 'windows-latest'
+        shell: pwsh
+        run: |
+          $version = "8.21.2"
+          Invoke-WebRequest -Uri "https://github.com/gitleaks/gitleaks/releases/download/v$version/gitleaks_${version}_windows_x64.zip" -OutFile gitleaks.zip
+          Expand-Archive -Path gitleaks.zip -DestinationPath C:\gitleaks
+          Add-Content $env:GITHUB_PATH "C:\gitleaks"
+          C:\gitleaks\gitleaks.exe version
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          # Node 22 LTS. Bumped from 20 because react-doctor (and its
+          # transitive deps oxc-parser, knip, ora) require Node ≥ 22.
+          # Vite 5/6 are fine with 22 — no other engine constraints in
+          # the workspace.
+          node-version: "22"
+          cache: "npm"
+
+      - name: npm ci
+        run: npm ci
+
+      # The macOS runner has intermittently lost `$HOME/.cargo/bin` from
+      # PATH between `dtolnay/rust-toolchain` and the cargo-using steps
+      # below. Re-export it once so every subsequent cargo step sees the
+      # rustup-managed binary deterministically.
+      - name: Re-export cargo PATH on macOS (defend against runner flake)
+        if: matrix.name == 'macos-latest'
+        run: |
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - name: cargo fmt --check
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml --all -- --check
+
+      - name: cargo clippy
+        run: cargo clippy --manifest-path src-tauri/Cargo.toml --workspace --all-targets -- -D warnings
+
+      # Free disk space BEFORE `cargo test` (Phase 7b: the workspace
+      # picked up tokio-serial / serialport / mio-serial via
+      # transit_console, which tipped the host-side cargo-test link
+      # over the Ubuntu runner's ~14 GB free space — `cc` failed with
+      # "No space left on device" partway through linking the test
+      # binaries). Moving the cleanup earlier amortizes its cost
+      # across cargo test, the dockerized integration steps, and the
+      # release build downstream.
+      #
+      # `preinstalled-runtimes: false` preserves the Node + Rust toolchains
+      # the earlier steps configured. The sweep takes `libgtk-3-dev` /
+      # `libwebkit2gtk-4.1-dev` / `libdbus-1-dev` with it; the
+      # "Re-install Linux host deps" step right after reinstalls them
+      # so subsequent host-side compile/link steps (cargo test,
+      # SSH dockerized integration, release build) still find them.
+      - name: Free disk space (Ubuntu)
+        if: matrix.name == 'ubuntu-latest'
+        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
+        with:
+          preinstalled-runtimes: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Re-install Linux host deps (post-disk-cleanup)
+        # `Free disk space (Ubuntu)` above purges `libgtk-3-dev` +
+        # `libwebkit2gtk-4.1-dev` (needed for Tauri's GUI link) AND
+        # `libdbus-1-dev` (transitively required by transit_auth's
+        # keyring -> dbus-secret-service chain). Without libdbus-1
+        # the cargo test below — which compiles transit_ssh +
+        # transit_auth — fails at link time with "unable to find
+        # library -ldbus-1". apt is cached, ~10s.
+        if: matrix.name == 'ubuntu-latest'
+        timeout-minutes: 10
+        run: |
+          sudo apt-get -o Acquire::Retries=3 update
+          sudo apt-get -o Acquire::Retries=3 install -y \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libsoup-3.0-dev \
+            libjavascriptcoregtk-4.1-dev \
+            libdbus-1-dev
+
+      # Split so the in-process russh integration tests run ONE AT A TIME.
+      # transit_ssh's tests stand up real russh SERVERS in-process and talk
+      # to them over loopback (keyboard_interactive.rs, jump_host.rs,
+      # agent_forward.rs); each is a multi-threaded tokio runtime hosting
+      # both ends of an SSH session, and cargo runs the binaries
+      # concurrently, so a small macOS runner ends up heavily
+      # oversubscribed and has wedged. Serializing costs seconds.
+      - name: cargo test (workspace, excluding transit_ssh)
+        timeout-minutes: 20
+        run: cargo test --manifest-path src-tauri/Cargo.toml --workspace --exclude transit_ssh
+
+      - name: cargo test (transit_ssh, serialized)
+        timeout-minutes: 15
+        run: cargo test --manifest-path src-tauri/Cargo.toml -p transit_ssh -- --test-threads=1
+
+      - name: cargo test (integration-tests)
+        if: matrix.name != 'ubuntu-latest'
+        # Capped like every other test step: an uncapped one turns a wedge
+        # into the whole 50-minute job budget instead of a fast failure.
+        #
+        # The cap is per-OS because the two runners are not close. This step
+        # recompiles the whole workspace under a different feature set, so it
+        # is compile-dominated, and Windows compiles far slower than macOS.
+        timeout-minutes: ${{ matrix.name == 'windows-latest' && 30 || 20 }}
+        # macOS Keychain and Windows Credential Manager are always
+        # available on a logged-in CI session — no daemon to start.
+        # Keychain entries created by the runner persist on the
+        # ephemeral VM; cleaned up when the VM dies. --test-threads=1
+        # serializes integration tests so probe-account collisions
+        # under parallelism (see KeyringBackend::probe_account) can't
+        # bite.
+        #
+        # Linux runs the same tests in a Docker container — see the
+        # next step. The `if: matrix.name != 'ubuntu-latest'` keeps this
+        # step host-side for the platforms where Keychain / Credential
+        # Manager need no bootstrap.
+        run: cargo test --manifest-path src-tauri/Cargo.toml --workspace --features transit_auth/integration-tests -- --test-threads=1
+
+      - name: cargo test (Linux integration via Docker)
+        if: matrix.name == 'ubuntu-latest'
+        # 15 tolerates a cold in-container compile after lockfile churn
+        # (normal duration: ~1–3 min warm).
+        timeout-minutes: 15
+        # Phase 2d closes the Phase 2a carve-out: the keyring
+        # round-trip tests run inside a CI-only image
+        # (ci/keyring-linux/) that pre-installs gnome-keyring-daemon
+        # + dbus + libsecret and bootstraps an unlocked default
+        # collection at run time. See docs/security/secrets.md for
+        # the rebuild runbook.
+        #
+        # The image is rebuilt inline on every CI run (no GHCR push).
+        # Workspace mounted in; cargo target dir lives in
+        # src-tauri/target inside the mount, so the host's
+        # Swatinem/rust-cache step still applies on subsequent runs.
+        # --test-threads=1 mirrors the macOS/Windows step.
+        #
+        # Scoped to `-p transit_auth` (NOT `--workspace`) because:
+        # the container intentionally lacks the GTK/WebKit dev libs
+        # that the Tauri shell (`transit_app`) links against — those
+        # are installed host-side by the "Install Linux system deps"
+        # step earlier in this job, and the host-side `cargo test`
+        # step above already exercises every workspace member that
+        # runs without the integration-tests feature. The only
+        # integration-tests-gated code lives in
+        # `transit_auth/tests/keyring_round_trip.rs`, so `-p
+        # transit_auth` is the precise scope. macOS/Windows still
+        # use `--workspace` above because their host environment
+        # has every dep available — keeping that path future-proofs
+        # against new integration-tests-feature tests in other
+        # crates.
+        run: |
+          docker build -t transit-keyring-ci ci/keyring-linux/
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            transit-keyring-ci \
+            cargo test --manifest-path src-tauri/Cargo.toml -p transit_auth --features integration-tests -- --test-threads=1
+
+      - name: cargo test (SSH dockerized integration)
+        if: matrix.name == 'ubuntu-latest'
+        timeout-minutes: 15
+        # Brings up `linuxserver/openssh-server` via docker compose,
+        # connects with our russh client, exercises the password-auth
+        # happy path, the host-key-mismatch rejection, and the
+        # invalid-password rejection. --test-threads=1 because the
+        # docker container is a shared resource. macOS / Windows
+        # runners skip — Docker-on-runner setup is heavier than the
+        # value (the russh-side code is fully covered by Linux).
+        run: cargo test --manifest-path src-tauri/Cargo.toml -p transit_ssh --features docker-tests --test dockerized_openssh -- --test-threads=1
+
+      - name: cargo deny check
+        working-directory: src-tauri
+        run: cargo deny check
+
+      - name: npm audit (high+)
+        run: npm audit --audit-level=high
+
+      - name: npm license:check
+        run: npm run license:check
+
+      - name: npm lint
+        run: npm run lint
+
+      - name: npm format:check
+        run: npm run format:check
+
+      - name: npm test
+        run: npm run test
+
+      # `npm test` only runs vitest, which compiles individual TS files
+      # on demand via esbuild — type errors in files vitest doesn't
+      # load aren't caught. The standalone `tsc --noEmit` we used to
+      # rely on doesn't match `tsc -b`'s project-graph type-checking
+      # either, so a missing field on a typed test fixture (e.g.
+      # PersistedPreferences with a new optional dropped) can slip
+      # through PR CI and surface only at release-build time.
+      #
+      # `npm run build` runs `tsc -b && vite build` — the same chain
+      # `tauri build`'s beforeBuildCommand uses. Linux-only because
+      # the type-checking output is OS-independent and the build cost
+      # would otherwise compound on macOS/Windows.
+      - name: npm build (tsc -b + vite)
+        if: matrix.name == 'ubuntu-latest'
+        run: npm run build
+
+      - name: react-doctor
+        # Static analysis on the React side: catches TanStack Query
+        # cache-invalidation gaps, useEffect-as-event-handler
+        # anti-patterns, accessibility regressions, dead code, etc.
+        # Runs on Linux only — the rules are platform-agnostic and
+        # the per-OS macOS/Windows runners exist for native deps
+        # (Tauri build, keyring), not JS lint duplication.
+        if: matrix.name == 'ubuntu-latest'
+        run: npm run react-doctor
+
+      - name: cargo build --release (Linux only) for the no-phone-home scan
+        # Build the release binary so `no-phone-home-scan.sh` can `strings`
+        # / `nm` it. The scan is the edition's headline guarantee, made
+        # checkable: no hosted-infrastructure hostname or client symbol may
+        # exist in a shipped binary. Linux-only in CI — the string set is
+        # platform-independent; every release leg re-runs it on its own
+        # artifact.
+        if: matrix.name == 'ubuntu-latest'
+        run: cargo build --release --manifest-path src-tauri/Cargo.toml --bin transit_app
+
+      - name: no-phone-home scan
+        if: matrix.name == 'ubuntu-latest'
+        run: ./scripts/no-phone-home-scan.sh src-tauri/target/release/transit_app
+
+      - name: gitleaks detect
+        run: gitleaks detect --source . --no-banner --redact -v

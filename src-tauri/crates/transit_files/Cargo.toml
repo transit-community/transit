@@ -1,0 +1,59 @@
+[package]
+name = "transit_files"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "SFTP browse + transfer engine and local-filesystem ops for the Files surface."
+
+[lints]
+workspace = true
+
+[dependencies]
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+# Transfer ids handed to the frontend (one per queued item).
+uuid.workspace = true
+# Local pane roots (the user's home directory).
+dirs.workspace = true
+tokio = { version = "1", features = [
+    "fs",
+    "io-util",
+    "sync",
+    "rt",
+    "macros",
+    "time",
+] }
+# `CancellationToken` — one per transfer, so a cancel interrupts a
+# *blocked* chunk read instead of waiting out the 60 s request timeout.
+# `default-features = false`: the `sync` module is unconditional, and
+# russh-sftp already pulls this crate, so this adds nothing to the tree.
+tokio-util = { version = "0.7", default-features = false }
+# SFTP protocol implementation over an already-open subsystem stream.
+# Generic over `AsyncRead + AsyncWrite + Unpin + Send + 'static`, which is
+# why this crate needs NO dependency on transit_ssh / russh (see lib.rs) —
+# transit_app hands it the opened stream and the same code runs against
+# russh-sftp's own server half over `tokio::io::duplex` in tests.
+#
+# Licensing: Apache-2.0, on the deny.toml allow-list. New transitives vs
+# the rest of the tree: `dashmap` (MIT) and `serde_bytes` (MIT OR
+# Apache-2.0); `chrono`, `bitflags`, `tokio-util`, `bytes`, `log` were
+# already present. See docs/security/licenses.md.
+russh-sftp = "2.4"
+
+[dev-dependencies]
+tempfile.workspace = true
+# `russh-sftp` is NOT re-declared here: its `server` module (the far end of
+# the `tokio::io::duplex` harness in tests/sftp_roundtrip.rs) ships in the
+# same crate as the client, so the [dependencies] entry above already
+# provides it.
+tokio = { version = "1", features = [
+    "rt-multi-thread",
+    "macros",
+    "time",
+    "sync",
+    "io-util",
+    "fs",
+] }

@@ -1,0 +1,1658 @@
+{
+  "generatedFrom": "UniFi Network API (official Postman + OpenAPI)",
+  "note": "DERIVED from the official UniFi Postman collection + OpenAPI by scripts/gen-unifi-collection.mjs — do not edit by hand.",
+  "cloud": {
+    "id": "net-cloud-root",
+    "name": "Network (via connector)",
+    "requests": [],
+    "folders": [
+      {
+        "id": "net-cloud-application-info",
+        "name": "Application Info",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-info",
+            "name": "Get Application Info",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/info",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve general information about the UniFi Network application."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-sites",
+        "name": "Sites",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-sites",
+            "name": "List Local Sites",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of local sites managed by this Network application."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-unifi-devices",
+        "name": "UniFi Devices",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-pending-devices",
+            "name": "List Devices Pending Adoption",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/pending-devices",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of devices pending adoption, including basic device information."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-devices",
+            "name": "List Adopted Devices",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/devices",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all adopted devices on a site, including basic device information."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-devices",
+            "name": "Adopt Devices",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/devices",
+            "headers": [],
+            "body": "{\n  \"ignoreDeviceLimit\": \"<boolean>\",\n  \"macAddress\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Adopt a device to a site."
+          },
+          {
+            "id": "net-cloud-delete-v1-sites-siteid-devices-deviceid",
+            "name": "Remove (Unadopt) Device",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/devices/{{deviceId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Removes (unadopts) an adopted device from the site. If the device is online, it will be reset to factory defaults."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-devices-deviceid",
+            "name": "Get Adopted Device Details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/devices/{{deviceId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve detailed information about a specific adopted device, including firmware versioning, uplink state, details about device features and interfaces (ports, radios) and other key attributes."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-devices-deviceid-actions",
+            "name": "Execute Adopted Device Action",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/devices/{{deviceId}}/actions",
+            "headers": [],
+            "body": "{\n  \"action\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Perform an action on an specific adopted device. The request body must include the action name and any applicable input arguments."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-devices-deviceid-interfaces-port",
+            "name": "Execute Port Action",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/devices/{{deviceId}}/interfaces/ports/{{portIdx}}/actions",
+            "headers": [],
+            "body": "{\n  \"action\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Perform an action on a specific device port. The request body must include the action name and any applicable input arguments."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-devices-deviceid-statistics-late",
+            "name": "Get Latest Adopted Device Statistics",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/devices/{{deviceId}}/statistics/latest",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve the latest real-time statistics of a specific adopted device, such as uptime, data transmission rates, CPU and memory utilization."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-clients",
+        "name": "Clients",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-sites-siteid-clients",
+            "name": "List Connected Clients",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/clients",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all connected clients on a site, including physical devices (computers, smartphones) and active VPN connections."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-clients-clientid",
+            "name": "Get Connected Client Details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/clients/{{clientId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve detailed information about a specific connected client, including name, IP address, MAC address, connection type and access information."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-clients-clientid-actions",
+            "name": "Execute Client Action",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/clients/{{clientId}}/actions",
+            "headers": [],
+            "body": "{\n  \"action\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Perform an action on a specific connected client. The request body must include the action name and any applicable input arguments."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-networks",
+        "name": "Networks",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-sites-siteid-networks",
+            "name": "List Networks",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/networks",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all Networks on a site."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-networks",
+            "name": "Create Network",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/networks",
+            "headers": [],
+            "body": "{\n  \"enabled\": \"<boolean>\",\n  \"management\": \"<string>\",\n  \"name\": \"<string>\",\n  \"vlanId\": \"<integer>\",\n  \"dhcpGuarding\": {\n    \"trustedDhcpServerIpAddresses\": [\n      \"<string>\"\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Create a new network on a site."
+          },
+          {
+            "id": "net-cloud-delete-v1-sites-siteid-networks-networkid",
+            "name": "Delete Network",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/networks/{{networkId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing network on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-networks-networkid",
+            "name": "Get Network Details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/networks/{{networkId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve detailed information about a specific network."
+          },
+          {
+            "id": "net-cloud-put-v1-sites-siteid-networks-networkid",
+            "name": "Update Network",
+            "method": "PUT",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/networks/{{networkId}}",
+            "headers": [],
+            "body": "{\n  \"enabled\": \"<boolean>\",\n  \"management\": \"<string>\",\n  \"name\": \"<string>\",\n  \"vlanId\": \"<integer>\",\n  \"dhcpGuarding\": {\n    \"trustedDhcpServerIpAddresses\": [\n      \"<string>\"\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Update an existing network on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-networks-networkid-references",
+            "name": "Get Network References",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/networks/{{networkId}}/references",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve references to a specific network."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-wifi-broadcasts",
+        "name": "WiFi Broadcasts",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-sites-siteid-wifi-broadcasts",
+            "name": "List Wifi Broadcasts",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/wifi/broadcasts",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all Wifi Broadcasts on a site."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-wifi-broadcasts",
+            "name": "Create Wifi Broadcast",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/wifi/broadcasts",
+            "headers": [],
+            "body": "{\n  \"channel2gLockedTo6\": false,\n  \"clientIsolationEnabled\": \"<boolean>\",\n  \"dtimPeriod2gLockedTo3\": false,\n  \"enabled\": \"<boolean>\",\n  \"hideName\": \"<boolean>\",\n  \"multicastToUnicastConversionEnabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"securityConfiguration\": {\n    \"type\": \"<string>\",\n    \"radiusConfiguration\": \"\"\n  },\n  \"type\": \"<string>\",\n  \"uapsdEnabled\": \"<boolean>\",\n  \"basicDataRateKbpsByFrequencyGHz\": {\n    \"5\": \"<integer>\",\n    \"2.4\": \"<integer>\"\n  },\n  \"blackoutScheduleConfiguration\": {\n    \"days\": [\n      {\n        \"day\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ]\n  },\n  \"broadcastingDeviceFilter\": {\n    \"type\": \"<string>\"\n  },\n  \"clientFilteringPolicy\": {\n    \"action\": \"<string>\",\n    \"macAddressFilter\": [\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\"\n    ]\n  },\n  \"mdnsProxyConfiguration\": {\n    \"mode\": \"<string>\"\n  },\n  \"multicastFilteringPolicy\": {\n    \"action\": \"<string>\"\n  },\n  \"network\": {\n    \"type\": \"<string>\"\n  }\n}",
+            "destructive": true,
+            "description": "Create a new Wifi Broadcast on the specified site."
+          },
+          {
+            "id": "net-cloud-delete-v1-sites-siteid-wifi-broadcasts-wifibroadcastid",
+            "name": "Delete Wifi Broadcast",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/wifi/broadcasts/{{wifiBroadcastId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing Wifi Broadcast from the specified site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-wifi-broadcasts-wifibroadcastid",
+            "name": "Get Wifi Broadcast Details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/wifi/broadcasts/{{wifiBroadcastId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve detailed information about a specific Wifi."
+          },
+          {
+            "id": "net-cloud-put-v1-sites-siteid-wifi-broadcasts-wifibroadcastid",
+            "name": "Update Wifi Broadcast",
+            "method": "PUT",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/wifi/broadcasts/{{wifiBroadcastId}}",
+            "headers": [],
+            "body": "{\n  \"channel2gLockedTo6\": false,\n  \"clientIsolationEnabled\": \"<boolean>\",\n  \"dtimPeriod2gLockedTo3\": false,\n  \"enabled\": \"<boolean>\",\n  \"hideName\": \"<boolean>\",\n  \"multicastToUnicastConversionEnabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"securityConfiguration\": {\n    \"type\": \"<string>\",\n    \"radiusConfiguration\": \"\"\n  },\n  \"type\": \"<string>\",\n  \"uapsdEnabled\": \"<boolean>\",\n  \"basicDataRateKbpsByFrequencyGHz\": {\n    \"5\": \"<integer>\",\n    \"2.4\": \"<integer>\"\n  },\n  \"blackoutScheduleConfiguration\": {\n    \"days\": [\n      {\n        \"day\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ]\n  },\n  \"broadcastingDeviceFilter\": {\n    \"type\": \"<string>\"\n  },\n  \"clientFilteringPolicy\": {\n    \"action\": \"<string>\",\n    \"macAddressFilter\": [\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\"\n    ]\n  },\n  \"mdnsProxyConfiguration\": {\n    \"mode\": \"<string>\"\n  },\n  \"multicastFilteringPolicy\": {\n    \"action\": \"<string>\"\n  },\n  \"network\": {\n    \"type\": \"<string>\"\n  }\n}",
+            "destructive": true,
+            "description": "Update an existing Wifi Broadcast on the specified site."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-hotspot",
+        "name": "Hotspot",
+        "requests": [
+          {
+            "id": "net-cloud-delete-v1-sites-siteid-hotspot-vouchers",
+            "name": "Delete Vouchers",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/hotspot/vouchers",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Remove Hotspot vouchers based on the specified filter criteria."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-hotspot-vouchers",
+            "name": "List Vouchers",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/hotspot/vouchers",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of Hotspot vouchers."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-hotspot-vouchers",
+            "name": "Generate Vouchers",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/hotspot/vouchers",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"timeLimitMinutes\": \"<long>\",\n  \"authorizedGuestLimit\": \"<long>\",\n  \"count\": 1,\n  \"dataUsageLimitMBytes\": \"<long>\",\n  \"rxRateLimitKbps\": \"<long>\",\n  \"txRateLimitKbps\": \"<long>\"\n}",
+            "destructive": true,
+            "description": "Create one or more Hotspot vouchers."
+          },
+          {
+            "id": "net-cloud-delete-v1-sites-siteid-hotspot-vouchers-voucherid",
+            "name": "Delete Voucher",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/hotspot/vouchers/{{voucherId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Remove a specific Hotspot voucher."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-hotspot-vouchers-voucherid",
+            "name": "Get Voucher Details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/hotspot/vouchers/{{voucherId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve details of a specific Hotspot voucher."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-firewall",
+        "name": "Firewall",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-sites-siteid-firewall-policies",
+            "name": "List Firewall Policies",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/policies",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a list of all firewall policies on a site."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-firewall-policies",
+            "name": "Create Firewall Policy",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/policies",
+            "headers": [],
+            "body": "{\n  \"action\": {\n    \"type\": \"<string>\"\n  },\n  \"destination\": {\n    \"zoneId\": \"<uuid>\",\n    \"trafficFilter\": {\n      \"type\": \"<string>\"\n    }\n  },\n  \"enabled\": \"<boolean>\",\n  \"ipProtocolScope\": {\n    \"ipVersion\": \"<string>\"\n  },\n  \"loggingEnabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"source\": {\n    \"zoneId\": \"<uuid>\",\n    \"trafficFilter\": {\n      \"type\": \"<string>\"\n    }\n  },\n  \"connectionStateFilter\": [\n    \"<string>\"\n  ],\n  \"description\": \"<string>\",\n  \"ipsecFilter\": \"<string>\",\n  \"schedule\": {\n    \"mode\": \"<string>\"\n  }\n}",
+            "destructive": true,
+            "description": "Create a new firewall policy on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-firewall-policies-ordering",
+            "name": "Get User-Defined Firewall Policy Ordering",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/policies/ordering",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve user-defined firewall policy ordering for a specific source/destination zone pair."
+          },
+          {
+            "id": "net-cloud-put-v1-sites-siteid-firewall-policies-ordering",
+            "name": "Reorder User-Defined Firewall Policies",
+            "method": "PUT",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/policies/ordering",
+            "headers": [],
+            "body": "{\n  \"orderedFirewallPolicyIds\": {\n    \"afterSystemDefined\": [\n      \"<uuid>\",\n      \"<uuid>\"\n    ],\n    \"beforeSystemDefined\": [\n      \"<uuid>\",\n      \"<uuid>\"\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Reorder user-defined firewall policies for a specific source/destination zone pair."
+          },
+          {
+            "id": "net-cloud-delete-v1-sites-siteid-firewall-policies-firewallpolicy",
+            "name": "Delete Firewall Policy",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/policies/{{firewallPolicyId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing firewall policy on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-firewall-policies-firewallpolicy",
+            "name": "Get Firewall Policy",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/policies/{{firewallPolicyId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve specific firewall policy."
+          },
+          {
+            "id": "net-cloud-patch-v1-sites-siteid-firewall-policies-firewallpolicy",
+            "name": "Patch Firewall Policy",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/policies/{{firewallPolicyId}}",
+            "headers": [],
+            "body": "{\n  \"loggingEnabled\": \"<boolean>\"\n}",
+            "destructive": true,
+            "description": "Patch an existing firewall policy on a site."
+          },
+          {
+            "id": "net-cloud-put-v1-sites-siteid-firewall-policies-firewallpolicy",
+            "name": "Update Firewall Policy",
+            "method": "PUT",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/policies/{{firewallPolicyId}}",
+            "headers": [],
+            "body": "{\n  \"action\": {\n    \"type\": \"<string>\"\n  },\n  \"destination\": {\n    \"zoneId\": \"<uuid>\",\n    \"trafficFilter\": {\n      \"type\": \"<string>\"\n    }\n  },\n  \"enabled\": \"<boolean>\",\n  \"ipProtocolScope\": {\n    \"ipVersion\": \"<string>\"\n  },\n  \"loggingEnabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"source\": {\n    \"zoneId\": \"<uuid>\",\n    \"trafficFilter\": {\n      \"type\": \"<string>\"\n    }\n  },\n  \"connectionStateFilter\": [\n    \"<string>\"\n  ],\n  \"description\": \"<string>\",\n  \"ipsecFilter\": \"<string>\",\n  \"schedule\": {\n    \"mode\": \"<string>\"\n  }\n}",
+            "destructive": true,
+            "description": "Update an existing firewall policy on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-firewall-zones",
+            "name": "List Firewall Zones",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/zones",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a list of all firewall zones on a site."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-firewall-zones",
+            "name": "Create Custom Firewall Zone",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/zones",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"networkIds\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Create a new custom firewall zone on a site."
+          },
+          {
+            "id": "net-cloud-delete-v1-sites-siteid-firewall-zones-firewallzoneid",
+            "name": "Delete Custom Firewall Zone",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/zones/{{firewallZoneId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a custom firewall zone from a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-firewall-zones-firewallzoneid",
+            "name": "Get Firewall Zone",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/zones/{{firewallZoneId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a firewall zone on a site."
+          },
+          {
+            "id": "net-cloud-put-v1-sites-siteid-firewall-zones-firewallzoneid",
+            "name": "Update Firewall Zone",
+            "method": "PUT",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/firewall/zones/{{firewallZoneId}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"networkIds\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Update a firewall zone on a site."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-access-control-acl-rules",
+        "name": "Access Control (ACL Rules)",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-sites-siteid-acl-rules",
+            "name": "List ACL Rules",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/acl-rules",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all ACL rules on a site."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-acl-rules",
+            "name": "Create ACL Rule",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/acl-rules",
+            "headers": [],
+            "body": "{\n  \"action\": \"<string>\",\n  \"enabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"destinationFilter\": {},\n  \"enforcingDeviceFilter\": {\n    \"type\": \"<string>\"\n  },\n  \"index\": \"<integer>\",\n  \"sourceFilter\": {}\n}",
+            "destructive": true,
+            "description": "Create a new user defined ACL rule on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-acl-rules-ordering",
+            "name": "Get User-Defined ACL Rule Ordering",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/acl-rules/ordering",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve user-defined ACL rule ordering on a site."
+          },
+          {
+            "id": "net-cloud-put-v1-sites-siteid-acl-rules-ordering",
+            "name": "Reorder User-Defined ACL Rules",
+            "method": "PUT",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/acl-rules/ordering",
+            "headers": [],
+            "body": "{\n  \"orderedAclRuleIds\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Reorder user-defined ACL rules on a site."
+          },
+          {
+            "id": "net-cloud-delete-v1-sites-siteid-acl-rules-aclruleid",
+            "name": "Delete ACL Rule",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/acl-rules/{{aclRuleId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing user defined ACL rule on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-acl-rules-aclruleid",
+            "name": "Get ACL Rule",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/acl-rules/{{aclRuleId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "net-cloud-put-v1-sites-siteid-acl-rules-aclruleid",
+            "name": "Update ACL Rule",
+            "method": "PUT",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/acl-rules/{{aclRuleId}}",
+            "headers": [],
+            "body": "{\n  \"action\": \"<string>\",\n  \"enabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"destinationFilter\": {},\n  \"enforcingDeviceFilter\": {\n    \"type\": \"<string>\"\n  },\n  \"index\": \"<integer>\",\n  \"sourceFilter\": {}\n}",
+            "destructive": true,
+            "description": "Update an existing user defined ACL rule on a site."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-switching",
+        "name": "Switching",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-sites-siteid-switching-lags",
+            "name": "List LAGs",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/switching/lags",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all LAGs (Link Aggregation Groups) on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-switching-lags-lagid",
+            "name": "Get LAG Details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/switching/lags/{{lagId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve LAG details."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-switching-mc-lag-domains",
+            "name": "List MC-LAG Domains",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/switching/mc-lag-domains",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all MC-LAG Domains on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-switching-mc-lag-domains-mclagdo",
+            "name": "Get MC-LAG Domain",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/switching/mc-lag-domains/{{mcLagDomainId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve MC-LAG Domain details."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-switching-switch-stacks",
+            "name": "List Switch Stacks",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/switching/switch-stacks",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all Switch Stacks on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-switching-switch-stacks-switchst",
+            "name": "Get Switch Stack",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/switching/switch-stacks/{{switchStackId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve Switch Stack details."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-dns-policies",
+        "name": "DNS Policies",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-sites-siteid-dns-policies",
+            "name": "List DNS Policies",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/dns/policies",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all DNS policies on a site."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-dns-policies",
+            "name": "Create DNS Policy",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/dns/policies",
+            "headers": [],
+            "body": "{\n  \"enabled\": \"<boolean>\",\n  \"type\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new DNS policy on a site."
+          },
+          {
+            "id": "net-cloud-delete-v1-sites-siteid-dns-policies-dnspolicyid",
+            "name": "Delete DNS Policy",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/dns/policies/{{dnsPolicyId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing DNS policy on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-dns-policies-dnspolicyid",
+            "name": "Get DNS Policy",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/dns/policies/{{dnsPolicyId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve specific DNS policy."
+          },
+          {
+            "id": "net-cloud-put-v1-sites-siteid-dns-policies-dnspolicyid",
+            "name": "Update DNS Policy",
+            "method": "PUT",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/dns/policies/{{dnsPolicyId}}",
+            "headers": [],
+            "body": "{\n  \"enabled\": \"<boolean>\",\n  \"type\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Update an existing DNS policy on a site."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-traffic-matching-lists",
+        "name": "Traffic Matching Lists",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-sites-siteid-traffic-matching-lists",
+            "name": "List Traffic Matching Lists",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/traffic-matching-lists",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve all traffic matching lists on a site."
+          },
+          {
+            "id": "net-cloud-post-v1-sites-siteid-traffic-matching-lists",
+            "name": "Create Traffic Matching List",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/traffic-matching-lists",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"type\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new traffic matching list on a site."
+          },
+          {
+            "id": "net-cloud-delete-v1-sites-siteid-traffic-matching-lists-trafficma",
+            "name": "Delete Traffic Matching List",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/traffic-matching-lists/{{trafficMatchingListId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an exist traffic matching list on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-traffic-matching-lists-trafficma",
+            "name": "Get Traffic Matching List",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/traffic-matching-lists/{{trafficMatchingListId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get an exist traffic matching list on a site."
+          },
+          {
+            "id": "net-cloud-put-v1-sites-siteid-traffic-matching-lists-trafficma",
+            "name": "Update Traffic Matching List",
+            "method": "PUT",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/traffic-matching-lists/{{trafficMatchingListId}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"type\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Update an exist traffic matching list on a site."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-cloud-supporting-resources",
+        "name": "Supporting Resources",
+        "requests": [
+          {
+            "id": "net-cloud-get-v1-countries",
+            "name": "List Countries",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/countries",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns ISO-standard country codes and names,"
+          },
+          {
+            "id": "net-cloud-get-v1-dpi-applications",
+            "name": "List DPI Applications",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/dpi/applications",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Lists DPI-recognized applications grouped under categories. Useful for firewall or traffic analytics integration."
+          },
+          {
+            "id": "net-cloud-get-v1-dpi-categories",
+            "name": "List DPI Application Categories",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/dpi/categories",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns predefined Deep Packet Inspection (DPI) application categories used for traffic identification and filtering."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-device-tags",
+            "name": "List Device Tags",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/device-tags",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns all device tags defined within a site, which can be used for WiFi Broadcast assignments."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-radius-profiles",
+            "name": "List Radius Profiles",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/radius/profiles",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns available RADIUS authentication profiles, including configuration origin metadata."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-vpn-servers",
+            "name": "List VPN Servers",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/vpn/servers",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all VPN servers on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-vpn-site-to-site-tunnels",
+            "name": "List Site-To-Site VPN Tunnels",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/vpn/site-to-site-tunnels",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all site-to-site VPN tunnels on a site."
+          },
+          {
+            "id": "net-cloud-get-v1-sites-siteid-wans",
+            "name": "List WAN Interfaces",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/network/integration/v1/sites/{{siteId}}/wans",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns available WAN interface definitions for a given site,"
+          }
+        ],
+        "folders": []
+      }
+    ]
+  },
+  "local": {
+    "id": "net-local-root",
+    "name": "UniFi Network",
+    "requests": [],
+    "folders": [
+      {
+        "id": "net-local-application-info",
+        "name": "Application Info",
+        "requests": [
+          {
+            "id": "net-local-get-v1-info",
+            "name": "Get Application Info",
+            "method": "GET",
+            "path": "info",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve general information about the UniFi Network application."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-sites",
+        "name": "Sites",
+        "requests": [
+          {
+            "id": "net-local-get-v1-sites",
+            "name": "List Local Sites",
+            "method": "GET",
+            "path": "sites",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of local sites managed by this Network application."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-unifi-devices",
+        "name": "UniFi Devices",
+        "requests": [
+          {
+            "id": "net-local-get-v1-pending-devices",
+            "name": "List Devices Pending Adoption",
+            "method": "GET",
+            "path": "pending-devices",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of devices pending adoption, including basic device information."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-devices",
+            "name": "List Adopted Devices",
+            "method": "GET",
+            "path": "sites/{{siteId}}/devices",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all adopted devices on a site, including basic device information."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-devices",
+            "name": "Adopt Devices",
+            "method": "POST",
+            "path": "sites/{{siteId}}/devices",
+            "headers": [],
+            "body": "{\n  \"ignoreDeviceLimit\": \"<boolean>\",\n  \"macAddress\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Adopt a device to a site."
+          },
+          {
+            "id": "net-local-delete-v1-sites-siteid-devices-deviceid",
+            "name": "Remove (Unadopt) Device",
+            "method": "DELETE",
+            "path": "sites/{{siteId}}/devices/{{deviceId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Removes (unadopts) an adopted device from the site. If the device is online, it will be reset to factory defaults."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-devices-deviceid",
+            "name": "Get Adopted Device Details",
+            "method": "GET",
+            "path": "sites/{{siteId}}/devices/{{deviceId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve detailed information about a specific adopted device, including firmware versioning, uplink state, details about device features and interfaces (ports, radios) and other key attributes."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-devices-deviceid-actions",
+            "name": "Execute Adopted Device Action",
+            "method": "POST",
+            "path": "sites/{{siteId}}/devices/{{deviceId}}/actions",
+            "headers": [],
+            "body": "{\n  \"action\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Perform an action on an specific adopted device. The request body must include the action name and any applicable input arguments."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-devices-deviceid-interfaces-port",
+            "name": "Execute Port Action",
+            "method": "POST",
+            "path": "sites/{{siteId}}/devices/{{deviceId}}/interfaces/ports/{{portIdx}}/actions",
+            "headers": [],
+            "body": "{\n  \"action\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Perform an action on a specific device port. The request body must include the action name and any applicable input arguments."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-devices-deviceid-statistics-late",
+            "name": "Get Latest Adopted Device Statistics",
+            "method": "GET",
+            "path": "sites/{{siteId}}/devices/{{deviceId}}/statistics/latest",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve the latest real-time statistics of a specific adopted device, such as uptime, data transmission rates, CPU and memory utilization."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-clients",
+        "name": "Clients",
+        "requests": [
+          {
+            "id": "net-local-get-v1-sites-siteid-clients",
+            "name": "List Connected Clients",
+            "method": "GET",
+            "path": "sites/{{siteId}}/clients",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all connected clients on a site, including physical devices (computers, smartphones) and active VPN connections."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-clients-clientid",
+            "name": "Get Connected Client Details",
+            "method": "GET",
+            "path": "sites/{{siteId}}/clients/{{clientId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve detailed information about a specific connected client, including name, IP address, MAC address, connection type and access information."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-clients-clientid-actions",
+            "name": "Execute Client Action",
+            "method": "POST",
+            "path": "sites/{{siteId}}/clients/{{clientId}}/actions",
+            "headers": [],
+            "body": "{\n  \"action\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Perform an action on a specific connected client. The request body must include the action name and any applicable input arguments."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-networks",
+        "name": "Networks",
+        "requests": [
+          {
+            "id": "net-local-get-v1-sites-siteid-networks",
+            "name": "List Networks",
+            "method": "GET",
+            "path": "sites/{{siteId}}/networks",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all Networks on a site."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-networks",
+            "name": "Create Network",
+            "method": "POST",
+            "path": "sites/{{siteId}}/networks",
+            "headers": [],
+            "body": "{\n  \"enabled\": \"<boolean>\",\n  \"management\": \"<string>\",\n  \"name\": \"<string>\",\n  \"vlanId\": \"<integer>\",\n  \"dhcpGuarding\": {\n    \"trustedDhcpServerIpAddresses\": [\n      \"<string>\"\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Create a new network on a site."
+          },
+          {
+            "id": "net-local-delete-v1-sites-siteid-networks-networkid",
+            "name": "Delete Network",
+            "method": "DELETE",
+            "path": "sites/{{siteId}}/networks/{{networkId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing network on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-networks-networkid",
+            "name": "Get Network Details",
+            "method": "GET",
+            "path": "sites/{{siteId}}/networks/{{networkId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve detailed information about a specific network."
+          },
+          {
+            "id": "net-local-put-v1-sites-siteid-networks-networkid",
+            "name": "Update Network",
+            "method": "PUT",
+            "path": "sites/{{siteId}}/networks/{{networkId}}",
+            "headers": [],
+            "body": "{\n  \"enabled\": \"<boolean>\",\n  \"management\": \"<string>\",\n  \"name\": \"<string>\",\n  \"vlanId\": \"<integer>\",\n  \"dhcpGuarding\": {\n    \"trustedDhcpServerIpAddresses\": [\n      \"<string>\"\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Update an existing network on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-networks-networkid-references",
+            "name": "Get Network References",
+            "method": "GET",
+            "path": "sites/{{siteId}}/networks/{{networkId}}/references",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve references to a specific network."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-wifi-broadcasts",
+        "name": "WiFi Broadcasts",
+        "requests": [
+          {
+            "id": "net-local-get-v1-sites-siteid-wifi-broadcasts",
+            "name": "List Wifi Broadcasts",
+            "method": "GET",
+            "path": "sites/{{siteId}}/wifi/broadcasts",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all Wifi Broadcasts on a site."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-wifi-broadcasts",
+            "name": "Create Wifi Broadcast",
+            "method": "POST",
+            "path": "sites/{{siteId}}/wifi/broadcasts",
+            "headers": [],
+            "body": "{\n  \"channel2gLockedTo6\": false,\n  \"clientIsolationEnabled\": \"<boolean>\",\n  \"dtimPeriod2gLockedTo3\": false,\n  \"enabled\": \"<boolean>\",\n  \"hideName\": \"<boolean>\",\n  \"multicastToUnicastConversionEnabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"securityConfiguration\": {\n    \"type\": \"<string>\",\n    \"radiusConfiguration\": \"\"\n  },\n  \"type\": \"<string>\",\n  \"uapsdEnabled\": \"<boolean>\",\n  \"basicDataRateKbpsByFrequencyGHz\": {\n    \"5\": \"<integer>\",\n    \"2.4\": \"<integer>\"\n  },\n  \"blackoutScheduleConfiguration\": {\n    \"days\": [\n      {\n        \"day\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ]\n  },\n  \"broadcastingDeviceFilter\": {\n    \"type\": \"<string>\"\n  },\n  \"clientFilteringPolicy\": {\n    \"action\": \"<string>\",\n    \"macAddressFilter\": [\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\"\n    ]\n  },\n  \"mdnsProxyConfiguration\": {\n    \"mode\": \"<string>\"\n  },\n  \"multicastFilteringPolicy\": {\n    \"action\": \"<string>\"\n  },\n  \"network\": {\n    \"type\": \"<string>\"\n  }\n}",
+            "destructive": true,
+            "description": "Create a new Wifi Broadcast on the specified site."
+          },
+          {
+            "id": "net-local-delete-v1-sites-siteid-wifi-broadcasts-wifibroadcastid",
+            "name": "Delete Wifi Broadcast",
+            "method": "DELETE",
+            "path": "sites/{{siteId}}/wifi/broadcasts/{{wifiBroadcastId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing Wifi Broadcast from the specified site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-wifi-broadcasts-wifibroadcastid",
+            "name": "Get Wifi Broadcast Details",
+            "method": "GET",
+            "path": "sites/{{siteId}}/wifi/broadcasts/{{wifiBroadcastId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve detailed information about a specific Wifi."
+          },
+          {
+            "id": "net-local-put-v1-sites-siteid-wifi-broadcasts-wifibroadcastid",
+            "name": "Update Wifi Broadcast",
+            "method": "PUT",
+            "path": "sites/{{siteId}}/wifi/broadcasts/{{wifiBroadcastId}}",
+            "headers": [],
+            "body": "{\n  \"channel2gLockedTo6\": false,\n  \"clientIsolationEnabled\": \"<boolean>\",\n  \"dtimPeriod2gLockedTo3\": false,\n  \"enabled\": \"<boolean>\",\n  \"hideName\": \"<boolean>\",\n  \"multicastToUnicastConversionEnabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"securityConfiguration\": {\n    \"type\": \"<string>\",\n    \"radiusConfiguration\": \"\"\n  },\n  \"type\": \"<string>\",\n  \"uapsdEnabled\": \"<boolean>\",\n  \"basicDataRateKbpsByFrequencyGHz\": {\n    \"5\": \"<integer>\",\n    \"2.4\": \"<integer>\"\n  },\n  \"blackoutScheduleConfiguration\": {\n    \"days\": [\n      {\n        \"day\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"type\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      }\n    ]\n  },\n  \"broadcastingDeviceFilter\": {\n    \"type\": \"<string>\"\n  },\n  \"clientFilteringPolicy\": {\n    \"action\": \"<string>\",\n    \"macAddressFilter\": [\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\",\n      \"<string>\"\n    ]\n  },\n  \"mdnsProxyConfiguration\": {\n    \"mode\": \"<string>\"\n  },\n  \"multicastFilteringPolicy\": {\n    \"action\": \"<string>\"\n  },\n  \"network\": {\n    \"type\": \"<string>\"\n  }\n}",
+            "destructive": true,
+            "description": "Update an existing Wifi Broadcast on the specified site."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-hotspot",
+        "name": "Hotspot",
+        "requests": [
+          {
+            "id": "net-local-delete-v1-sites-siteid-hotspot-vouchers",
+            "name": "Delete Vouchers",
+            "method": "DELETE",
+            "path": "sites/{{siteId}}/hotspot/vouchers",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Remove Hotspot vouchers based on the specified filter criteria."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-hotspot-vouchers",
+            "name": "List Vouchers",
+            "method": "GET",
+            "path": "sites/{{siteId}}/hotspot/vouchers",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of Hotspot vouchers."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-hotspot-vouchers",
+            "name": "Generate Vouchers",
+            "method": "POST",
+            "path": "sites/{{siteId}}/hotspot/vouchers",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"timeLimitMinutes\": \"<long>\",\n  \"authorizedGuestLimit\": \"<long>\",\n  \"count\": 1,\n  \"dataUsageLimitMBytes\": \"<long>\",\n  \"rxRateLimitKbps\": \"<long>\",\n  \"txRateLimitKbps\": \"<long>\"\n}",
+            "destructive": true,
+            "description": "Create one or more Hotspot vouchers."
+          },
+          {
+            "id": "net-local-delete-v1-sites-siteid-hotspot-vouchers-voucherid",
+            "name": "Delete Voucher",
+            "method": "DELETE",
+            "path": "sites/{{siteId}}/hotspot/vouchers/{{voucherId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Remove a specific Hotspot voucher."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-hotspot-vouchers-voucherid",
+            "name": "Get Voucher Details",
+            "method": "GET",
+            "path": "sites/{{siteId}}/hotspot/vouchers/{{voucherId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve details of a specific Hotspot voucher."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-firewall",
+        "name": "Firewall",
+        "requests": [
+          {
+            "id": "net-local-get-v1-sites-siteid-firewall-policies",
+            "name": "List Firewall Policies",
+            "method": "GET",
+            "path": "sites/{{siteId}}/firewall/policies",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a list of all firewall policies on a site."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-firewall-policies",
+            "name": "Create Firewall Policy",
+            "method": "POST",
+            "path": "sites/{{siteId}}/firewall/policies",
+            "headers": [],
+            "body": "{\n  \"action\": {\n    \"type\": \"<string>\"\n  },\n  \"destination\": {\n    \"zoneId\": \"<uuid>\",\n    \"trafficFilter\": {\n      \"type\": \"<string>\"\n    }\n  },\n  \"enabled\": \"<boolean>\",\n  \"ipProtocolScope\": {\n    \"ipVersion\": \"<string>\"\n  },\n  \"loggingEnabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"source\": {\n    \"zoneId\": \"<uuid>\",\n    \"trafficFilter\": {\n      \"type\": \"<string>\"\n    }\n  },\n  \"connectionStateFilter\": [\n    \"<string>\"\n  ],\n  \"description\": \"<string>\",\n  \"ipsecFilter\": \"<string>\",\n  \"schedule\": {\n    \"mode\": \"<string>\"\n  }\n}",
+            "destructive": true,
+            "description": "Create a new firewall policy on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-firewall-policies-ordering",
+            "name": "Get User-Defined Firewall Policy Ordering",
+            "method": "GET",
+            "path": "sites/{{siteId}}/firewall/policies/ordering",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve user-defined firewall policy ordering for a specific source/destination zone pair."
+          },
+          {
+            "id": "net-local-put-v1-sites-siteid-firewall-policies-ordering",
+            "name": "Reorder User-Defined Firewall Policies",
+            "method": "PUT",
+            "path": "sites/{{siteId}}/firewall/policies/ordering",
+            "headers": [],
+            "body": "{\n  \"orderedFirewallPolicyIds\": {\n    \"afterSystemDefined\": [\n      \"<uuid>\",\n      \"<uuid>\"\n    ],\n    \"beforeSystemDefined\": [\n      \"<uuid>\",\n      \"<uuid>\"\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Reorder user-defined firewall policies for a specific source/destination zone pair."
+          },
+          {
+            "id": "net-local-delete-v1-sites-siteid-firewall-policies-firewallpolicy",
+            "name": "Delete Firewall Policy",
+            "method": "DELETE",
+            "path": "sites/{{siteId}}/firewall/policies/{{firewallPolicyId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing firewall policy on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-firewall-policies-firewallpolicy",
+            "name": "Get Firewall Policy",
+            "method": "GET",
+            "path": "sites/{{siteId}}/firewall/policies/{{firewallPolicyId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve specific firewall policy."
+          },
+          {
+            "id": "net-local-patch-v1-sites-siteid-firewall-policies-firewallpolicy",
+            "name": "Patch Firewall Policy",
+            "method": "PATCH",
+            "path": "sites/{{siteId}}/firewall/policies/{{firewallPolicyId}}",
+            "headers": [],
+            "body": "{\n  \"loggingEnabled\": \"<boolean>\"\n}",
+            "destructive": true,
+            "description": "Patch an existing firewall policy on a site."
+          },
+          {
+            "id": "net-local-put-v1-sites-siteid-firewall-policies-firewallpolicy",
+            "name": "Update Firewall Policy",
+            "method": "PUT",
+            "path": "sites/{{siteId}}/firewall/policies/{{firewallPolicyId}}",
+            "headers": [],
+            "body": "{\n  \"action\": {\n    \"type\": \"<string>\"\n  },\n  \"destination\": {\n    \"zoneId\": \"<uuid>\",\n    \"trafficFilter\": {\n      \"type\": \"<string>\"\n    }\n  },\n  \"enabled\": \"<boolean>\",\n  \"ipProtocolScope\": {\n    \"ipVersion\": \"<string>\"\n  },\n  \"loggingEnabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"source\": {\n    \"zoneId\": \"<uuid>\",\n    \"trafficFilter\": {\n      \"type\": \"<string>\"\n    }\n  },\n  \"connectionStateFilter\": [\n    \"<string>\"\n  ],\n  \"description\": \"<string>\",\n  \"ipsecFilter\": \"<string>\",\n  \"schedule\": {\n    \"mode\": \"<string>\"\n  }\n}",
+            "destructive": true,
+            "description": "Update an existing firewall policy on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-firewall-zones",
+            "name": "List Firewall Zones",
+            "method": "GET",
+            "path": "sites/{{siteId}}/firewall/zones",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a list of all firewall zones on a site."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-firewall-zones",
+            "name": "Create Custom Firewall Zone",
+            "method": "POST",
+            "path": "sites/{{siteId}}/firewall/zones",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"networkIds\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Create a new custom firewall zone on a site."
+          },
+          {
+            "id": "net-local-delete-v1-sites-siteid-firewall-zones-firewallzoneid",
+            "name": "Delete Custom Firewall Zone",
+            "method": "DELETE",
+            "path": "sites/{{siteId}}/firewall/zones/{{firewallZoneId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a custom firewall zone from a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-firewall-zones-firewallzoneid",
+            "name": "Get Firewall Zone",
+            "method": "GET",
+            "path": "sites/{{siteId}}/firewall/zones/{{firewallZoneId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a firewall zone on a site."
+          },
+          {
+            "id": "net-local-put-v1-sites-siteid-firewall-zones-firewallzoneid",
+            "name": "Update Firewall Zone",
+            "method": "PUT",
+            "path": "sites/{{siteId}}/firewall/zones/{{firewallZoneId}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"networkIds\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Update a firewall zone on a site."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-access-control-acl-rules",
+        "name": "Access Control (ACL Rules)",
+        "requests": [
+          {
+            "id": "net-local-get-v1-sites-siteid-acl-rules",
+            "name": "List ACL Rules",
+            "method": "GET",
+            "path": "sites/{{siteId}}/acl-rules",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all ACL rules on a site."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-acl-rules",
+            "name": "Create ACL Rule",
+            "method": "POST",
+            "path": "sites/{{siteId}}/acl-rules",
+            "headers": [],
+            "body": "{\n  \"action\": \"<string>\",\n  \"enabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"destinationFilter\": {},\n  \"enforcingDeviceFilter\": {\n    \"type\": \"<string>\"\n  },\n  \"index\": \"<integer>\",\n  \"sourceFilter\": {}\n}",
+            "destructive": true,
+            "description": "Create a new user defined ACL rule on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-acl-rules-ordering",
+            "name": "Get User-Defined ACL Rule Ordering",
+            "method": "GET",
+            "path": "sites/{{siteId}}/acl-rules/ordering",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve user-defined ACL rule ordering on a site."
+          },
+          {
+            "id": "net-local-put-v1-sites-siteid-acl-rules-ordering",
+            "name": "Reorder User-Defined ACL Rules",
+            "method": "PUT",
+            "path": "sites/{{siteId}}/acl-rules/ordering",
+            "headers": [],
+            "body": "{\n  \"orderedAclRuleIds\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Reorder user-defined ACL rules on a site."
+          },
+          {
+            "id": "net-local-delete-v1-sites-siteid-acl-rules-aclruleid",
+            "name": "Delete ACL Rule",
+            "method": "DELETE",
+            "path": "sites/{{siteId}}/acl-rules/{{aclRuleId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing user defined ACL rule on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-acl-rules-aclruleid",
+            "name": "Get ACL Rule",
+            "method": "GET",
+            "path": "sites/{{siteId}}/acl-rules/{{aclRuleId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "net-local-put-v1-sites-siteid-acl-rules-aclruleid",
+            "name": "Update ACL Rule",
+            "method": "PUT",
+            "path": "sites/{{siteId}}/acl-rules/{{aclRuleId}}",
+            "headers": [],
+            "body": "{\n  \"action\": \"<string>\",\n  \"enabled\": \"<boolean>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"destinationFilter\": {},\n  \"enforcingDeviceFilter\": {\n    \"type\": \"<string>\"\n  },\n  \"index\": \"<integer>\",\n  \"sourceFilter\": {}\n}",
+            "destructive": true,
+            "description": "Update an existing user defined ACL rule on a site."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-switching",
+        "name": "Switching",
+        "requests": [
+          {
+            "id": "net-local-get-v1-sites-siteid-switching-lags",
+            "name": "List LAGs",
+            "method": "GET",
+            "path": "sites/{{siteId}}/switching/lags",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all LAGs (Link Aggregation Groups) on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-switching-lags-lagid",
+            "name": "Get LAG Details",
+            "method": "GET",
+            "path": "sites/{{siteId}}/switching/lags/{{lagId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve LAG details."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-switching-mc-lag-domains",
+            "name": "List MC-LAG Domains",
+            "method": "GET",
+            "path": "sites/{{siteId}}/switching/mc-lag-domains",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all MC-LAG Domains on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-switching-mc-lag-domains-mclagdo",
+            "name": "Get MC-LAG Domain",
+            "method": "GET",
+            "path": "sites/{{siteId}}/switching/mc-lag-domains/{{mcLagDomainId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve MC-LAG Domain details."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-switching-switch-stacks",
+            "name": "List Switch Stacks",
+            "method": "GET",
+            "path": "sites/{{siteId}}/switching/switch-stacks",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all Switch Stacks on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-switching-switch-stacks-switchst",
+            "name": "Get Switch Stack",
+            "method": "GET",
+            "path": "sites/{{siteId}}/switching/switch-stacks/{{switchStackId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve Switch Stack details."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-dns-policies",
+        "name": "DNS Policies",
+        "requests": [
+          {
+            "id": "net-local-get-v1-sites-siteid-dns-policies",
+            "name": "List DNS Policies",
+            "method": "GET",
+            "path": "sites/{{siteId}}/dns/policies",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all DNS policies on a site."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-dns-policies",
+            "name": "Create DNS Policy",
+            "method": "POST",
+            "path": "sites/{{siteId}}/dns/policies",
+            "headers": [],
+            "body": "{\n  \"enabled\": \"<boolean>\",\n  \"type\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new DNS policy on a site."
+          },
+          {
+            "id": "net-local-delete-v1-sites-siteid-dns-policies-dnspolicyid",
+            "name": "Delete DNS Policy",
+            "method": "DELETE",
+            "path": "sites/{{siteId}}/dns/policies/{{dnsPolicyId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing DNS policy on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-dns-policies-dnspolicyid",
+            "name": "Get DNS Policy",
+            "method": "GET",
+            "path": "sites/{{siteId}}/dns/policies/{{dnsPolicyId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve specific DNS policy."
+          },
+          {
+            "id": "net-local-put-v1-sites-siteid-dns-policies-dnspolicyid",
+            "name": "Update DNS Policy",
+            "method": "PUT",
+            "path": "sites/{{siteId}}/dns/policies/{{dnsPolicyId}}",
+            "headers": [],
+            "body": "{\n  \"enabled\": \"<boolean>\",\n  \"type\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Update an existing DNS policy on a site."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-traffic-matching-lists",
+        "name": "Traffic Matching Lists",
+        "requests": [
+          {
+            "id": "net-local-get-v1-sites-siteid-traffic-matching-lists",
+            "name": "List Traffic Matching Lists",
+            "method": "GET",
+            "path": "sites/{{siteId}}/traffic-matching-lists",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve all traffic matching lists on a site."
+          },
+          {
+            "id": "net-local-post-v1-sites-siteid-traffic-matching-lists",
+            "name": "Create Traffic Matching List",
+            "method": "POST",
+            "path": "sites/{{siteId}}/traffic-matching-lists",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"type\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new traffic matching list on a site."
+          },
+          {
+            "id": "net-local-delete-v1-sites-siteid-traffic-matching-lists-trafficma",
+            "name": "Delete Traffic Matching List",
+            "method": "DELETE",
+            "path": "sites/{{siteId}}/traffic-matching-lists/{{trafficMatchingListId}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an exist traffic matching list on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-traffic-matching-lists-trafficma",
+            "name": "Get Traffic Matching List",
+            "method": "GET",
+            "path": "sites/{{siteId}}/traffic-matching-lists/{{trafficMatchingListId}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get an exist traffic matching list on a site."
+          },
+          {
+            "id": "net-local-put-v1-sites-siteid-traffic-matching-lists-trafficma",
+            "name": "Update Traffic Matching List",
+            "method": "PUT",
+            "path": "sites/{{siteId}}/traffic-matching-lists/{{trafficMatchingListId}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"type\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Update an exist traffic matching list on a site."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "net-local-supporting-resources",
+        "name": "Supporting Resources",
+        "requests": [
+          {
+            "id": "net-local-get-v1-countries",
+            "name": "List Countries",
+            "method": "GET",
+            "path": "countries",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns ISO-standard country codes and names,"
+          },
+          {
+            "id": "net-local-get-v1-dpi-applications",
+            "name": "List DPI Applications",
+            "method": "GET",
+            "path": "dpi/applications",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Lists DPI-recognized applications grouped under categories. Useful for firewall or traffic analytics integration."
+          },
+          {
+            "id": "net-local-get-v1-dpi-categories",
+            "name": "List DPI Application Categories",
+            "method": "GET",
+            "path": "dpi/categories",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns predefined Deep Packet Inspection (DPI) application categories used for traffic identification and filtering."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-device-tags",
+            "name": "List Device Tags",
+            "method": "GET",
+            "path": "sites/{{siteId}}/device-tags",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns all device tags defined within a site, which can be used for WiFi Broadcast assignments."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-radius-profiles",
+            "name": "List Radius Profiles",
+            "method": "GET",
+            "path": "sites/{{siteId}}/radius/profiles",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns available RADIUS authentication profiles, including configuration origin metadata."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-vpn-servers",
+            "name": "List VPN Servers",
+            "method": "GET",
+            "path": "sites/{{siteId}}/vpn/servers",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all VPN servers on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-vpn-site-to-site-tunnels",
+            "name": "List Site-To-Site VPN Tunnels",
+            "method": "GET",
+            "path": "sites/{{siteId}}/vpn/site-to-site-tunnels",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Retrieve a paginated list of all site-to-site VPN tunnels on a site."
+          },
+          {
+            "id": "net-local-get-v1-sites-siteid-wans",
+            "name": "List WAN Interfaces",
+            "method": "GET",
+            "path": "sites/{{siteId}}/wans",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns available WAN interface definitions for a given site,"
+          }
+        ],
+        "folders": []
+      }
+    ]
+  }
+}

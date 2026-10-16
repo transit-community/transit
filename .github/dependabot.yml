@@ -1,0 +1,65 @@
+# Dependabot — monthly version updates for the three ecosystems. Minor +
+# patch updates are grouped into a single PR per ecosystem; MAJOR updates
+# open as individual PRs so one un-adoptable major cannot turn a whole
+# group red. Pairs with the SHA-pin policy in CLAUDE.md
+# §13: the github-actions ecosystem bumps our SHA-pinned actions to the
+# latest signed tags. No auto-merge — CI is the build-breakage safety
+# net; a maintainer's manual smoke (connect to a device, ask the agent a
+# question) is the runtime-behavior safety net.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore(actions)"
+    open-pull-requests-limit: 5
+    groups:
+      github-actions-all:
+        patterns: ["*"]
+
+  - package-ecosystem: "cargo"
+    directory: "/src-tauri"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore(deps)"
+    open-pull-requests-limit: 5
+    groups:
+      cargo-all:
+        patterns: ["*"]
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore(deps)"
+    open-pull-requests-limit: 5
+    groups:
+      npm-all:
+        patterns: ["*"]
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # react-doctor 0.5.x is far stricter than 0.1.x and fails the CI
+      # gate on current source; adopting it is a tracked follow-up.
+      - dependency-name: "react-doctor"
+        versions: [">= 0.2"]
+      # TypeScript 6→7 is blocked upstream: typescript-eslint still peers
+      # `typescript <6.1.0`, so the bump fails `npm ci` with ERESOLVE.
+      # Lift once `npm view typescript-eslint peerDependencies` admits 7.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # happy-dom 20.12.1 rewrote CSSStyleDeclaration and drops a valid
+      # inline `color-mix(...)` declaration — ButtonBar.test "shades a
+      # colored button" fails on 20.12.1 through 20.14.5 and passes on
+      # 20.12.0. Test-environment regression only; real webviews render
+      # it. Pinned exact at 20.12.0 in package.json.
+      - dependency-name: "happy-dom"
+        versions: [">= 20.12.1"]

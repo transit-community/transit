@@ -1,0 +1,145 @@
+# Palo Alto PAN-OS — read-only command policy.
+#
+# Schema: see src-tauri/crates/transit_policy/src/loader.rs.
+# Design rationale: see policies/pan_os.README.md.
+#
+# Default-deny on no-match. The `precedence` field below only governs
+# the "head matches both `allowed` and `blocked`" tiebreaker — a
+# command that matches nothing is ALWAYS denied regardless.
+#
+# PAN-OS has a distinct CLI from the Cisco family:
+#   - `request restart system` (vs `reload`)
+#   - `request shutdown system`
+#   - `debug software shell` (the critical shell escape — drops to a
+#     Linux root shell on the firewall)
+#   - `commit` / `commit-all` / `save config` / `load config`
+#     (PAN-OS uses a candidate-config + commit model, similar to Junos)
+#   - `scp export / scp import / tftp export / tftp import`
+#   - `set cli pager off` (rather than `terminal length 0`)
+#
+# The pipe-suffix policy mirrors PAN-OS's actual verbs: `match` (filter),
+# `except`, `count` are read-only filters; `redirect` writes output
+# to a file/URL and is blocked.
+---
+precedence: block-wins
+
+canonicalization:
+  # PAN-OS engineers contract `show` to `sh` and `delete` to `del`.
+  # `sh` -> `show` is critical so the allowlist's `^show( |$)` catches
+  # the contracted form. We do NOT canonicalize `del` -> `delete`
+  # — `delete` is on the blocklist anyway, and aliasing `del` -> `delete`
+  # would let `del-something` flow through as `delete-something` and
+  # accidentally trip the blocklist on a non-delete command.
+  aliases:
+    sh: show
+    sho: show
+    shw: show
+    p: ping
+    tr: traceroute
+
+# ---------------------------------------------------------------------
+# Head allow/block lists.
+# ---------------------------------------------------------------------
+
+allowed:
+  - "^show( |$)"
+  - "^ping( |$)"
+  - "^traceroute( |$)"
+  # The four viewer heads below are PAN-OS-native commands whose GNU
+  # namesakes exist in every Linux shell. Each pattern requires
+  # PAN-OS's own grammar — a `<area>-log` token for less/tail/grep,
+  # the literal `command` for find — so a device that is NOT actually
+  # a PAN-OS box (mislabeled inventory) or a future allow-wins
+  # refactor can't ride a bare `^less ` / `^find ` head into
+  # arbitrary GNU filesystem reads (`less /etc/passwd`,
+  # `find / -exec …`). Paths can't match: `/` is outside the
+  # log-area character class. See README §"Grammar-anchored viewers".
+  - "^less [a-z0-9._-]+-log( |$)" # read-only log viewer (`less mp-log <file>`)
+  - "^tail (follow (yes|no) |lines [0-9]+ )*[a-z0-9._-]+-log( |$)" # log tail
+  - "^find command( |$)" # command-help search (`find command keyword <x>`)
+  - "^grep ([a-z]+ [a-z0-9]+ )*[a-z0-9._-]+-log " # pattern filter over a log area
+  - "^view-config " # read-only candidate-config view
+  - "^set cli pager " # pager control (output formatting, no device state)
+  - "^set cli terminal " # terminal type/width (cosmetic)
+  - "^set cli timeout " # CLI idle timeout for THIS session (no persisted state)
+
+blocked:
+  # ---- Configuration model ----
+  # `configure` enters config mode, `edit` navigates within config,
+  # `commit` / `commit-all` / `commit-force` push the candidate to
+  # running.
+  #
+  # We deliberately do NOT block `^set ` as a head — the allowlist
+  # surfaces three operational-only carve-outs (`set cli pager`,
+  # `set cli terminal`, `set cli timeout`) that block-wins
+  # precedence would otherwise nullify. Config-mode `set` commands
+  # (`set deviceconfig`, `set network`, `set rulebase`, …) fall
+  # through to default-deny because they match no allow regex.
+  # Adding a new `^set cli ...` carve-out means appending to the
+  # allowlist + a corpus row; no blocklist edit needed.
+  - "^configure( |$)"
+  - "^edit "
+  - "^delete "
+  - "^commit"
+  - "^load "
+  - "^save "
+  - "^revert "
+  - "^rename "
+  - "^move "
+  - "^copy "
+  # ---- File / transfer operations ----
+  - "^scp " # `scp export`, `scp import` — file in/out
+  - "^tftp " # `tftp export`, `tftp import`
+  - "^ftp " # legacy file transfer
+  - "^clear " # clears counters, logs, sessions, ARP entries
+  # ---- The critical shell-escape block ----
+  # `debug software shell` drops to the underlying Linux shell as root.
+  # The single most important block on PAN-OS — once in the shell, the
+  # gate is fully bypassed and the attacker has root on the firewall.
+  - "^debug software shell"
+  # `debug system maint-mode` reboots into maintenance mode. Adjacent
+  # `debug system` subcommands include `loadcfg` (load a config from
+  # maint mode), `disk-image` (image management), and others that
+  # modify persistent state. Block the whole prefix.
+  - "^debug system "
+  # `request restart` / `request shutdown` reboot or power off the
+  # firewall. PAN-OS also has `request system` for license/cert
+  # imports + `request platform-software` for image management — all
+  # outside the read-only contract.
+  - "^request restart"
+  - "^request shutdown"
+  - "^request system "
+  - "^request platform-software "
+  - "^request high-availability "
+  - "^request password-hash " # password hash generation (escapes redaction)
+  # ---- Session / mode manipulation ----
+  - "^exit"
+  - "^quit"
+  - "^logout"
+  - "^run " # `run` from config mode — escape to operational mode
+
+# ---------------------------------------------------------------------
+# Pipe-stage policy. PAN-OS pipe verbs:
+#   match / except / count — pure filters
+#   redirect — writes output to a file/URL — BLOCKED
+#   tee — display AND save (less common on PAN-OS but exists in some
+#         scripts) — BLOCKED
+# ---------------------------------------------------------------------
+
+pipe_allowed:
+  - "^match "
+  - "^except "
+  - "^count$"
+
+pipe_blocked:
+  - "^redirect "
+  - "^tee "
+
+# v6.1.x #1 — phrasebook (see junos.yaml for the contract; gate-tested).
+phrasebook:
+  - "show system info"
+  - "show interface all"
+  - "show routing route"
+  - "show session info"
+  - "show high-availability state"
+  - "ping host 10.0.0.1"

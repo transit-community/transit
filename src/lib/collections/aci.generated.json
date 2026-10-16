@@ -1,0 +1,563 @@
+{
+  "id": "aci",
+  "name": "Cisco ACI (APIC)",
+  "vendor": "aci",
+  "bundled": true,
+  "variables": [],
+  "root": {
+    "id": "aci-1",
+    "name": "Cisco ACI",
+    "requests": [],
+    "folders": [
+      {
+        "id": "aci-2",
+        "name": "Log in first",
+        "requests": [
+          {
+            "id": "aci-3",
+            "name": "Log in (obtain APIC token)",
+            "method": "POST",
+            "path": "/api/aaaLogin.json",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": "{\n  \"aaaUser\": {\n    \"attributes\": {\n      \"name\": \"{{username}}\",\n      \"pwd\": \"{{password}}\"\n    }\n  }\n}",
+            "destructive": true,
+            "capture": [
+              {
+                "from": "body",
+                "key": "imdata.0.aaaLogin.attributes.token",
+                "into": "apicToken"
+              }
+            ]
+          },
+          {
+            "id": "aci-4",
+            "name": "Refresh token",
+            "method": "GET",
+            "path": "/api/aaaRefresh.json",
+            "headers": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-5",
+            "name": "Log out (revoke token)",
+            "method": "DELETE",
+            "path": "/api/aaaLogout.json",
+            "headers": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": null,
+            "destructive": true
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aci-6",
+        "name": "Fabric & nodes",
+        "requests": [
+          {
+            "id": "aci-7",
+            "name": "Top system (topology overview)",
+            "method": "GET",
+            "path": "/api/class/topSystem.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-8",
+            "name": "Fabric topologies",
+            "method": "GET",
+            "path": "/api/class/fabricTopology.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-9",
+            "name": "Fabric pods",
+            "method": "GET",
+            "path": "/api/class/fabricPod.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-10",
+            "name": "Fabric nodes",
+            "method": "GET",
+            "path": "/api/class/fabricNode.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-11",
+            "name": "Fabric paths",
+            "method": "GET",
+            "path": "/api/class/fabricPath.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-12",
+            "name": "Fabric node by DN (example: pod-1/node-101)",
+            "method": "GET",
+            "path": "/api/mo/topology/pod-1/node-101.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-13",
+            "name": "Fabric node system details (example: node-101)",
+            "method": "GET",
+            "path": "/api/mo/topology/pod-1/node-101/sys.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aci-14",
+        "name": "Interfaces",
+        "requests": [
+          {
+            "id": "aci-15",
+            "name": "Physical interface (example: node-101 eth1/28)",
+            "method": "GET",
+            "path": "/api/mo/topology/pod-1/node-101/sys/phys-[eth1/28].json?rsp-subtree=full",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aci-16",
+        "name": "Tenants",
+        "requests": [
+          {
+            "id": "aci-17",
+            "name": "All tenants",
+            "method": "GET",
+            "path": "/api/node/class/fvTenant.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-18",
+            "name": "Tenant by DN (example: AciPostman)",
+            "method": "GET",
+            "path": "/api/mo/uni/tn-AciPostman.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-19",
+            "name": "Tenant subtree (example: Heroes)",
+            "method": "GET",
+            "path": "/api/mo/uni/tn-Heroes.json?rsp-subtree=full",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-31",
+            "name": "Create tenant (example: globoTenant)",
+            "method": "POST",
+            "path": "/api/mo/uni.json?rsp-subtree=modified",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": "{\n  \"fvTenant\": {\n    \"attributes\": {\n      \"name\": \"globoTenant\"\n    }\n  }\n}",
+            "destructive": true,
+            "description": "Create a new tenant (fvTenant) under uni. Edit the name attribute for your own tenant. WRITE — requires confirmation before send."
+          },
+          {
+            "id": "aci-32",
+            "name": "Delete tenant (example: globoTenant)",
+            "method": "DELETE",
+            "path": "/api/mo/uni/tn-globoTenant.json?rsp-subtree=modified",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a tenant by DN (tn-<name>). This removes the tenant and its entire subtree — VRFs, bridge domains, application profiles, and EPGs. WRITE — requires confirmation before send."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aci-20",
+        "name": "VRFs & bridge domains",
+        "requests": [
+          {
+            "id": "aci-21",
+            "name": "All VRFs",
+            "method": "GET",
+            "path": "/api/node/class/fvCtx.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-22",
+            "name": "VRF by DN (example: VRF_GLOBO)",
+            "method": "GET",
+            "path": "/api/mo/uni/tn-globoTenant/ctx-VRF_GLOBO.json?rsp-subtree=full",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-23",
+            "name": "All bridge domains",
+            "method": "GET",
+            "path": "/api/node/class/fvBD.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-24",
+            "name": "Bridge domain by DN (example: BD_GLOBO)",
+            "method": "GET",
+            "path": "/api/mo/uni/tn-globoTenant/BD-BD_GLOBO.json?rsp-subtree=full",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-33",
+            "name": "Create VRF (example: VRF_GLOBO)",
+            "method": "POST",
+            "path": "/api/mo/uni/tn-globoTenant.json?rsp-subtree=modified",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": "{\n  \"fvCtx\": {\n    \"attributes\": {\n      \"name\": \"VRF_GLOBO\",\n      \"ipDataPlaneLearning\": \"enabled\",\n      \"knwMcastAct\": \"permit\",\n      \"pcEnfDir\": \"ingress\",\n      \"pcEnfPref\": \"enforced\"\n    }\n  }\n}",
+            "destructive": true,
+            "description": "Create a VRF (fvCtx) inside a tenant. POSTed to the tenant DN with the fvCtx object. WRITE — requires confirmation before send."
+          },
+          {
+            "id": "aci-34",
+            "name": "Delete VRF (example: VRF_GLOBO)",
+            "method": "DELETE",
+            "path": "/api/mo/uni/tn-globoTenant/ctx-VRF_GLOBO.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a VRF by DN (ctx-<name>) inside a tenant. WRITE — requires confirmation before send."
+          },
+          {
+            "id": "aci-35",
+            "name": "Create bridge domain (example: BD_GLOBO)",
+            "method": "POST",
+            "path": "/api/mo/uni/tn-globoTenant.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": "{\n  \"fvBD\": {\n    \"attributes\": {\n      \"name\": \"BD_GLOBO\"\n    },\n    \"children\": [\n      {\n        \"fvRsCtx\": {\n          \"attributes\": {\n            \"tnFvCtxName\": \"VRF_GLOBO\"\n          }\n        }\n      },\n      {\n        \"fvSubnet\": {\n          \"attributes\": {\n            \"ip\": \"192.0.2.254/24\"\n          }\n        }\n      }\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Create a bridge domain (fvBD) inside a tenant, bound to a VRF (fvRsCtx) with a subnet (fvSubnet). POSTed to the tenant DN. WRITE — requires confirmation before send."
+          },
+          {
+            "id": "aci-36",
+            "name": "Delete bridge domain (example: BD_GLOBO)",
+            "method": "DELETE",
+            "path": "/api/mo/uni/tn-globoTenant/BD-BD_GLOBO.json?rsp-subtree=modified",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a bridge domain by DN (BD-<name>) inside a tenant. WRITE — requires confirmation before send."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aci-25",
+        "name": "Application profiles & EPGs",
+        "requests": [
+          {
+            "id": "aci-26",
+            "name": "All application profiles",
+            "method": "GET",
+            "path": "/api/node/class/fvAp.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-27",
+            "name": "All EPGs",
+            "method": "GET",
+            "path": "/api/class/fvAEPg.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-28",
+            "name": "Application profile by DN (example: AP_GLOBO)",
+            "method": "GET",
+            "path": "/api/mo/uni/tn-globoTenant/ap-AP_GLOBO.json?rsp-subtree=full",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-29",
+            "name": "EPG by DN (example: EPG_FRONTEND)",
+            "method": "GET",
+            "path": "/api/mo/uni/tn-globoTenant/ap-AP_GLOBO/epg-EPG_FRONTEND.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-30",
+            "name": "EPG by DN (example: EPG_BACKEND)",
+            "method": "GET",
+            "path": "/api/mo/uni/tn-globoTenant/ap-AP_GLOBO/epg-EPG_BACKEND.json",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false
+          },
+          {
+            "id": "aci-37",
+            "name": "Create application profile with EPGs (example: AP_GLOBO)",
+            "method": "POST",
+            "path": "/api/mo/uni/tn-globoTenant.json?rsp-subtree=modified",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": "{\n  \"fvAp\": {\n    \"attributes\": {\n      \"name\": \"AP_GLOBO\"\n    },\n    \"children\": [\n      {\n        \"fvAEPg\": {\n          \"attributes\": {\n            \"name\": \"EPG_FRONTEND\"\n          }\n        }\n      },\n      {\n        \"fvAEPg\": {\n          \"attributes\": {\n            \"name\": \"EPG_BACKEND\"\n          }\n        }\n      }\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Create an application profile (fvAp) inside a tenant with child EPGs (fvAEPg). POSTed to the tenant DN. WRITE — requires confirmation before send."
+          },
+          {
+            "id": "aci-38",
+            "name": "Assign EPG to interface eth1/28 (static path binding)",
+            "method": "POST",
+            "path": "/api/mo/uni/tn-globoTenant/ap-AP_GLOBO.json?rsp-subtree=modified",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": "{\n  \"fvAEPg\": {\n    \"attributes\": {\n      \"name\": \"epg-EPG_FRONTEND\"\n    },\n    \"children\": [\n      {\n        \"fvRsPathAtt\": {\n          \"attributes\": {\n            \"tDn\": \"topology/pod-1/paths-1017/pathep-[eth1/28]\",\n            \"mode\": \"regular\",\n            \"instrImedcy\": \"immediate\",\n            \"encap\": \"vlan-99\"\n          }\n        }\n      }\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Statically bind an EPG to a leaf interface (fvRsPathAtt) — port eth1/28 on paths-1017, encap vlan-99. POSTed to the application-profile DN. WRITE — requires confirmation before send."
+          },
+          {
+            "id": "aci-39",
+            "name": "Assign EPG to interface eth1/27 (static path binding)",
+            "method": "POST",
+            "path": "/api/mo/uni/tn-globoTenant/ap-AP_GLOBO.json?rsp-subtree=modified",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": "{\n  \"fvAEPg\": {\n    \"attributes\": {\n      \"name\": \"epg-EPG_BACKEND\"\n    },\n    \"children\": [\n      {\n        \"fvRsPathAtt\": {\n          \"attributes\": {\n            \"tDn\": \"topology/pod-1/paths-1017/pathep-[eth1/27]\",\n            \"mode\": \"regular\",\n            \"instrImedcy\": \"immediate\",\n            \"encap\": \"vlan-98\"\n          }\n        }\n      }\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Statically bind an EPG to a leaf interface (fvRsPathAtt) — port eth1/27 on paths-1017, encap vlan-98. POSTed to the application-profile DN. WRITE — requires confirmation before send."
+          },
+          {
+            "id": "aci-40",
+            "name": "Delete application profile with EPGs (example: AP_GLOBO)",
+            "method": "DELETE",
+            "path": "/api/mo/uni/tn-globoTenant/ap-AP_GLOBO.json?rsp-subtree=modified",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "APIC-cookie={{apicToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an application profile by DN (ap-<name>) inside a tenant, along with its EPGs. WRITE — requires confirmation before send."
+          }
+        ],
+        "folders": []
+      }
+    ]
+  }
+}

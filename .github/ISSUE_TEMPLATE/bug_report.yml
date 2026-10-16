@@ -1,0 +1,80 @@
+name: Bug report
+description: Something is wrong in the app. Not for security bugs (see SECURITY.md).
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. **Redact** hostnames, IPs, usernames and any
+        device output you paste; the agent's redaction filter is not applied
+        to GitHub issues.
+  - type: input
+    id: version
+    attributes:
+      label: Transit Community Edition version
+      description: Settings → About, or the release you installed.
+      placeholder: "6.5.9"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS (Apple Silicon)
+        - Windows
+        - Linux (.deb)
+        - Linux (.rpm)
+        - Built from source (say which OS below)
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - SSH terminal / connecting
+        - AI chat (API key)
+        - AI chat (local models)
+        - AI chat (Sign in with ChatGPT)
+        - Policy gate / command approval
+        - Files (SFTP)
+        - PCaps
+        - Inventory / import
+        - Settings / UI
+        - Build / CI
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: vendor
+    attributes:
+      label: Device vendor and OS version (if relevant)
+      placeholder: "Juniper vEX 23.4R2, Cisco IOS-XE 17.9, Arista EOS 4.32…"
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you saw. Redacted logs or screenshots help.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Settings → …
+        2. …
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues, including closed ones.
+          required: true
+        - label: This is not a security bug (those go through private vulnerability reporting).
+          required: true
+        - label: I redacted hostnames, addresses, credentials and device output.
+          required: true

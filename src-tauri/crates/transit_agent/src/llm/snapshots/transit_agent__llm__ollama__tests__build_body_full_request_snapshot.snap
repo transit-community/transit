@@ -1,0 +1,35 @@
+---
+source: crates/transit_agent/src/llm/ollama.rs
+expression: body
+---
+keep_alive: 15m
+messages:
+  - content: investigate only
+    role: system
+  - content: check the uplink on vEX1
+    role: user
+  - content: ""
+    role: assistant
+    tool_calls:
+      - function:
+          arguments:
+            session_id: s1
+          name: read_scrollback
+        id: tu_1
+  - content: ge-0/0/0 up
+    role: tool
+    tool_call_id: tu_1
+    tool_name: read_scrollback
+model: "qwen3:8b"
+options:
+  num_ctx: 16384
+  num_predict: 4096
+stream: true
+tools:
+  - function:
+      description: desc for read_scrollback
+      name: read_scrollback
+      parameters:
+        properties: {}
+        type: object
+    type: function

@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 0521f27507a114257a672d3550327d60de6a5905f6f51cce227b4183a0664b2f # shrinks to (id, salt, digest) = ("1", "aAA0", "0AA000a0Aa0a.0aaaaaA"), algo = "sha512"

@@ -1,0 +1,163 @@
+mode: gated
+precedence: block-wins
+
+canonicalization:
+  aliases: {} # a shell has no first-token contractions to normalize
+
+allowed:
+  # UniFi identity + adoption state.
+  - "^info$"
+  - "^mca-cli-op info$"
+  # Wireless — associated clients, signal, bitrate, airtime, channel survey.
+  - "^wstalist$"
+  - "^athstats$"
+  - "^iwconfig( [a-z0-9.]+)?$"
+  - "^iw dev$"
+  - "^iw dev [a-z0-9]+ (station dump|survey dump|link|info)$"
+  - "^iw phy[0-9]* info$"
+  - "^iw reg get$"
+  # Switch — read ("show") forms only (ports, PoE).
+  - "^swctrl [a-z]+ show( |$)"
+  # L2 — MAC/forwarding tables, STP, VLAN membership, ARP cache.
+  - "^brctl show$"
+  - "^bridge (-[a-zA-Z] )*(fdb|link|vlan)( show)?$"
+  - "^arp( -[an]+)?( [a-zA-Z0-9.-]+)?$"
+  # L3 / interfaces. `ip`/`ethtool` mutation verbs stay blocked (block-wins).
+  - "^ip (-[a-z0-9]+ )*(addr|address|link|route|neigh|neighbour|rule|maddress)( |$)"
+  - "^ifconfig( -a)?$"
+  # ⚠️ NO FLAGS. Canonicalization lowercases before matching, and every
+  # ethtool read flag has an upper-case MUTATING twin that becomes
+  # indistinguishable once folded: -s/-S (set settings vs show stats),
+  # -k/-K (show vs set offload), -g/-G (ring), -a/-A (pause), -c/-C
+  # (coalesce). The `$` anchor happens to reject the mutating forms today
+  # because they need trailing arguments, but resting a write-block on an
+  # anchor is far too subtle to defend. The plain query form is the only
+  # one the gate can distinguish, so it is the only one allowed.
+  # (The original sample wrote `-[iSgkamcT]`, whose upper-case letters
+  # could never match a folded command at all — it failed closed, but
+  # silently.)
+  - "^ethtool [a-z0-9.]+$"
+  # Sockets / listeners / connections (display-only tools).
+  - "^ss( -[a-zA-Z]+)?$"
+  - "^netstat( -[a-zA-Z]+)?$"
+  # Reachability + DNS from the device's own vantage point.
+  - "^ping( |$)"
+  - "^ping6( |$)"
+  - "^traceroute( |$)"
+  - "^(dig|host|nslookup) [a-zA-Z0-9.@ +_-]+$"
+  - "^mtr (-[a-zA-Z0-9]+ )*[a-zA-Z0-9.-]+$"
+  # QoS / smart-queue stats — read ("show") forms only.
+  - "^tc -s (qdisc|class|filter) show( dev [a-z0-9.]+)?$"
+  # System health + logs.
+  - "^uptime$"
+  - "^free$"
+  - "^dmesg$"
+  - "^logread$"
+  # `cat` is scoped to /proc, /sys, /var/log ONLY — kernel/hardware state +
+  # logs, no secrets (/var/log still gets the redaction pass). NOT /data: on
+  # a UniFi OS console /data is the whole state store — unifi-credential-
+  # server/, the postgres + ui-db databases (WLAN PSKs, admin/RADIUS/SNMP
+  # secrets, PII), unifi-access/ (door creds), dpi-tracer/, unifi-protect/.
+  # None is reliably secret-shaped, so redaction can't strip it (same reason
+  # mca-dump is excluded); the `\.\.` block below stops traversal in.
+  - "^cat /(proc|sys|var/log)/[a-zA-Z0-9._/-]+$"
+
+blocked:
+  # Shell-grammar armor — the load-bearing blocks. Without these, an
+  # allowed head can chain, redirect, or substitute a write in.
+  - "[;&]"
+  - "[<>]"
+  - "`"
+  - '\$\('
+  - '\.\.' # path traversal out of the scoped /proc, /sys, /var/log reads
+  # Adoption / reset / firmware
+  - "^set-inform"
+  - "^syswrapper"
+  - "^set-default"
+  - "^fwupdate"
+  - "^mca-ctrl"
+  - "^mca-cli( |$)"
+  # Outage
+  - "^reboot"
+  - "^poweroff"
+  - "^halt"
+  - "^shutdown"
+  - "^init( |$)"
+  # Console control plane (UniFi OS gateways are Debian)
+  - "^unifi-os"
+  - "^systemctl"
+  - "^service "
+  - "^podman"
+  - "^docker"
+  - "^apt"
+  - "^dpkg"
+  - "^opkg"
+  # Filesystem / process mutation
+  - "^rm "
+  - "^mv "
+  - "^cp "
+  - "^dd "
+  - "^chmod"
+  - "^chown"
+  - "^ln "
+  - "^mount"
+  - "^umount"
+  - "^mkdir"
+  - "^touch "
+  - "^kill"
+  - "^killall"
+  - "^vi( |$)"
+  - "^vim"
+  - "^nano"
+  - "^sed "
+  # Lateral movement / ingress / exfil
+  - "^ssh( |$)"
+  - "^telnet"
+  - "^nc( |$)"
+  - "^netcat"
+  - "^curl"
+  - "^wget"
+  - "^scp"
+  - "^tftp"
+  - "^ftp( |$)"
+  # Credentials / users
+  - "^passwd"
+  - "^adduser"
+  - "^useradd"
+  - "^usermod"
+  - "^deluser"
+  # Firewall mutation
+  - "^iptables"
+  - "^ip6tables"
+  - "^ebtables"
+  - "^nft( |$)"
+  # Nested shells / exec / scheduling
+  - "^sh( |$)"
+  - "^bash"
+  - "^ash( |$)"
+  - "^exec "
+  - "^env "
+  - "^xargs"
+  - "^crontab"
+  - "^at "
+
+# Pipes: filters only, with strict character sets so no stage can spell
+# a metacharacter.
+pipe_allowed:
+  - "^grep( -[a-zA-Z]+)* [a-zA-Z0-9 ._:/-]+$"
+  - "^head( -n [0-9]+)?$"
+  - "^tail( -n [0-9]+)?$"
+  - "^wc( -l)?$"
+
+pipe_blocked:
+  - "[;&<>]"
+  - "`"
+  - '\$\('
+
+# v6.1.x #1 — phrasebook (see junos.yaml for the contract; gate-tested).
+phrasebook:
+  - "info"
+  - "mca-cli-op info"
+  - "cat /proc/uptime"
+  - "ip addr"
+  - "ip route"

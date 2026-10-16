@@ -1,0 +1,1786 @@
+{
+  "generatedFrom": "UniFi Protect API (official Postman + OpenAPI)",
+  "note": "DERIVED from the official UniFi Postman collection + OpenAPI by scripts/gen-unifi-collection.mjs — do not edit by hand.",
+  "cloud": {
+    "id": "prot-cloud-root",
+    "name": "Protect (via connector)",
+    "requests": [],
+    "folders": [
+      {
+        "id": "prot-cloud-information-about-application",
+        "name": "Information about application",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-meta-info",
+            "name": "Get application information",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/meta/info",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get generic information about the Protect application"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-viewer-information-management",
+        "name": "Viewer information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-viewers-id",
+            "name": "Get viewer details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/viewers/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific viewer"
+          },
+          {
+            "id": "prot-cloud-patch-v1-viewers-id",
+            "name": "Patch viewer settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/viewers/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"liveview\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific viewer"
+          },
+          {
+            "id": "prot-cloud-get-v1-viewers",
+            "name": "Get all viewers",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/viewers",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all viewers"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-live-view-management",
+        "name": "Live view management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-liveviews-id",
+            "name": "Get live view details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/liveviews/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific live view"
+          },
+          {
+            "id": "prot-cloud-patch-v1-liveviews-id",
+            "name": "Patch live view configuration",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/liveviews/{{id}}",
+            "headers": [],
+            "body": "{\n  \"id\": \"<string>\",\n  \"modelKey\": \"<string>\",\n  \"name\": \"<string>\",\n  \"isDefault\": \"<boolean>\",\n  \"isGlobal\": \"<boolean>\",\n  \"owner\": \"<string>\",\n  \"layout\": \"<number>\",\n  \"slots\": [\n    {\n      \"cameras\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ],\n      \"cycleMode\": \"<string>\",\n      \"cycleInterval\": \"<number>\"\n    },\n    {\n      \"cameras\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ],\n      \"cycleMode\": \"<string>\",\n      \"cycleInterval\": \"<number>\"\n    }\n  ]\n}",
+            "destructive": true,
+            "description": "Patch the configuration about a specific live view"
+          },
+          {
+            "id": "prot-cloud-get-v1-liveviews",
+            "name": "Get all live views",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/liveviews",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all live views"
+          },
+          {
+            "id": "prot-cloud-post-v1-liveviews",
+            "name": "Create live view",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/liveviews",
+            "headers": [],
+            "body": "{\n  \"id\": \"<string>\",\n  \"modelKey\": \"<string>\",\n  \"name\": \"<string>\",\n  \"isDefault\": \"<boolean>\",\n  \"isGlobal\": \"<boolean>\",\n  \"owner\": \"<string>\",\n  \"layout\": \"<number>\",\n  \"slots\": [\n    {\n      \"cameras\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ],\n      \"cycleMode\": \"<string>\",\n      \"cycleInterval\": \"<number>\"\n    },\n    {\n      \"cameras\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ],\n      \"cycleMode\": \"<string>\",\n      \"cycleInterval\": \"<number>\"\n    }\n  ]\n}",
+            "destructive": true,
+            "description": "Create a new live view"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-websocket-updates",
+        "name": "WebSocket updates",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-subscribe-devices",
+            "name": "Get update messages about devices",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/subscribe/devices",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "A WebSocket subscription which broadcasts all changes happening to Protect-managed hardware devices"
+          },
+          {
+            "id": "prot-cloud-get-v1-subscribe-events",
+            "name": "Get Protect event messages",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/subscribe/events",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "A WebSocket subscription that broadcasts Protect events"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-camera-ptz-control-management",
+        "name": "Camera PTZ control & management",
+        "requests": [
+          {
+            "id": "prot-cloud-post-v1-cameras-id-ptz-patrol-start-slot",
+            "name": "Start a camera PTZ patrol",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras/{{id}}/ptz/patrol/start/{{slot}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Start a camera PTZ patrol"
+          },
+          {
+            "id": "prot-cloud-post-v1-cameras-id-ptz-patrol-stop",
+            "name": "Stop active camera PTZ patrol",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras/{{id}}/ptz/patrol/stop",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Stop active camera PTZ patrol"
+          },
+          {
+            "id": "prot-cloud-post-v1-cameras-id-ptz-goto-slot",
+            "name": "Move PTZ camera to preset",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras/{{id}}/ptz/goto/{{slot}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Adjust the PTZ camera position to a specified preset"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-alarm-manager-integration",
+        "name": "Alarm manager integration",
+        "requests": [
+          {
+            "id": "prot-cloud-post-v1-alarm-manager-webhook-id",
+            "name": "Send a webhook to the alarm manager",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/alarm-manager/webhook/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Send a webhook to the alarm manager to trigger configured alarms"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-arm-profile-management",
+        "name": "Arm profile management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-arm-profiles",
+            "name": "Get all arm profiles",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/arm-profiles",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of all arm profiles. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-cloud-post-v1-arm-profiles",
+            "name": "Create arm profile",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/arm-profiles",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"automations\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"schedules\": [\n    {\n      \"start\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"end\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      }\n    },\n    {\n      \"start\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"end\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      }\n    }\n  ],\n  \"recordEverything\": \"<boolean>\",\n  \"activationDelay\": \"<number>\"\n}",
+            "destructive": true,
+            "description": "Create a new arm profile. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-cloud-patch-v1-arm-profiles-settings",
+            "name": "Set current arm profile",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/arm-profiles/settings",
+            "headers": [],
+            "body": "{\n  \"armProfileId\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Set the current arm profile to be used when enabling the arm alarm. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-cloud-patch-v1-arm-profiles-id",
+            "name": "Update arm profile",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/arm-profiles/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"automations\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"schedules\": [\n    {\n      \"start\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"end\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      }\n    },\n    {\n      \"start\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"end\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      }\n    }\n  ],\n  \"recordEverything\": \"<boolean>\",\n  \"activationDelay\": \"<number>\"\n}",
+            "destructive": true,
+            "description": "Update an existing arm profile. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-cloud-delete-v1-arm-profiles-id",
+            "name": "Delete arm profile",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/arm-profiles/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an arm profile by ID. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-cloud-post-v1-arm-profiles-enable",
+            "name": "Enable arm alarm",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/arm-profiles/enable",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Enable the arm alarm feature using the currently selected arm profile. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-cloud-post-v1-arm-profiles-disable",
+            "name": "Disable arm alarm",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/arm-profiles/disable",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Disable the arm alarm feature. Only available when using local alarm manager."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-light-information-management",
+        "name": "Light information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-lights-id",
+            "name": "Get light details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/lights/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific light"
+          },
+          {
+            "id": "prot-cloud-patch-v1-lights-id",
+            "name": "Patch light settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/lights/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"isLightForceEnabled\": \"<boolean>\",\n  \"lightModeSettings\": {\n    \"mode\": \"<string>\",\n    \"enableAt\": \"<string>\"\n  },\n  \"lightDeviceSettings\": {\n    \"isIndicatorEnabled\": \"<boolean>\",\n    \"pirDuration\": \"<number>\",\n    \"pirSensitivity\": \"<number>\",\n    \"ledLevel\": \"<number>\"\n  }\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific light"
+          },
+          {
+            "id": "prot-cloud-get-v1-lights",
+            "name": "Get all lights",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/lights",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all lights"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-camera-information-management",
+        "name": "Camera information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-cameras-id",
+            "name": "Get camera details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific camera"
+          },
+          {
+            "id": "prot-cloud-patch-v1-cameras-id",
+            "name": "Patch camera settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"osdSettings\": {\n    \"isNameEnabled\": \"<boolean>\",\n    \"isDateEnabled\": \"<boolean>\",\n    \"isLogoEnabled\": \"<boolean>\",\n    \"isDebugEnabled\": \"<boolean>\",\n    \"overlayLocation\": \"<string>\"\n  },\n  \"ledSettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"welcomeLed\": \"<boolean>\",\n    \"floodLed\": \"<boolean>\"\n  },\n  \"lcdMessage\": {\n    \"type\": \"<string>\",\n    \"resetAt\": \"<number,null>\"\n  },\n  \"micVolume\": \"<number>\",\n  \"videoMode\": \"<string>\",\n  \"hdrType\": \"<string>\",\n  \"smartDetectSettings\": {\n    \"objectTypes\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"audioTypes\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific camera"
+          },
+          {
+            "id": "prot-cloud-get-v1-cameras",
+            "name": "Get all cameras",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all cameras"
+          },
+          {
+            "id": "prot-cloud-post-v1-cameras-id-rtsps-stream",
+            "name": "Create RTSPS streams for camera",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras/{{id}}/rtsps-stream",
+            "headers": [],
+            "body": "{\n  \"qualities\": [\n    \"<string>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Returns RTSPS stream URLs for specified quality levels"
+          },
+          {
+            "id": "prot-cloud-delete-v1-cameras-id-rtsps-stream",
+            "name": "Delete camera RTSPS stream",
+            "method": "DELETE",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras/{{id}}/rtsps-stream",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Remove the RTSPS stream for a specified camera"
+          },
+          {
+            "id": "prot-cloud-get-v1-cameras-id-rtsps-stream",
+            "name": "Get RTSPS streams for camera",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras/{{id}}/rtsps-stream",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns existing RTSPS stream URLs for camera"
+          },
+          {
+            "id": "prot-cloud-get-v1-cameras-id-snapshot",
+            "name": "Get camera snapshot",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras/{{id}}/snapshot",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a snapshot image from a specific camera. Use channel=package for cameras with a package camera (hasPackageCamera: true)."
+          },
+          {
+            "id": "prot-cloud-post-v1-cameras-id-disable-mic-permanently",
+            "name": "Permanently disable camera microphone",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras/{{id}}/disable-mic-permanently",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Disable the microphone for a specific camera. This action cannot be undone unless the camera is reset."
+          },
+          {
+            "id": "prot-cloud-post-v1-cameras-id-talkback-session",
+            "name": "Create talkback session for camera",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/cameras/{{id}}/talkback-session",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Returns the talkback stream URL and audio configuration for a specific camera"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-sensor-information-management",
+        "name": "Sensor information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-sensors-id",
+            "name": "Get sensor details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/sensors/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific sensor"
+          },
+          {
+            "id": "prot-cloud-patch-v1-sensors-id",
+            "name": "Patch sensor settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/sensors/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"lightSettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"margin\": \"<number>\",\n    \"lowThreshold\": \"<number,null>\",\n    \"highThreshold\": \"<number,null>\"\n  },\n  \"humiditySettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"margin\": \"<number>\",\n    \"lowThreshold\": \"<number,null>\",\n    \"highThreshold\": \"<number,null>\"\n  },\n  \"temperatureSettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"margin\": \"<number>\",\n    \"lowThreshold\": \"<number,null>\",\n    \"highThreshold\": \"<number,null>\"\n  },\n  \"motionSettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"sensitivity\": \"<number>\",\n    \"sensitivityWhenArmed\": \"<number>\"\n  },\n  \"glassBreakSettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"sensitivity\": \"<number>\",\n    \"sensitivityWhenArmed\": \"<number>\"\n  },\n  \"scheduleMode\": \"<string>\",\n  \"armProfileIds\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"hasCustomSensitivityWhenArmed\": \"<boolean>\",\n  \"alarmSettings\": {\n    \"isEnabled\": \"<boolean>\"\n  }\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific sensor"
+          },
+          {
+            "id": "prot-cloud-get-v1-sensors",
+            "name": "Get all sensors",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/sensors",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all sensors"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-siren-information-management",
+        "name": "Siren information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-sirens-id",
+            "name": "Get siren details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/sirens/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific siren"
+          },
+          {
+            "id": "prot-cloud-patch-v1-sirens-id",
+            "name": "Patch siren settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/sirens/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"volume\": \"<integer>\",\n  \"ledSettings\": {\n    \"isEnabled\": \"<boolean>\"\n  }\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific siren"
+          },
+          {
+            "id": "prot-cloud-get-v1-sirens",
+            "name": "Get all sirens",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/sirens",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all sirens"
+          },
+          {
+            "id": "prot-cloud-post-v1-sirens-id-play",
+            "name": "Play siren",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/sirens/{{id}}/play",
+            "headers": [],
+            "body": "{\n  \"duration\": \"<number>\"\n}",
+            "destructive": true,
+            "description": "Activate the siren alarm for the specified duration. The siren status will be tracked and can be stopped early using the stop endpoint."
+          },
+          {
+            "id": "prot-cloud-post-v1-sirens-id-stop",
+            "name": "Stop siren",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/sirens/{{id}}/stop",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Stop an active siren."
+          },
+          {
+            "id": "prot-cloud-post-v1-sirens-id-test-sound",
+            "name": "Test siren sound",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/sirens/{{id}}/test-sound",
+            "headers": [],
+            "body": "{\n  \"volume\": \"<integer>\"\n}",
+            "destructive": true,
+            "description": "Test the siren sound for 5 seconds at the specified volume."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-fob-information-management",
+        "name": "Fob information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-fobs-id",
+            "name": "Get fob details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/fobs/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific fob"
+          },
+          {
+            "id": "prot-cloud-patch-v1-fobs-id",
+            "name": "Patch fob settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/fobs/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific fob"
+          },
+          {
+            "id": "prot-cloud-get-v1-fobs",
+            "name": "Get all fobs",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/fobs",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all fobs"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-relay-information-management",
+        "name": "Relay information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-relays-id",
+            "name": "Get relay details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/relays/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific relay"
+          },
+          {
+            "id": "prot-cloud-patch-v1-relays-id",
+            "name": "Patch relay settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/relays/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"ledSettings\": {\n    \"isEnabled\": \"<boolean>\"\n  }\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific relay"
+          },
+          {
+            "id": "prot-cloud-get-v1-relays",
+            "name": "Get all relays",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/relays",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all relays"
+          },
+          {
+            "id": "prot-cloud-post-v1-relays-id-outputs-outputid-activate",
+            "name": "Activate relay output",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/relays/{{id}}/outputs/{{outputId}}/activate",
+            "headers": [],
+            "body": "{\n  \"state\": \"<string>\",\n  \"pulseDuration\": \"<integer>\"\n}",
+            "destructive": true,
+            "description": "Control a relay output state. Use \"state\" to set a specific state (on/off), or omit to toggle. When state is \"on\", you can optionally provide \"pulseDuration\" to auto-turn off after the specified mi…"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-speaker-information-management",
+        "name": "Speaker information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-speakers-id",
+            "name": "Get speaker details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/speakers/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific speaker"
+          },
+          {
+            "id": "prot-cloud-patch-v1-speakers-id",
+            "name": "Patch speaker settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/speakers/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"volume\": \"<integer>\",\n  \"micVolume\": \"<integer>\",\n  \"isMicEnabled\": \"<boolean>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific speaker"
+          },
+          {
+            "id": "prot-cloud-get-v1-speakers",
+            "name": "Get all speakers",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/speakers",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all speakers"
+          },
+          {
+            "id": "prot-cloud-post-v1-speakers-id-test-sound",
+            "name": "Test speaker sound",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/speakers/{{id}}/test-sound",
+            "headers": [],
+            "body": "{\n  \"volume\": \"<integer>\"\n}",
+            "destructive": true,
+            "description": "Test the speaker sound at the specified volume."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-bridge-information-management",
+        "name": "Bridge information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-bridges-id",
+            "name": "Get bridge details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/bridges/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific bridge"
+          },
+          {
+            "id": "prot-cloud-patch-v1-bridges-id",
+            "name": "Patch bridge settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/bridges/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific bridge"
+          },
+          {
+            "id": "prot-cloud-get-v1-bridges",
+            "name": "Get all bridges",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/bridges",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all bridges"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-link-station-information-management",
+        "name": "Link station information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-link-stations-id",
+            "name": "Get link station details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/link-stations/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific link station (non-alarm hub gateways)"
+          },
+          {
+            "id": "prot-cloud-patch-v1-link-stations-id",
+            "name": "Patch link station settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/link-stations/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific link station"
+          },
+          {
+            "id": "prot-cloud-get-v1-link-stations",
+            "name": "Get all link stations",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/link-stations",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all link stations (non-alarm hub gateways)"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-alarm-hub-information-management",
+        "name": "Alarm hub information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-alarm-hubs-id",
+            "name": "Get alarm hub details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/alarm-hubs/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific alarm hub"
+          },
+          {
+            "id": "prot-cloud-patch-v1-alarm-hubs-id",
+            "name": "Patch alarm hub settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/alarm-hubs/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific alarm hub"
+          },
+          {
+            "id": "prot-cloud-get-v1-alarm-hubs",
+            "name": "Get all alarm hubs",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/alarm-hubs",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all alarm hubs"
+          },
+          {
+            "id": "prot-cloud-post-v1-alarm-hubs-id-outputs-outputid-trigger",
+            "name": "Trigger alarm hub output",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/alarm-hubs/{{id}}/outputs/{{outputId}}/trigger",
+            "headers": [],
+            "body": "{\n  \"enable\": \"<boolean>\",\n  \"delay\": \"<integer>\",\n  \"duration\": \"<integer>\"\n}",
+            "destructive": true,
+            "description": "Trigger an alarm hub output channel. Can be used to turn on/off connected devices like sirens, lights, or other actuators."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-nvr-information-management",
+        "name": "NVR information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-nvrs",
+            "name": "Get NVR details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/nvrs",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about the NVR"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-device-asset-file-management",
+        "name": "Device asset file management",
+        "requests": [
+          {
+            "id": "prot-cloud-post-v1-files-filetype",
+            "name": "Upload device asset file",
+            "method": "POST",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/files/{{fileType}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Upload a new device asset file"
+          },
+          {
+            "id": "prot-cloud-get-v1-files-filetype",
+            "name": "Get device asset files",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/files/{{fileType}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of all device asset files"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-chime-information-management",
+        "name": "Chime information & management",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-chimes-id",
+            "name": "Get chime details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/chimes/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific chime"
+          },
+          {
+            "id": "prot-cloud-patch-v1-chimes-id",
+            "name": "Patch chime settings",
+            "method": "PATCH",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/chimes/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"cameraIds\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"ringSettings\": [\n    {\n      \"cameraId\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"repeatTimes\": \"<number>\",\n      \"ringtoneId\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"volume\": \"<number>\"\n    },\n    {\n      \"cameraId\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"repeatTimes\": \"<number>\",\n      \"ringtoneId\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"volume\": \"<number>\"\n    }\n  ]\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific chime"
+          },
+          {
+            "id": "prot-cloud-get-v1-chimes",
+            "name": "Get all chimes",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/chimes",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all chimes"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-protect-user-information",
+        "name": "Protect User information",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-users-id",
+            "name": "Get user details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/users/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific Protect user."
+          },
+          {
+            "id": "prot-cloud-get-v1-users",
+            "name": "Get all users",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/users",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get all Protect users. Users are filtered based on access permissions."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-cloud-unifi-identity-user-information",
+        "name": "UniFi Identity User information",
+        "requests": [
+          {
+            "id": "prot-cloud-get-v1-ulp-users-id",
+            "name": "Get identity user details",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/ulp-users/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific UniFi Identity user."
+          },
+          {
+            "id": "prot-cloud-get-v1-ulp-users",
+            "name": "Get all identity users",
+            "method": "GET",
+            "path": "/v1/connector/consoles/{{consoleId}}/proxy/protect/integration/v1/ulp-users",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get all UniFi Identity users with enrolled credentials (NFC cards, fingerprints)."
+          }
+        ],
+        "folders": []
+      }
+    ]
+  },
+  "local": {
+    "id": "prot-local-root",
+    "name": "UniFi Protect",
+    "requests": [],
+    "folders": [
+      {
+        "id": "prot-local-information-about-application",
+        "name": "Information about application",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-meta-info",
+            "name": "Get application information",
+            "method": "GET",
+            "path": "meta/info",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get generic information about the Protect application"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-viewer-information-management",
+        "name": "Viewer information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-viewers-id",
+            "name": "Get viewer details",
+            "method": "GET",
+            "path": "viewers/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific viewer"
+          },
+          {
+            "id": "prot-local-patch-v1-viewers-id",
+            "name": "Patch viewer settings",
+            "method": "PATCH",
+            "path": "viewers/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"liveview\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific viewer"
+          },
+          {
+            "id": "prot-local-get-v1-viewers",
+            "name": "Get all viewers",
+            "method": "GET",
+            "path": "viewers",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all viewers"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-live-view-management",
+        "name": "Live view management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-liveviews-id",
+            "name": "Get live view details",
+            "method": "GET",
+            "path": "liveviews/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific live view"
+          },
+          {
+            "id": "prot-local-patch-v1-liveviews-id",
+            "name": "Patch live view configuration",
+            "method": "PATCH",
+            "path": "liveviews/{{id}}",
+            "headers": [],
+            "body": "{\n  \"id\": \"<string>\",\n  \"modelKey\": \"<string>\",\n  \"name\": \"<string>\",\n  \"isDefault\": \"<boolean>\",\n  \"isGlobal\": \"<boolean>\",\n  \"owner\": \"<string>\",\n  \"layout\": \"<number>\",\n  \"slots\": [\n    {\n      \"cameras\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ],\n      \"cycleMode\": \"<string>\",\n      \"cycleInterval\": \"<number>\"\n    },\n    {\n      \"cameras\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ],\n      \"cycleMode\": \"<string>\",\n      \"cycleInterval\": \"<number>\"\n    }\n  ]\n}",
+            "destructive": true,
+            "description": "Patch the configuration about a specific live view"
+          },
+          {
+            "id": "prot-local-get-v1-liveviews",
+            "name": "Get all live views",
+            "method": "GET",
+            "path": "liveviews",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all live views"
+          },
+          {
+            "id": "prot-local-post-v1-liveviews",
+            "name": "Create live view",
+            "method": "POST",
+            "path": "liveviews",
+            "headers": [],
+            "body": "{\n  \"id\": \"<string>\",\n  \"modelKey\": \"<string>\",\n  \"name\": \"<string>\",\n  \"isDefault\": \"<boolean>\",\n  \"isGlobal\": \"<boolean>\",\n  \"owner\": \"<string>\",\n  \"layout\": \"<number>\",\n  \"slots\": [\n    {\n      \"cameras\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ],\n      \"cycleMode\": \"<string>\",\n      \"cycleInterval\": \"<number>\"\n    },\n    {\n      \"cameras\": [\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      ],\n      \"cycleMode\": \"<string>\",\n      \"cycleInterval\": \"<number>\"\n    }\n  ]\n}",
+            "destructive": true,
+            "description": "Create a new live view"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-websocket-updates",
+        "name": "WebSocket updates",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-subscribe-devices",
+            "name": "Get update messages about devices",
+            "method": "GET",
+            "path": "subscribe/devices",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "A WebSocket subscription which broadcasts all changes happening to Protect-managed hardware devices"
+          },
+          {
+            "id": "prot-local-get-v1-subscribe-events",
+            "name": "Get Protect event messages",
+            "method": "GET",
+            "path": "subscribe/events",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "A WebSocket subscription that broadcasts Protect events"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-camera-ptz-control-management",
+        "name": "Camera PTZ control & management",
+        "requests": [
+          {
+            "id": "prot-local-post-v1-cameras-id-ptz-patrol-start-slot",
+            "name": "Start a camera PTZ patrol",
+            "method": "POST",
+            "path": "cameras/{{id}}/ptz/patrol/start/{{slot}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Start a camera PTZ patrol"
+          },
+          {
+            "id": "prot-local-post-v1-cameras-id-ptz-patrol-stop",
+            "name": "Stop active camera PTZ patrol",
+            "method": "POST",
+            "path": "cameras/{{id}}/ptz/patrol/stop",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Stop active camera PTZ patrol"
+          },
+          {
+            "id": "prot-local-post-v1-cameras-id-ptz-goto-slot",
+            "name": "Move PTZ camera to preset",
+            "method": "POST",
+            "path": "cameras/{{id}}/ptz/goto/{{slot}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Adjust the PTZ camera position to a specified preset"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-alarm-manager-integration",
+        "name": "Alarm manager integration",
+        "requests": [
+          {
+            "id": "prot-local-post-v1-alarm-manager-webhook-id",
+            "name": "Send a webhook to the alarm manager",
+            "method": "POST",
+            "path": "alarm-manager/webhook/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Send a webhook to the alarm manager to trigger configured alarms"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-arm-profile-management",
+        "name": "Arm profile management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-arm-profiles",
+            "name": "Get all arm profiles",
+            "method": "GET",
+            "path": "arm-profiles",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of all arm profiles. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-local-post-v1-arm-profiles",
+            "name": "Create arm profile",
+            "method": "POST",
+            "path": "arm-profiles",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"automations\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"schedules\": [\n    {\n      \"start\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"end\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      }\n    },\n    {\n      \"start\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"end\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      }\n    }\n  ],\n  \"recordEverything\": \"<boolean>\",\n  \"activationDelay\": \"<number>\"\n}",
+            "destructive": true,
+            "description": "Create a new arm profile. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-local-patch-v1-arm-profiles-settings",
+            "name": "Set current arm profile",
+            "method": "PATCH",
+            "path": "arm-profiles/settings",
+            "headers": [],
+            "body": "{\n  \"armProfileId\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Set the current arm profile to be used when enabling the arm alarm. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-local-patch-v1-arm-profiles-id",
+            "name": "Update arm profile",
+            "method": "PATCH",
+            "path": "arm-profiles/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"automations\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"schedules\": [\n    {\n      \"start\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"end\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      }\n    },\n    {\n      \"start\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"end\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      }\n    }\n  ],\n  \"recordEverything\": \"<boolean>\",\n  \"activationDelay\": \"<number>\"\n}",
+            "destructive": true,
+            "description": "Update an existing arm profile. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-local-delete-v1-arm-profiles-id",
+            "name": "Delete arm profile",
+            "method": "DELETE",
+            "path": "arm-profiles/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an arm profile by ID. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-local-post-v1-arm-profiles-enable",
+            "name": "Enable arm alarm",
+            "method": "POST",
+            "path": "arm-profiles/enable",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Enable the arm alarm feature using the currently selected arm profile. Only available when using local alarm manager."
+          },
+          {
+            "id": "prot-local-post-v1-arm-profiles-disable",
+            "name": "Disable arm alarm",
+            "method": "POST",
+            "path": "arm-profiles/disable",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Disable the arm alarm feature. Only available when using local alarm manager."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-light-information-management",
+        "name": "Light information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-lights-id",
+            "name": "Get light details",
+            "method": "GET",
+            "path": "lights/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific light"
+          },
+          {
+            "id": "prot-local-patch-v1-lights-id",
+            "name": "Patch light settings",
+            "method": "PATCH",
+            "path": "lights/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"isLightForceEnabled\": \"<boolean>\",\n  \"lightModeSettings\": {\n    \"mode\": \"<string>\",\n    \"enableAt\": \"<string>\"\n  },\n  \"lightDeviceSettings\": {\n    \"isIndicatorEnabled\": \"<boolean>\",\n    \"pirDuration\": \"<number>\",\n    \"pirSensitivity\": \"<number>\",\n    \"ledLevel\": \"<number>\"\n  }\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific light"
+          },
+          {
+            "id": "prot-local-get-v1-lights",
+            "name": "Get all lights",
+            "method": "GET",
+            "path": "lights",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all lights"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-camera-information-management",
+        "name": "Camera information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-cameras-id",
+            "name": "Get camera details",
+            "method": "GET",
+            "path": "cameras/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific camera"
+          },
+          {
+            "id": "prot-local-patch-v1-cameras-id",
+            "name": "Patch camera settings",
+            "method": "PATCH",
+            "path": "cameras/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"osdSettings\": {\n    \"isNameEnabled\": \"<boolean>\",\n    \"isDateEnabled\": \"<boolean>\",\n    \"isLogoEnabled\": \"<boolean>\",\n    \"isDebugEnabled\": \"<boolean>\",\n    \"overlayLocation\": \"<string>\"\n  },\n  \"ledSettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"welcomeLed\": \"<boolean>\",\n    \"floodLed\": \"<boolean>\"\n  },\n  \"lcdMessage\": {\n    \"type\": \"<string>\",\n    \"resetAt\": \"<number,null>\"\n  },\n  \"micVolume\": \"<number>\",\n  \"videoMode\": \"<string>\",\n  \"hdrType\": \"<string>\",\n  \"smartDetectSettings\": {\n    \"objectTypes\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"audioTypes\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific camera"
+          },
+          {
+            "id": "prot-local-get-v1-cameras",
+            "name": "Get all cameras",
+            "method": "GET",
+            "path": "cameras",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all cameras"
+          },
+          {
+            "id": "prot-local-post-v1-cameras-id-rtsps-stream",
+            "name": "Create RTSPS streams for camera",
+            "method": "POST",
+            "path": "cameras/{{id}}/rtsps-stream",
+            "headers": [],
+            "body": "{\n  \"qualities\": [\n    \"<string>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Returns RTSPS stream URLs for specified quality levels"
+          },
+          {
+            "id": "prot-local-delete-v1-cameras-id-rtsps-stream",
+            "name": "Delete camera RTSPS stream",
+            "method": "DELETE",
+            "path": "cameras/{{id}}/rtsps-stream",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Remove the RTSPS stream for a specified camera"
+          },
+          {
+            "id": "prot-local-get-v1-cameras-id-rtsps-stream",
+            "name": "Get RTSPS streams for camera",
+            "method": "GET",
+            "path": "cameras/{{id}}/rtsps-stream",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Returns existing RTSPS stream URLs for camera"
+          },
+          {
+            "id": "prot-local-get-v1-cameras-id-snapshot",
+            "name": "Get camera snapshot",
+            "method": "GET",
+            "path": "cameras/{{id}}/snapshot",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a snapshot image from a specific camera. Use channel=package for cameras with a package camera (hasPackageCamera: true)."
+          },
+          {
+            "id": "prot-local-post-v1-cameras-id-disable-mic-permanently",
+            "name": "Permanently disable camera microphone",
+            "method": "POST",
+            "path": "cameras/{{id}}/disable-mic-permanently",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Disable the microphone for a specific camera. This action cannot be undone unless the camera is reset."
+          },
+          {
+            "id": "prot-local-post-v1-cameras-id-talkback-session",
+            "name": "Create talkback session for camera",
+            "method": "POST",
+            "path": "cameras/{{id}}/talkback-session",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Returns the talkback stream URL and audio configuration for a specific camera"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-sensor-information-management",
+        "name": "Sensor information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-sensors-id",
+            "name": "Get sensor details",
+            "method": "GET",
+            "path": "sensors/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific sensor"
+          },
+          {
+            "id": "prot-local-patch-v1-sensors-id",
+            "name": "Patch sensor settings",
+            "method": "PATCH",
+            "path": "sensors/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"lightSettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"margin\": \"<number>\",\n    \"lowThreshold\": \"<number,null>\",\n    \"highThreshold\": \"<number,null>\"\n  },\n  \"humiditySettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"margin\": \"<number>\",\n    \"lowThreshold\": \"<number,null>\",\n    \"highThreshold\": \"<number,null>\"\n  },\n  \"temperatureSettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"margin\": \"<number>\",\n    \"lowThreshold\": \"<number,null>\",\n    \"highThreshold\": \"<number,null>\"\n  },\n  \"motionSettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"sensitivity\": \"<number>\",\n    \"sensitivityWhenArmed\": \"<number>\"\n  },\n  \"glassBreakSettings\": {\n    \"isEnabled\": \"<boolean>\",\n    \"sensitivity\": \"<number>\",\n    \"sensitivityWhenArmed\": \"<number>\"\n  },\n  \"scheduleMode\": \"<string>\",\n  \"armProfileIds\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"hasCustomSensitivityWhenArmed\": \"<boolean>\",\n  \"alarmSettings\": {\n    \"isEnabled\": \"<boolean>\"\n  }\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific sensor"
+          },
+          {
+            "id": "prot-local-get-v1-sensors",
+            "name": "Get all sensors",
+            "method": "GET",
+            "path": "sensors",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all sensors"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-siren-information-management",
+        "name": "Siren information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-sirens-id",
+            "name": "Get siren details",
+            "method": "GET",
+            "path": "sirens/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific siren"
+          },
+          {
+            "id": "prot-local-patch-v1-sirens-id",
+            "name": "Patch siren settings",
+            "method": "PATCH",
+            "path": "sirens/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"volume\": \"<integer>\",\n  \"ledSettings\": {\n    \"isEnabled\": \"<boolean>\"\n  }\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific siren"
+          },
+          {
+            "id": "prot-local-get-v1-sirens",
+            "name": "Get all sirens",
+            "method": "GET",
+            "path": "sirens",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all sirens"
+          },
+          {
+            "id": "prot-local-post-v1-sirens-id-play",
+            "name": "Play siren",
+            "method": "POST",
+            "path": "sirens/{{id}}/play",
+            "headers": [],
+            "body": "{\n  \"duration\": \"<number>\"\n}",
+            "destructive": true,
+            "description": "Activate the siren alarm for the specified duration. The siren status will be tracked and can be stopped early using the stop endpoint."
+          },
+          {
+            "id": "prot-local-post-v1-sirens-id-stop",
+            "name": "Stop siren",
+            "method": "POST",
+            "path": "sirens/{{id}}/stop",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Stop an active siren."
+          },
+          {
+            "id": "prot-local-post-v1-sirens-id-test-sound",
+            "name": "Test siren sound",
+            "method": "POST",
+            "path": "sirens/{{id}}/test-sound",
+            "headers": [],
+            "body": "{\n  \"volume\": \"<integer>\"\n}",
+            "destructive": true,
+            "description": "Test the siren sound for 5 seconds at the specified volume."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-fob-information-management",
+        "name": "Fob information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-fobs-id",
+            "name": "Get fob details",
+            "method": "GET",
+            "path": "fobs/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific fob"
+          },
+          {
+            "id": "prot-local-patch-v1-fobs-id",
+            "name": "Patch fob settings",
+            "method": "PATCH",
+            "path": "fobs/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific fob"
+          },
+          {
+            "id": "prot-local-get-v1-fobs",
+            "name": "Get all fobs",
+            "method": "GET",
+            "path": "fobs",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all fobs"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-relay-information-management",
+        "name": "Relay information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-relays-id",
+            "name": "Get relay details",
+            "method": "GET",
+            "path": "relays/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific relay"
+          },
+          {
+            "id": "prot-local-patch-v1-relays-id",
+            "name": "Patch relay settings",
+            "method": "PATCH",
+            "path": "relays/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"ledSettings\": {\n    \"isEnabled\": \"<boolean>\"\n  }\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific relay"
+          },
+          {
+            "id": "prot-local-get-v1-relays",
+            "name": "Get all relays",
+            "method": "GET",
+            "path": "relays",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all relays"
+          },
+          {
+            "id": "prot-local-post-v1-relays-id-outputs-outputid-activate",
+            "name": "Activate relay output",
+            "method": "POST",
+            "path": "relays/{{id}}/outputs/{{outputId}}/activate",
+            "headers": [],
+            "body": "{\n  \"state\": \"<string>\",\n  \"pulseDuration\": \"<integer>\"\n}",
+            "destructive": true,
+            "description": "Control a relay output state. Use \"state\" to set a specific state (on/off), or omit to toggle. When state is \"on\", you can optionally provide \"pulseDuration\" to auto-turn off after the specified mi…"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-speaker-information-management",
+        "name": "Speaker information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-speakers-id",
+            "name": "Get speaker details",
+            "method": "GET",
+            "path": "speakers/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific speaker"
+          },
+          {
+            "id": "prot-local-patch-v1-speakers-id",
+            "name": "Patch speaker settings",
+            "method": "PATCH",
+            "path": "speakers/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"volume\": \"<integer>\",\n  \"micVolume\": \"<integer>\",\n  \"isMicEnabled\": \"<boolean>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific speaker"
+          },
+          {
+            "id": "prot-local-get-v1-speakers",
+            "name": "Get all speakers",
+            "method": "GET",
+            "path": "speakers",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all speakers"
+          },
+          {
+            "id": "prot-local-post-v1-speakers-id-test-sound",
+            "name": "Test speaker sound",
+            "method": "POST",
+            "path": "speakers/{{id}}/test-sound",
+            "headers": [],
+            "body": "{\n  \"volume\": \"<integer>\"\n}",
+            "destructive": true,
+            "description": "Test the speaker sound at the specified volume."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-bridge-information-management",
+        "name": "Bridge information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-bridges-id",
+            "name": "Get bridge details",
+            "method": "GET",
+            "path": "bridges/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific bridge"
+          },
+          {
+            "id": "prot-local-patch-v1-bridges-id",
+            "name": "Patch bridge settings",
+            "method": "PATCH",
+            "path": "bridges/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific bridge"
+          },
+          {
+            "id": "prot-local-get-v1-bridges",
+            "name": "Get all bridges",
+            "method": "GET",
+            "path": "bridges",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all bridges"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-link-station-information-management",
+        "name": "Link station information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-link-stations-id",
+            "name": "Get link station details",
+            "method": "GET",
+            "path": "link-stations/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific link station (non-alarm hub gateways)"
+          },
+          {
+            "id": "prot-local-patch-v1-link-stations-id",
+            "name": "Patch link station settings",
+            "method": "PATCH",
+            "path": "link-stations/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific link station"
+          },
+          {
+            "id": "prot-local-get-v1-link-stations",
+            "name": "Get all link stations",
+            "method": "GET",
+            "path": "link-stations",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all link stations (non-alarm hub gateways)"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-alarm-hub-information-management",
+        "name": "Alarm hub information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-alarm-hubs-id",
+            "name": "Get alarm hub details",
+            "method": "GET",
+            "path": "alarm-hubs/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific alarm hub"
+          },
+          {
+            "id": "prot-local-patch-v1-alarm-hubs-id",
+            "name": "Patch alarm hub settings",
+            "method": "PATCH",
+            "path": "alarm-hubs/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific alarm hub"
+          },
+          {
+            "id": "prot-local-get-v1-alarm-hubs",
+            "name": "Get all alarm hubs",
+            "method": "GET",
+            "path": "alarm-hubs",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all alarm hubs"
+          },
+          {
+            "id": "prot-local-post-v1-alarm-hubs-id-outputs-outputid-trigger",
+            "name": "Trigger alarm hub output",
+            "method": "POST",
+            "path": "alarm-hubs/{{id}}/outputs/{{outputId}}/trigger",
+            "headers": [],
+            "body": "{\n  \"enable\": \"<boolean>\",\n  \"delay\": \"<integer>\",\n  \"duration\": \"<integer>\"\n}",
+            "destructive": true,
+            "description": "Trigger an alarm hub output channel. Can be used to turn on/off connected devices like sirens, lights, or other actuators."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-nvr-information-management",
+        "name": "NVR information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-nvrs",
+            "name": "Get NVR details",
+            "method": "GET",
+            "path": "nvrs",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about the NVR"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-device-asset-file-management",
+        "name": "Device asset file management",
+        "requests": [
+          {
+            "id": "prot-local-post-v1-files-filetype",
+            "name": "Upload device asset file",
+            "method": "POST",
+            "path": "files/{{fileType}}",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Upload a new device asset file"
+          },
+          {
+            "id": "prot-local-get-v1-files-filetype",
+            "name": "Get device asset files",
+            "method": "GET",
+            "path": "files/{{fileType}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of all device asset files"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-chime-information-management",
+        "name": "Chime information & management",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-chimes-id",
+            "name": "Get chime details",
+            "method": "GET",
+            "path": "chimes/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific chime"
+          },
+          {
+            "id": "prot-local-patch-v1-chimes-id",
+            "name": "Patch chime settings",
+            "method": "PATCH",
+            "path": "chimes/{{id}}",
+            "headers": [],
+            "body": "{\n  \"name\": \"<string>\",\n  \"cameraIds\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"ringSettings\": [\n    {\n      \"cameraId\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"repeatTimes\": \"<number>\",\n      \"ringtoneId\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"volume\": \"<number>\"\n    },\n    {\n      \"cameraId\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"repeatTimes\": \"<number>\",\n      \"ringtoneId\": {\n        \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n      },\n      \"volume\": \"<number>\"\n    }\n  ]\n}",
+            "destructive": true,
+            "description": "Patch the settings for a specific chime"
+          },
+          {
+            "id": "prot-local-get-v1-chimes",
+            "name": "Get all chimes",
+            "method": "GET",
+            "path": "chimes",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about all chimes"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-protect-user-information",
+        "name": "Protect User information",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-users-id",
+            "name": "Get user details",
+            "method": "GET",
+            "path": "users/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific Protect user."
+          },
+          {
+            "id": "prot-local-get-v1-users",
+            "name": "Get all users",
+            "method": "GET",
+            "path": "users",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get all Protect users. Users are filtered based on access permissions."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "prot-local-unifi-identity-user-information",
+        "name": "UniFi Identity User information",
+        "requests": [
+          {
+            "id": "prot-local-get-v1-ulp-users-id",
+            "name": "Get identity user details",
+            "method": "GET",
+            "path": "ulp-users/{{id}}",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get detailed information about a specific UniFi Identity user."
+          },
+          {
+            "id": "prot-local-get-v1-ulp-users",
+            "name": "Get all identity users",
+            "method": "GET",
+            "path": "ulp-users",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Get all UniFi Identity users with enrolled credentials (NFC cards, fingerprints)."
+          }
+        ],
+        "folders": []
+      }
+    ]
+  }
+}

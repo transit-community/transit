@@ -1,0 +1,601 @@
+{
+  "id": "sdwan",
+  "name": "Cisco Catalyst SD-WAN (vManage)",
+  "vendor": "sdwan",
+  "bundled": true,
+  "variables": [],
+  "root": {
+    "id": "sdwan-25",
+    "name": "Cisco Catalyst SD-WAN",
+    "requests": [],
+    "folders": [
+      {
+        "id": "sdwan-26",
+        "name": "Log in first",
+        "requests": [
+          {
+            "id": "sdwan-1",
+            "name": "Log in (security check)",
+            "method": "POST",
+            "path": "/j_security_check",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": "j_username={{username}}&j_password={{password}}",
+            "destructive": true,
+            "description": "Authenticate to vManage. Posts j_username / j_password as a form; on success vManage returns a JSESSIONID session cookie. Capture that cookie value into the {{jsessionid}} variable, then fetch the client token below before running any other request.",
+            "capture": [
+              {
+                "from": "cookie",
+                "key": "JSESSIONID",
+                "into": "jsessionid"
+              }
+            ]
+          },
+          {
+            "id": "sdwan-2",
+            "name": "Client token (XSRF)",
+            "method": "GET",
+            "path": "/dataservice/client/token",
+            "headers": [],
+            "body": null,
+            "destructive": false,
+            "description": "Fetch the per-session cross-site request token (returned as X-XSRF-TOKEN). Run it once after logging in, within the same JSESSIONID session; investigation GETs below reuse that session cookie."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "sdwan-27",
+        "name": "Devices",
+        "requests": [
+          {
+            "id": "sdwan-3",
+            "name": "Fabric devices",
+            "method": "GET",
+            "path": "/dataservice/device",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "List every device in the SD-WAN fabric (vManage, vBond, vSmart, and WAN edges) with reachability, system IP, site ID, hostname, and model."
+          },
+          {
+            "id": "sdwan-4",
+            "name": "Device status",
+            "method": "GET",
+            "path": "/dataservice/device/monitor",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Monitoring summary for all fabric devices: reachability, health, CPU / memory load, and uptime."
+          },
+          {
+            "id": "sdwan-5",
+            "name": "System status",
+            "method": "GET",
+            "path": "/dataservice/device/system/status",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Per-device system status \u2014 CPU and memory utilisation, uptime, disk usage, and process load. Query per device with ?deviceId=<system-ip>."
+          },
+          {
+            "id": "sdwan-6",
+            "name": "Device counters",
+            "method": "GET",
+            "path": "/dataservice/device/counters",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Aggregate device counters \u2014 OMP, control, and BFD up / down counts plus reboot and crash totals per device."
+          },
+          {
+            "id": "sdwan-7",
+            "name": "Reboot history",
+            "method": "GET",
+            "path": "/dataservice/device/reboothistory",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Reboot history for a device \u2014 timestamp and reason for each restart. Query per device with ?deviceId=<system-ip>."
+          },
+          {
+            "id": "sdwan-33",
+            "name": "Reboot device",
+            "method": "POST",
+            "path": "/dataservice/device/action/reboot",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrftoken}}"
+              }
+            ],
+            "body": "{\n  \"action\": \"reboot\",\n  \"deviceType\": \"vedge\",\n  \"devices\": [\n    {\n      \"deviceId\": \"{{deviceId}}\",\n      \"deviceIP\": \"{{systemIp}}\"\n    }\n  ]\n}",
+            "destructive": true,
+            "description": "Trigger a reboot of one or more fabric devices. Set deviceId / deviceIP to the target's UUID and system IP. WRITE \u2014 requires confirmation before send."
+          },
+          {
+            "id": "sdwan-34",
+            "name": "Install software (upgrade)",
+            "method": "POST",
+            "path": "/dataservice/device/action/install",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrftoken}}"
+              }
+            ],
+            "body": "{\n  \"action\": \"install\",\n  \"input\": {\n    \"vEdgeVPN\": 0,\n    \"vSmartVPN\": 0,\n    \"family\": \"vedge-x86\",\n    \"version\": \"{{softwareVersion}}\",\n    \"versionType\": \"vmanage\",\n    \"reboot\": true,\n    \"sync\": true\n  },\n  \"devices\": [\n    {\n      \"deviceId\": \"{{deviceId}}\",\n      \"deviceIP\": \"{{systemIp}}\"\n    }\n  ],\n  \"deviceType\": \"vedge\"\n}",
+            "destructive": true,
+            "description": "Push and install a software image onto a device, then reboot into it. Set the version and target device; family matches the platform (e.g. vedge-x86). WRITE \u2014 requires confirmation before send."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "sdwan-28",
+        "name": "Interfaces",
+        "requests": [
+          {
+            "id": "sdwan-8",
+            "name": "Interfaces",
+            "method": "GET",
+            "path": "/dataservice/device/interface",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Real-time interface table for a device \u2014 admin / oper state, IP addressing, speed, duplex, and VPN. Query per device with ?deviceId=<system-ip>."
+          },
+          {
+            "id": "sdwan-9",
+            "name": "Interface statistics",
+            "method": "GET",
+            "path": "/dataservice/statistics/interface",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Historical interface statistics \u2014 rx / tx octets, packets, errors, and drops over time from the vManage statistics database."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "sdwan-29",
+        "name": "Control & BFD",
+        "requests": [
+          {
+            "id": "sdwan-10",
+            "name": "Control connections",
+            "method": "GET",
+            "path": "/dataservice/device/control/connections",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Control-plane connections (DTLS / TLS) a device holds to vSmart / vBond / vManage \u2014 peer type, system IP, state, and uptime. Query per device with ?deviceId=<system-ip>."
+          },
+          {
+            "id": "sdwan-11",
+            "name": "Control connections history",
+            "method": "GET",
+            "path": "/dataservice/device/control/connectionshistory",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "History of control-connection attempts and failures \u2014 local / remote error codes for diagnosing flapping or failed control sessions."
+          },
+          {
+            "id": "sdwan-12",
+            "name": "Control local properties",
+            "method": "GET",
+            "path": "/dataservice/device/control/localproperties",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "A device's local control-plane properties \u2014 system IP, site ID, org name, certificate status, and configured connection preferences."
+          },
+          {
+            "id": "sdwan-13",
+            "name": "BFD sessions",
+            "method": "GET",
+            "path": "/dataservice/device/bfd/sessions",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "BFD sessions (data-plane tunnels) for a device \u2014 remote system IP, colour pair, state, and uptime. Query per device with ?deviceId=<system-ip>."
+          },
+          {
+            "id": "sdwan-14",
+            "name": "BFD summary",
+            "method": "GET",
+            "path": "/dataservice/device/bfd/summary",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Per-device BFD summary \u2014 counts of sessions up / down / flapping across all data-plane tunnels."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "sdwan-30",
+        "name": "OMP & routing",
+        "requests": [
+          {
+            "id": "sdwan-15",
+            "name": "OMP peers",
+            "method": "GET",
+            "path": "/dataservice/device/omp/peers",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "OMP peers for a device \u2014 peer system IP, type, state, and route counts exchanged with vSmart. Query per device with ?deviceId=<system-ip>."
+          },
+          {
+            "id": "sdwan-16",
+            "name": "OMP summary",
+            "method": "GET",
+            "path": "/dataservice/device/omp/summary",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "OMP protocol summary for a device \u2014 admin / oper state, peer count, and advertised / received route, TLOC, and service totals."
+          },
+          {
+            "id": "sdwan-17",
+            "name": "TLOCs",
+            "method": "GET",
+            "path": "/dataservice/device/tloc",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "TLOCs (transport locators) known to a device \u2014 system IP, colour, encapsulation, and status; the transport endpoints OMP binds routes to."
+          },
+          {
+            "id": "sdwan-18",
+            "name": "IP route table",
+            "method": "GET",
+            "path": "/dataservice/device/ip/routetable",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "The device's IP routing table \u2014 prefixes, next-hops, protocol source, and VPN. Query per device with ?deviceId=<system-ip>."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "sdwan-31",
+        "name": "Alarms",
+        "requests": [
+          {
+            "id": "sdwan-19",
+            "name": "Alarms",
+            "method": "GET",
+            "path": "/dataservice/alarms",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Active fabric alarms from vManage \u2014 severity, component, affected device, and timestamp."
+          },
+          {
+            "id": "sdwan-20",
+            "name": "Events",
+            "method": "GET",
+            "path": "/dataservice/event",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Fabric event history from vManage \u2014 routing, control, BFD, and hardware events with severity and timestamp."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "sdwan-32",
+        "name": "Templates & policy",
+        "requests": [
+          {
+            "id": "sdwan-boot1",
+            "name": "List vSmart policies",
+            "method": "GET",
+            "path": "/dataservice/template/policy/vsmart",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "All centralized (vSmart) policies \u2014 a policyId here fills {{policyId}} for activate/deactivate."
+          },
+          {
+            "id": "sdwan-21",
+            "name": "Feature templates",
+            "method": "GET",
+            "path": "/dataservice/template/feature",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "List all configured feature templates on vManage \u2014 name, device type, and the number of devices attached."
+          },
+          {
+            "id": "sdwan-22",
+            "name": "Feature template types",
+            "method": "GET",
+            "path": "/dataservice/template/feature/types",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "The catalog of feature-template types vManage supports, by device model and software version."
+          },
+          {
+            "id": "sdwan-23",
+            "name": "vEdge policy devices",
+            "method": "GET",
+            "path": "/dataservice/template/policy/vedge/devices",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Devices with a vEdge (localised / centralised) policy applied \u2014 mapping of device to attached policy."
+          },
+          {
+            "id": "sdwan-24",
+            "name": "Policy list",
+            "method": "GET",
+            "path": "/dataservice/template/policy/list",
+            "headers": [
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "All policy lists defined on vManage \u2014 prefix, site, VPN, application, and colour lists referenced by centralised policy."
+          },
+          {
+            "id": "sdwan-35",
+            "name": "Attach device template",
+            "method": "POST",
+            "path": "/dataservice/template/device/config/attachfeature",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrftoken}}"
+              }
+            ],
+            "body": "{\n  \"deviceTemplateList\": [\n    {\n      \"templateId\": \"{{templateId}}\",\n      \"device\": [\n        {\n          \"csv-status\": \"complete\",\n          \"csv-deviceId\": \"{{deviceId}}\",\n          \"csv-deviceIP\": \"{{systemIp}}\",\n          \"csv-host-name\": \"{{hostname}}\",\n          \"selected\": \"true\"\n        }\n      ],\n      \"isEdited\": false,\n      \"isMasterEdited\": false\n    }\n  ]\n}",
+            "destructive": true,
+            "description": "Attach a feature-based device template to a device and push the resulting config. Provide the templateId plus the device's UUID / system IP / hostname. WRITE \u2014 requires confirmation before send."
+          },
+          {
+            "id": "sdwan-36",
+            "name": "Detach device template (change to CLI mode)",
+            "method": "POST",
+            "path": "/dataservice/template/config/device/mode/cli",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrftoken}}"
+              }
+            ],
+            "body": "{\n  \"deviceType\": \"vedge\",\n  \"devices\": [\n    {\n      \"deviceId\": \"{{deviceId}}\",\n      \"deviceIP\": \"{{systemIp}}\"\n    }\n  ]\n}",
+            "destructive": true,
+            "description": "Detach a device from its template by moving it to CLI (device-local) mode, releasing vManage template management. WRITE \u2014 requires confirmation before send."
+          },
+          {
+            "id": "sdwan-37",
+            "name": "Push CLI template config",
+            "method": "POST",
+            "path": "/dataservice/template/device/config/attachcli",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrftoken}}"
+              }
+            ],
+            "body": "{\n  \"deviceTemplateList\": [\n    {\n      \"templateId\": \"{{templateId}}\",\n      \"device\": [\n        {\n          \"csv-status\": \"complete\",\n          \"csv-deviceId\": \"{{deviceId}}\",\n          \"csv-deviceIP\": \"{{systemIp}}\",\n          \"csv-host-name\": \"{{hostname}}\",\n          \"selected\": \"true\"\n        }\n      ],\n      \"isEdited\": false,\n      \"isMasterEdited\": false\n    }\n  ]\n}",
+            "destructive": true,
+            "description": "Attach a CLI device template and push its configuration to the target device. Provide the templateId and the device's UUID / system IP / hostname. WRITE \u2014 requires confirmation before send."
+          },
+          {
+            "id": "sdwan-38",
+            "name": "Activate centralized (vSmart) policy",
+            "method": "POST",
+            "path": "/dataservice/template/policy/vsmart/activate/{{policyId}}?confirm=true",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrftoken}}"
+              }
+            ],
+            "body": "{}",
+            "destructive": true,
+            "description": "Activate a centralized (vSmart) policy by id \u2014 pushes it to the vSmart controllers. confirm=true acknowledges the fabric-wide change. WRITE \u2014 requires confirmation before send."
+          },
+          {
+            "id": "sdwan-39",
+            "name": "Deactivate centralized (vSmart) policy",
+            "method": "POST",
+            "path": "/dataservice/template/policy/vsmart/deactivate/{{policyId}}?confirm=true",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "JSESSIONID={{jsessionid}}"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrftoken}}"
+              }
+            ],
+            "body": "{}",
+            "destructive": true,
+            "description": "Deactivate the currently active centralized (vSmart) policy by id, removing it from the vSmart controllers. WRITE \u2014 requires confirmation before send."
+          }
+        ],
+        "folders": []
+      }
+    ]
+  }
+}

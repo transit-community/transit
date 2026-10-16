@@ -1,0 +1,71 @@
+---
+source: crates/transit_policy/tests/policy_summary.rs
+assertion_line: 111
+expression: render(&s)
+---
+precedence: BlockWins
+allowed:
+  - ^show( |$)
+  - ^ping( |$)
+  - ^ping6( |$)
+  - ^traceroute( |$)
+  - ^traceroute6( |$)
+  - ^dir( |$)
+  - ^more 
+  - ^terminal length 
+  - ^terminal monitor
+  - ^terminal no monitor
+  - ^where 
+blocked:
+  - ^enable( |$)
+  - ^disable( |$)
+  - ^configure
+  - ^conf t
+  - ^write
+  - ^copy 
+  - ^delete 
+  - ^erase 
+  - ^format 
+  - ^boot 
+  - ^show tech-support\b.*\b(file\b|flash:|disk[0-9]+:|harddisk:|bootflash:|logflash:|volatile:|slot[0-9]+:|usb[0-9]+:|nvram:|tftp:|ftp:|scp:|sftp:|rcp:|https?:)
+  - ^feature 
+  - ^no feature 
+  - ^install 
+  - ^reload
+  - ^restart 
+  - ^clear 
+  - ^run bash
+  - ^run python
+  - ^python
+  - ^source 
+  - ^tclsh
+  - ^event manager run 
+  - ^scheduler 
+  - ^logout
+  - ^exit
+  - ^quit
+  - ^end
+pipe_allowed:
+  - ^include 
+  - ^exclude 
+  - ^begin 
+  - ^section 
+  - ^count$
+  - ^grep 
+  - ^egrep 
+  - ^head 
+  - ^last( |$)
+  - ^sort( |$)
+  - ^uniq( |$)
+  - ^wc( |$)
+  - ^diff$
+pipe_blocked:
+  - ^redirect 
+  - ^tee 
+  - ^append 
+  - ^vsh 
+  - ^run-script 
+  - ^sort\b.*\s-o(\s|$)
+  - ^sort\b.*--output
+  - ^sort\b.*--compress-program
+  - ^sort\b.*--files0-from

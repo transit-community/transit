@@ -1,0 +1,2240 @@
+{
+  "id": "aruba",
+  "name": "HPE Aruba Networking Central (Classic)",
+  "vendor": "aruba",
+  "bundled": true,
+  "variables": [],
+  "root": {
+    "id": "aruba-117",
+    "name": "HPE Aruba Networking Central (Classic)",
+    "requests": [],
+    "folders": [
+      {
+        "id": "aruba-107",
+        "name": "Log in first",
+        "requests": [
+          {
+            "id": "aruba-103",
+            "name": "Step 1 - Login & Obtain CSRF Token",
+            "method": "POST",
+            "path": "/oauth2/authorize/central/api/login",
+            "headers": [],
+            "body": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}",
+            "destructive": true,
+            "description": "Step 1: authenticate with your Central username/password to obtain a session cookie + CSRF token used by step 2."
+          },
+          {
+            "id": "aruba-104",
+            "name": "Step 2 - Obtain Authorization Code",
+            "method": "POST",
+            "path": "/oauth2/authorize/central/api/",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "session={{session_token}}"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrf_token}}"
+              }
+            ],
+            "body": "{\n    \"customer_id\": \"{{customer_id}}\"\n}",
+            "destructive": true,
+            "description": "Step 2: exchange the session + CSRF token for a one-time authorization code (scope=all)."
+          },
+          {
+            "id": "aruba-105",
+            "name": "Step 3 - Acquire the Access Token",
+            "method": "POST",
+            "path": "/oauth2/token",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": "{\n    \"client_id\": \"{{client_id}}\",\n    \"client_secret\": \"{{client_secret}}\",\n    \"grant_type\": \"authorization_code\",\n    \"code\": \"{{auth_code}}\"\n}",
+            "destructive": true,
+            "description": "Step 3: exchange the authorization code for the short-lived Bearer access_token. Paste that token into the {{arubaToken}} variable used by every request below.",
+            "capture": [
+              {
+                "from": "body",
+                "key": "access_token",
+                "into": "arubaToken"
+              }
+            ]
+          },
+          {
+            "id": "aruba-106",
+            "name": "Refresh Access Token",
+            "method": "POST",
+            "path": "/oauth2/token",
+            "headers": [],
+            "body": null,
+            "destructive": true,
+            "description": "Exchange a refresh_token for a fresh short-lived access token when {{arubaToken}} expires. Re-paste the new token into {{arubaToken}}.",
+            "capture": [
+              {
+                "from": "body",
+                "key": "access_token",
+                "into": "arubaToken"
+              }
+            ]
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-108",
+        "name": "Sites, networks & WLANs",
+        "requests": [
+          {
+            "id": "aruba-22",
+            "name": "List all networks",
+            "method": "GET",
+            "path": "/monitoring/v2/networks",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of networks. You can only specify one of group, swarm_id, label, site parameters."
+          },
+          {
+            "id": "aruba-23",
+            "name": "Network details",
+            "method": "GET",
+            "path": "/monitoring/v2/networks/{{network_name}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get Network details"
+          },
+          {
+            "id": "aruba-24",
+            "name": "WLAN network bandwidth usage",
+            "method": "GET",
+            "path": "/monitoring/v2/networks/bandwidth_usage",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get WLAN network bandwidth usage over a time period. You can only specify one of group, swarm_id, label, site parameters."
+          },
+          {
+            "id": "aruba-35",
+            "name": "Top N swarms by bandwidth usage",
+            "method": "GET",
+            "path": "/monitoring/v1/swarms/bandwidth_usage/topn",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get top N Swarm by bandwidth usage over a time period."
+          },
+          {
+            "id": "aruba-36",
+            "name": "Top N swarms by clients count",
+            "method": "GET",
+            "path": "/monitoring/v1/swarms/clients_count/topn",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get top N Swarm by clients count over a time period."
+          },
+          {
+            "id": "aruba-37",
+            "name": "List swarms",
+            "method": "GET",
+            "path": "/monitoring/v1/swarms",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get list of swarms. You can optionally specify a group to filter on groups."
+          },
+          {
+            "id": "aruba-38",
+            "name": "Swarm details",
+            "method": "GET",
+            "path": "/monitoring/v1/swarms/{{swarm_id}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get Swarm details"
+          },
+          {
+            "id": "aruba-39",
+            "name": "List labels",
+            "method": "GET",
+            "path": "/central/v1/labels",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get list of Labels and Sites."
+          },
+          {
+            "id": "aruba-40",
+            "name": "List label categories",
+            "method": "GET",
+            "path": "/central/v1/labels/categories",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get list of Label categories."
+          },
+          {
+            "id": "aruba-41",
+            "name": "List sites",
+            "method": "GET",
+            "path": "/central/v2/sites",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get list of Sites."
+          },
+          {
+            "id": "aruba-42",
+            "name": "Site details",
+            "method": "GET",
+            "path": "/central/v2/sites/{{site_id}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get Site details."
+          },
+          {
+            "id": "aruba-118",
+            "name": "Create WLAN (SSID)",
+            "method": "POST",
+            "path": "/configuration/full_wlan/{{group_name_or_guid_or_serial_number}}/{{wlan_name}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"value\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new WLAN (SSID) in the given group/device."
+          },
+          {
+            "id": "aruba-119",
+            "name": "Update WLAN (SSID)",
+            "method": "PUT",
+            "path": "/configuration/full_wlan/{{group_name_or_guid_or_serial_number}}/{{wlan_name}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"value\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Update an existing WLAN (SSID) in the given group/device."
+          },
+          {
+            "id": "aruba-120",
+            "name": "Delete WLAN (SSID)",
+            "method": "DELETE",
+            "path": "/configuration/full_wlan/{{group_name_or_guid_or_serial_number}}/{{wlan_name}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing WLAN (SSID) from the given group/device."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-109",
+        "name": "Clients",
+        "requests": [
+          {
+            "id": "aruba-25",
+            "name": "List connected wireless clients",
+            "method": "GET",
+            "path": "/monitoring/v1/clients/wireless",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of Connected wireless clients. You can only specify one of group, swarm_id, label parameters."
+          },
+          {
+            "id": "aruba-26",
+            "name": "List connected wired clients",
+            "method": "GET",
+            "path": "/monitoring/v1/clients/wired",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of Connected wired clients. You can only specify one of group, swarm_id, cluster_id, stack_id and"
+          },
+          {
+            "id": "aruba-27",
+            "name": "List unified clients (wired/wireless). option to choose connected/failed clients",
+            "method": "GET",
+            "path": "/monitoring/v2/clients",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "This is a unified form of List APIs /monitoring/v1/clients/wired and /monitoring/v1/clients/wireless and it is backward compatible with these v1 apis."
+          },
+          {
+            "id": "aruba-28",
+            "name": "Client details",
+            "method": "GET",
+            "path": "/monitoring/v2/clients/{{macaddr}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "This is a unified form of Details APIs /monitoring/v1/clients/wired/{macaddr} and /monitoring/v1/clients/wireless/{macaddr} and it is backward compatible with t"
+          },
+          {
+            "id": "aruba-29",
+            "name": "Connected wireless client details",
+            "method": "GET",
+            "path": "/monitoring/v1/clients/wireless/{{macaddr}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get connected wireless client details"
+          },
+          {
+            "id": "aruba-30",
+            "name": "Wireless client mobility trail",
+            "method": "GET",
+            "path": "/monitoring/v1/clients/wireless/{{macaddr}}/mobility_trail",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get wireless client mobility details"
+          },
+          {
+            "id": "aruba-31",
+            "name": "Connected wired client details",
+            "method": "GET",
+            "path": "/monitoring/v1/clients/wired/{{macaddr}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get connected wired client details"
+          },
+          {
+            "id": "aruba-32",
+            "name": "Client bandwidth usage",
+            "method": "GET",
+            "path": "/monitoring/v1/clients/bandwidth_usage",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get clients bandwidth usage over a time period. You can only specify one of group, swarm_id, label, cluster_id"
+          },
+          {
+            "id": "aruba-33",
+            "name": "Top N clients",
+            "method": "GET",
+            "path": "/monitoring/v1/clients/bandwidth_usage/topn",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get top N client details over a time period. You can only specify one of group, swarm_id, label, cluster_id"
+          },
+          {
+            "id": "aruba-34",
+            "name": "Total clients count",
+            "method": "GET",
+            "path": "/monitoring/v1/clients/count",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get the total clients connected"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-110",
+        "name": "Access points & RF",
+        "requests": [
+          {
+            "id": "aruba-2",
+            "name": "AP neighbor list",
+            "method": "GET",
+            "path": "/ap_nbr_graph/v1/Ap/NeighborList/{{apserialnum}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Multiple status values can be provided with comma separated strings"
+          },
+          {
+            "id": "aruba-3",
+            "name": "Radio neighbor list",
+            "method": "GET",
+            "path": "/ap_nbr_graph/v1/Radio/NeighborList/{{radiomac}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Multiple status values can be provided with comma separated strings"
+          },
+          {
+            "id": "aruba-16",
+            "name": "List access points",
+            "method": "GET",
+            "path": "/monitoring/v2/aps",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get access points. You can only specify one of group, swarm_id, label, site parameters."
+          },
+          {
+            "id": "aruba-17",
+            "name": "List BSSIDs",
+            "method": "GET",
+            "path": "/monitoring/v2/bssids",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of BSSIDs. You can only specify one of group, swarm_id, label, serial, macaddr, site parameters"
+          },
+          {
+            "id": "aruba-18",
+            "name": "AP details",
+            "method": "GET",
+            "path": "/monitoring/v1/aps/{{serial}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get AP details"
+          },
+          {
+            "id": "aruba-19",
+            "name": "AP RF summary",
+            "method": "GET",
+            "path": "/monitoring/v3/aps/{{serial}}/rf_summary",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get AP RF summary of channel utilization, noise floor in negative, errors, drops and"
+          },
+          {
+            "id": "aruba-20",
+            "name": "AP bandwidth usage",
+            "method": "GET",
+            "path": "/monitoring/v3/aps/bandwidth_usage",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get the average bandwidth usage for access points over a time period. You can only specify one of group, swarm_id, label,"
+          },
+          {
+            "id": "aruba-21",
+            "name": "Top N AP details",
+            "method": "GET",
+            "path": "/monitoring/v2/aps/bandwidth_usage/topn",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get top N AP details over a time period. You can only specify one of group, swarm_id, label, cluster_id, site parameters."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-111",
+        "name": "Switches",
+        "requests": [
+          {
+            "id": "aruba-43",
+            "name": "List switches",
+            "method": "GET",
+            "path": "/monitoring/v1/switches",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switches You can only specify one of group, label and stack_id parameters."
+          },
+          {
+            "id": "aruba-44",
+            "name": "VLAN info of the switch",
+            "method": "GET",
+            "path": "/monitoring/v1/switches/{{serial}}/vlan",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch vlan info"
+          },
+          {
+            "id": "aruba-45",
+            "name": "VLAN info for CX switch",
+            "method": "GET",
+            "path": "/monitoring/v1/cx_switches/{{serial}}/vlan",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get vlan info for CX switch"
+          },
+          {
+            "id": "aruba-46",
+            "name": "VLAN info of the switch stack",
+            "method": "GET",
+            "path": "/monitoring/v1/switch_stacks/{{stack_id}}/vlan",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch stack vlan info"
+          },
+          {
+            "id": "aruba-47",
+            "name": "VLAN info of the CX switch stack",
+            "method": "GET",
+            "path": "/monitoring/v1/cx_switch_stacks/{{stack_id}}/vlan",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch stack vlan info for CX"
+          },
+          {
+            "id": "aruba-48",
+            "name": "Switch port PoE info",
+            "method": "GET",
+            "path": "/monitoring/v1/switches/{{serial}}/poe_detail",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch port poe info"
+          },
+          {
+            "id": "aruba-49",
+            "name": "Switch port PoE info for CX switch",
+            "method": "GET",
+            "path": "/monitoring/v1/cx_switches/{{serial}}/poe_detail",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch port poe info for CX switch"
+          },
+          {
+            "id": "aruba-50",
+            "name": "Switch PoE info",
+            "method": "GET",
+            "path": "/monitoring/v1/switches/{{serial}}/poe_details",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch poe info"
+          },
+          {
+            "id": "aruba-51",
+            "name": "Switch PoE info for CX switch",
+            "method": "GET",
+            "path": "/monitoring/v1/cx_switches/{{serial}}/poe_details",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch poe info for CX switch"
+          },
+          {
+            "id": "aruba-52",
+            "name": "Switch VSX info for CX switch",
+            "method": "GET",
+            "path": "/monitoring/v1/cx_switches/{{serial}}/vsx",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch vsx info for CX switch"
+          },
+          {
+            "id": "aruba-53",
+            "name": "LLDP device neighbor info for CX switch",
+            "method": "GET",
+            "path": "/monitoring/v1/cx_switches/{{serial}}/neighbors",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get lldp device neighbor info for CX switch"
+          },
+          {
+            "id": "aruba-54",
+            "name": "LLDP device neighbor info for CX switch stack",
+            "method": "GET",
+            "path": "/monitoring/v1/cx_switch_stacks/{{stack_id}}/neighbors",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get lldp device neighbor info for CX switch stack"
+          },
+          {
+            "id": "aruba-55",
+            "name": "Switch bandwidth usage",
+            "method": "GET",
+            "path": "/monitoring/v1/switches/bandwidth_usage",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switches bandwidth usage over a time period. You can only specify one of group, label, serial and stack_id"
+          },
+          {
+            "id": "aruba-56",
+            "name": "Top N switches",
+            "method": "GET",
+            "path": "/monitoring/v1/switches/bandwidth_usage/topn",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get top N Switches details over a time period. You can only specify one of group, label and stack_id parameters."
+          },
+          {
+            "id": "aruba-57",
+            "name": "Switch details",
+            "method": "GET",
+            "path": "/monitoring/v1/switches/{{serial}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get Switch details"
+          },
+          {
+            "id": "aruba-58",
+            "name": "Switch ports details",
+            "method": "GET",
+            "path": "/monitoring/v1/switches/{{serial}}/ports",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch ports details."
+          },
+          {
+            "id": "aruba-59",
+            "name": "Ports details for CX switch",
+            "method": "GET",
+            "path": "/monitoring/v1/cx_switches/{{serial}}/ports",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get ports details for CX switch"
+          },
+          {
+            "id": "aruba-60",
+            "name": "Switch chassis details",
+            "method": "GET",
+            "path": "/monitoring/v1/switches/{{serial}}/chassis_info",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch chassis details for chassis type switches."
+          },
+          {
+            "id": "aruba-61",
+            "name": "Switch ports bandwidth usage",
+            "method": "GET",
+            "path": "/monitoring/v1/switches/{{serial}}/ports/bandwidth_usage",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch ports bandwidth usage over a time period."
+          },
+          {
+            "id": "aruba-62",
+            "name": "Ports bandwidth usage for CX switch",
+            "method": "GET",
+            "path": "/monitoring/v1/cx_switches/{{serial}}/ports/bandwidth_usage",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch ports bandwidth usage over a time period for CX switch"
+          },
+          {
+            "id": "aruba-63",
+            "name": "Switch ports errors",
+            "method": "GET",
+            "path": "/monitoring/v1/switches/{{serial}}/ports/errors",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch ports in and out errors over a time period."
+          },
+          {
+            "id": "aruba-64",
+            "name": "CX switch ports errors",
+            "method": "GET",
+            "path": "/monitoring/v1/cx_switches/{{serial}}/ports/errors",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get switch ports in and out errors over a time period for CX switch"
+          },
+          {
+            "id": "aruba-65",
+            "name": "Switch stack port details",
+            "method": "GET",
+            "path": "/monitoring/v1/switch_stacks/{{stack_id}}/ports",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get the Port details for a given stack_id"
+          },
+          {
+            "id": "aruba-66",
+            "name": "CX switch stack port details",
+            "method": "GET",
+            "path": "/monitoring/v1/cx_switch_stacks/{{stack_id}}/ports",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get the Port details for a given stack_id for CX Switch"
+          },
+          {
+            "id": "aruba-67",
+            "name": "List switch stacks",
+            "method": "GET",
+            "path": "/monitoring/v1/switch_stacks",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "List Switch Stacks"
+          },
+          {
+            "id": "aruba-68",
+            "name": "Switch stack details",
+            "method": "GET",
+            "path": "/monitoring/v1/switch_stacks/{{stack_id}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get Switch Stack details"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-112",
+        "name": "Gateways, WAN & tunnels",
+        "requests": [
+          {
+            "id": "aruba-b148",
+            "name": "List Mobility Controllers",
+            "method": "GET",
+            "path": "/monitoring/v1/mobility_controllers",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get mobility controllers."
+          },
+          {
+            "id": "aruba-70",
+            "name": "VPN details",
+            "method": "GET",
+            "path": "/monitoring/v1/vpn/info",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get VPN details"
+          },
+          {
+            "id": "aruba-71",
+            "name": "Mobility controllers ports bandwidth usage",
+            "method": "GET",
+            "path": "/monitoring/v1/mobility_controllers/{{serial}}/ports/bandwidth_usage",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get Mobility Controller ports bandwidth usage over a time period."
+          },
+          {
+            "id": "aruba-72",
+            "name": "Mobility controllers ports details",
+            "method": "GET",
+            "path": "/monitoring/v1/mobility_controllers/{{serial}}/ports",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get mobility controllers ports details."
+          },
+          {
+            "id": "aruba-73",
+            "name": "Mobility controllers VLAN details",
+            "method": "GET",
+            "path": "/monitoring/v1/mobility_controllers/{{serial}}/vlan",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get mobility controller's VLAN information."
+          },
+          {
+            "id": "aruba-74",
+            "name": "List mobility controllers",
+            "method": "GET",
+            "path": "/monitoring/v2/mobility_controllers",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get mobility controllers."
+          },
+          {
+            "id": "aruba-75",
+            "name": "Mobility controller details",
+            "method": "GET",
+            "path": "/monitoring/v2/mobility_controllers/{{serial}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get mobility controller details."
+          },
+          {
+            "id": "aruba-76",
+            "name": "Gateway list",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateways. You can only specify one of group, label parameters."
+          },
+          {
+            "id": "aruba-77",
+            "name": "Gateway details",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateway details"
+          },
+          {
+            "id": "aruba-78",
+            "name": "Gateway uplink details",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/uplinks",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateway uplink details."
+          },
+          {
+            "id": "aruba-79",
+            "name": "Gateway uplink bandwidth usage",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/uplinks/bandwidth_usage",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateway uplink bandwidth usage over a time period."
+          },
+          {
+            "id": "aruba-80",
+            "name": "Gateway uplink tunnel stats",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/tunnels/stats",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateway uplink tunnel stats over a time period for a particular gateway."
+          },
+          {
+            "id": "aruba-81",
+            "name": "Gateway uplink WAN compression stats",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/uplinks/wan_compression_stats",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get Gateway WAN compression stats over a time period."
+          },
+          {
+            "id": "aruba-82",
+            "name": "Gateway uplink distribution",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/uplinks/distribution",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateway uplinks distribution."
+          },
+          {
+            "id": "aruba-83",
+            "name": "Gateway ports bandwidth usage",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/ports/bandwidth_usage",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get Gateway ports bandwidth usage over a time period."
+          },
+          {
+            "id": "aruba-84",
+            "name": "Gateway ports details",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/ports",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateways ports details."
+          },
+          {
+            "id": "aruba-85",
+            "name": "Gateway port errors",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/ports/errors",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateway port errors over a time period."
+          },
+          {
+            "id": "aruba-86",
+            "name": "Gateway tunnels details",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/tunnels",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateway Uplink tunnel details."
+          },
+          {
+            "id": "aruba-87",
+            "name": "Gateway DHCP clients information",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/dhcp_clients",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateway DHCP Clients information."
+          },
+          {
+            "id": "aruba-88",
+            "name": "Gateway DHCP pools details",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/dhcp_pools",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateway DHCP Pools information."
+          },
+          {
+            "id": "aruba-89",
+            "name": "Gateway VLAN details",
+            "method": "GET",
+            "path": "/monitoring/v1/gateways/{{serial}}/vlan",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get gateway's VLAN information."
+          },
+          {
+            "id": "aruba-90",
+            "name": "Data for all sites",
+            "method": "GET",
+            "path": "/branchhealth/v1/site",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get data for all sites"
+          },
+          {
+            "id": "aruba-102",
+            "name": "SD-WAN DPS policy compliance report",
+            "method": "GET",
+            "path": "/sdwan-mon-api/external/noc/reports/wan/policy-compliance",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Compliance stats on all the uplinks belonging to different policies"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-113",
+        "name": "Applications & traffic (AppRF)",
+        "requests": [
+          {
+            "id": "aruba-4",
+            "name": "Top N AppRF statistics (v2 version)",
+            "method": "GET",
+            "path": "/apprf/datapoints/v2/topn_stats",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Gets Top N Applications (V2 Version)"
+          },
+          {
+            "id": "aruba-5",
+            "name": "Top N applications",
+            "method": "GET",
+            "path": "/apprf/v1/applications",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Gets Top N Applications. You can only specify one of group, swarm_id, serial, macaddr parameters or none for customer level."
+          },
+          {
+            "id": "aruba-6",
+            "name": "Top N web categories",
+            "method": "GET",
+            "path": "/apprf/v1/webcategories",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Gets Top N Web categories. You can only specify one of group, swarm_id, serial, macaddr parameters or none for customer level."
+          },
+          {
+            "id": "aruba-7",
+            "name": "Top N app categories",
+            "method": "GET",
+            "path": "/apprf/v1/appcategories",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Gets Top N App categories. You can only specify one of group, swarm_id, serial, macaddr parameters or none for customer level."
+          },
+          {
+            "id": "aruba-8",
+            "name": "Top web reputations",
+            "method": "GET",
+            "path": "/apprf/v1/webreputations",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Gets Top Web reputations. You can only specify one of group, swarm_id, serial, macaddr parameters or for customer level."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-114",
+        "name": "Rogues & WIDS (RAPIDS)",
+        "requests": [
+          {
+            "id": "aruba-94",
+            "name": "List rogue APs",
+            "method": "GET",
+            "path": "/rapids/v1/rogue_aps",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get rogue APs over a time period"
+          },
+          {
+            "id": "aruba-95",
+            "name": "List interfering APs",
+            "method": "GET",
+            "path": "/rapids/v1/interfering_aps",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get interfering APs over a time period"
+          },
+          {
+            "id": "aruba-96",
+            "name": "List suspect APs",
+            "method": "GET",
+            "path": "/rapids/v1/suspect_aps",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get suspect APs over a time period"
+          },
+          {
+            "id": "aruba-97",
+            "name": "List neighbor APs",
+            "method": "GET",
+            "path": "/rapids/v1/neighbor_aps",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get neighbor APs over a time period"
+          },
+          {
+            "id": "aruba-98",
+            "name": "List manually contained APs",
+            "method": "GET",
+            "path": "/rapids/v1/manually_contained_aps",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get manually contained APs over a time period"
+          },
+          {
+            "id": "aruba-99",
+            "name": "List infrastructure attacks",
+            "method": "GET",
+            "path": "/rapids/v1/wids/infrastructure_attacks",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get infrastructure attacks over a time period"
+          },
+          {
+            "id": "aruba-100",
+            "name": "List client attacks",
+            "method": "GET",
+            "path": "/rapids/v1/wids/client_attacks",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get client attacks over a time period"
+          },
+          {
+            "id": "aruba-101",
+            "name": "WIDS events",
+            "method": "GET",
+            "path": "/rapids/v1/wids/events",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get WIDS events over a time period"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-115",
+        "name": "Alerts & events",
+        "requests": [
+          {
+            "id": "aruba-0",
+            "name": "All audit logs",
+            "method": "GET",
+            "path": "/platform/auditlogs/v1/logs",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get audit logs, sort by time in in reverse chronological order."
+          },
+          {
+            "id": "aruba-1",
+            "name": "Details of an audit log",
+            "method": "GET",
+            "path": "/platform/auditlogs/v1/logs/{{id}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get details of an audit log"
+          },
+          {
+            "id": "aruba-69",
+            "name": "List events",
+            "method": "GET",
+            "path": "/monitoring/v2/events",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of events.Possible error_codes for the error responses are"
+          },
+          {
+            "id": "aruba-91",
+            "name": "Notifications count by severity",
+            "method": "GET",
+            "path": "/central/v1/notifications/count_by_severity",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get notifications count by severity."
+          },
+          {
+            "id": "aruba-92",
+            "name": "List notifications",
+            "method": "GET",
+            "path": "/central/v1/notifications",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get notifications. You can only specify one of group, label parameters."
+          },
+          {
+            "id": "aruba-93",
+            "name": "List types",
+            "method": "GET",
+            "path": "/central/v1/notifications/types",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get types."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-116",
+        "name": "Firmware",
+        "requests": [
+          {
+            "id": "aruba-9",
+            "name": "List firmware details of swarms",
+            "method": "GET",
+            "path": "/firmware/v1/swarms",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of swarms with their firmware details. You can optionally specify a group, to filter devices under it"
+          },
+          {
+            "id": "aruba-10",
+            "name": "Firmware details of swarm",
+            "method": "GET",
+            "path": "/firmware/v1/swarms/{{swarm_id}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get firmware details for specific swarm."
+          },
+          {
+            "id": "aruba-11",
+            "name": "List firmware details of devices",
+            "method": "GET",
+            "path": "/firmware/v1/devices",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get a list of devices with their firmware details. You can optionally specify a group, to filter the devices under a group."
+          },
+          {
+            "id": "aruba-12",
+            "name": "Firmware details of device",
+            "method": "GET",
+            "path": "/firmware/v1/devices/{{serial}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get Firmware details for a specific device, applicable only for MAS Switches, Aruba Switches, CX switches, and Controllers"
+          },
+          {
+            "id": "aruba-13",
+            "name": "List firmware version",
+            "method": "GET",
+            "path": "/firmware/v1/versions",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get list of firmware versions for device."
+          },
+          {
+            "id": "aruba-14",
+            "name": "Firmware status",
+            "method": "GET",
+            "path": "/firmware/v1/status",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get firmware upgrade status of device."
+          },
+          {
+            "id": "aruba-15",
+            "name": "List model family",
+            "method": "GET",
+            "path": "/firmware/v1/models",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "Get list of model families for specific device type."
+          },
+          {
+            "id": "aruba-144",
+            "name": "Upgrade firmware",
+            "method": "POST",
+            "path": "/firmware/v1/upgrade",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"firmware_scheduled_at\": \"<integer>\",\n  \"swarm_id\": \"<string>\",\n  \"serial\": \"<string>\",\n  \"group\": \"<string>\",\n  \"device_type\": \"<string>\",\n  \"firmware_version\": \"<string>\",\n  \"reboot\": \"<boolean>\",\n  \"model\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Schedule/trigger a firmware upgrade for a device, swarm, or group."
+          },
+          {
+            "id": "aruba-145",
+            "name": "Cancel scheduled firmware upgrade",
+            "method": "POST",
+            "path": "/firmware/v1/upgrade/cancel",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"swarm_id\": \"<string>\",\n  \"serial\": \"<string>\",\n  \"device_type\": \"<string>\",\n  \"group\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Cancel a scheduled firmware upgrade."
+          },
+          {
+            "id": "aruba-146",
+            "name": "Set firmware compliance version",
+            "method": "POST",
+            "path": "/firmware/v1/upgrade/compliance_version",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"device_type\": \"<string>\",\n  \"firmware_compliance_version\": \"<string>\",\n  \"group\": \"<string>\",\n  \"reboot\": \"<boolean>\",\n  \"allow_unsupported_version\": \"<boolean>\"\n}",
+            "destructive": true,
+            "description": "Set the firmware compliance version for a device type in a group."
+          },
+          {
+            "id": "aruba-147",
+            "name": "Clear firmware compliance version",
+            "method": "DELETE",
+            "path": "/firmware/v1/upgrade/compliance_version",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Clear the firmware compliance version for a device type in a group."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-121",
+        "name": "Groups & configuration",
+        "requests": [
+          {
+            "id": "aruba-boot1",
+            "name": "Get all groups",
+            "method": "GET",
+            "path": "/configuration/v2/groups",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "All configuration groups \u2014 a group name fills {{group}}."
+          },
+          {
+            "id": "aruba-122",
+            "name": "Create group",
+            "method": "POST",
+            "path": "/configuration/v2/groups",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"group\": \"<string>\",\n  \"group_attributes\": {\n    \"group_password\": \"<string>\",\n    \"template_info\": {\n      \"Wired\": true,\n      \"Wireless\": \"<boolean>\"\n    }\n  }\n}",
+            "destructive": true,
+            "description": "Create a new configuration group."
+          },
+          {
+            "id": "aruba-123",
+            "name": "Clone group",
+            "method": "POST",
+            "path": "/configuration/v2/groups/clone",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"clone_group\": \"<string>\",\n  \"group\": \"<string>\",\n  \"upgrade_architecture\": false\n}",
+            "destructive": true,
+            "description": "Clone an existing group into a new group."
+          },
+          {
+            "id": "aruba-124",
+            "name": "Update group properties",
+            "method": "PATCH",
+            "path": "/configuration/v2/groups/{{group}}/properties",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"group_properties\": {\n    \"AllowedDevTypes\": [\n      \"SD_WAN_Gateway\",\n      \"Switches\"\n    ],\n    \"Architecture\": \"Instant\",\n    \"ApNetworkRole\": \"Standard\",\n    \"GwNetworkRole\": \"WLANGateway\",\n    \"AllowedSwitchTypes\": [\n      \"AOS_CX\",\n      \"AOS_CX\"\n    ],\n    \"MonitorOnly\": [\n      \"AOS_S\",\n      \"AOS_S\"\n    ],\n    \"NewCentral\": \"<boolean>\"\n  },\n  \"template_info\": {\n    \"Wired\": true,\n    \"Wireless\": \"<boolean>\"\n  }\n}",
+            "destructive": true,
+            "description": "Update properties (architecture, allowed device types) for the given group."
+          },
+          {
+            "id": "aruba-125",
+            "name": "Delete group",
+            "method": "DELETE",
+            "path": "/configuration/v1/groups/{{group}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing group."
+          },
+          {
+            "id": "aruba-126",
+            "name": "Set group config mode",
+            "method": "POST",
+            "path": "/configuration/v1/mode/group",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"config_mode\": \"Monitor\",\n  \"groups\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Set configuration mode (Monitor or Manage) at group level."
+          },
+          {
+            "id": "aruba-127",
+            "name": "Commit group configurations",
+            "method": "POST",
+            "path": "/configuration/v1/commit/groups",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"groups\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+            "destructive": true,
+            "description": "Commit staged configurations for the given groups."
+          },
+          {
+            "id": "aruba-128",
+            "name": "Create group config backup",
+            "method": "POST",
+            "path": "/configuration/v1/groups/snapshot/{{group}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"do_not_delete\": \"<boolean>\",\n  \"name\": \"<string>\"\n}",
+            "destructive": true,
+            "description": "Create a new configuration backup (snapshot) for a group."
+          },
+          {
+            "id": "aruba-129",
+            "name": "Restore group config backup",
+            "method": "POST",
+            "path": "/configuration/v1/groups/{{group}}/snapshots/{{snapshot}}/restore",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Restore a configuration backup (snapshot) for a group."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-130",
+        "name": "Templates",
+        "requests": [
+          {
+            "id": "aruba-131",
+            "name": "Create template",
+            "method": "POST",
+            "path": "/configuration/v1/groups/{{group}}/templates",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Create a new configuration template in a group (multipart form-data template file upload)."
+          },
+          {
+            "id": "aruba-132",
+            "name": "Update template",
+            "method": "PATCH",
+            "path": "/configuration/v1/groups/{{group}}/templates",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Update an existing configuration template in a group (multipart form-data template file upload)."
+          },
+          {
+            "id": "aruba-133",
+            "name": "Delete template",
+            "method": "DELETE",
+            "path": "/configuration/v1/groups/{{group}}/templates/{{template}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete an existing configuration template from a group."
+          },
+          {
+            "id": "aruba-134",
+            "name": "Create device template variables",
+            "method": "POST",
+            "path": "/configuration/v1/devices/{{device_serial}}/template_variables",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"total\": \"<integer>\",\n  \"variables\": {\n    \"_sys_serial\": \"<string>\",\n    \"_sys_lan_mac\": \"<string>\"\n  }\n}",
+            "destructive": true,
+            "description": "Create template variables for a device."
+          },
+          {
+            "id": "aruba-135",
+            "name": "Update device template variables",
+            "method": "PATCH",
+            "path": "/configuration/v1/devices/{{device_serial}}/template_variables",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"total\": \"<integer>\",\n  \"variables\": {\n    \"_sys_serial\": \"<string>\",\n    \"_sys_lan_mac\": \"<string>\"\n  }\n}",
+            "destructive": true,
+            "description": "Update template variables for a device."
+          },
+          {
+            "id": "aruba-136",
+            "name": "Delete device template variables",
+            "method": "DELETE",
+            "path": "/configuration/v1/devices/{{device_serial}}/template_variables",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete all template variables for a device."
+          }
+        ],
+        "folders": []
+      },
+      {
+        "id": "aruba-137",
+        "name": "Guest access",
+        "requests": [
+          {
+            "id": "aruba-boot2",
+            "name": "Get all portals",
+            "method": "GET",
+            "path": "/guest/v1/portals",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": false,
+            "description": "All guest portals with limited data \u2014 a portal id fills {{portal_id}}."
+          },
+          {
+            "id": "aruba-138",
+            "name": "Create guest portal",
+            "method": "POST",
+            "path": "/guest/v1/portals",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"name\": \"<string>\",\n  \"auth_type\": \"unauthenticated\",\n  \"username_password_enabled\": false,\n  \"registration_enabled\": false,\n  \"verify_registration\": false,\n  \"bypass_cna_policy\": false,\n  \"cna_policy\": \"allow_always\",\n  \"register_accept_email\": false,\n  \"register_accept_phone\": true,\n  \"free_wifi_duration\": \"<integer>\",\n  \"self_reg_account_unlimited\": true,\n  \"self_reg_account_expire_days\": \"<integer>\",\n  \"self_reg_account_expire_hours\": \"<integer>\",\n  \"self_reg_account_expire_minutes\": \"<integer>\",\n  \"login_button_title\": {},\n  \"whitelist_urls\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"sms_messages\": {\n    \"custom_username_label\": {},\n    \"custom_password_label\": {},\n    \"custom_sender_message\": {},\n    \"custom_verification_message\": {},\n    \"custom_registration_message\": {},\n    \"custom_pwd_reset_message\": {}\n  },\n  \"auth_sources\": [\n    {\n      \"client_id\": {},\n      \"client_secret\": {},\n      \"name\": \"facebook\",\n      \"hosted_domain\": {},\n      \"login_button_title\": {}\n    },\n    {\n      \"client_id\": {},\n      \"client_secret\": {},\n      \"name\": \"twitter\",\n      \"hosted_domain\": {},\n      \"login_button_title\": {}\n    }\n  ],\n  \"facebook_wifi_configure_url\": {},\n  \"facebook_wifi_gateway_id\": {},\n  \"redirect_url\": {},\n  \"auth_failure_message\": {},\n  \"session_timeout\": {\n    \"days\": \"<integer>\",\n    \"hours\": \"<integer>\",\n    \"minutes\": \"<integer>\"\n  },\n  \"mac_caching_enabled\": false,\n  \"is_shared\": false,\n  \"simultaneous_login_limit\": \"<integer>\",\n  \"daily_usage_limit\": \"nolimit\",\n  \"usage_time\": {\n    \"by_hours\": \"<integer>\",\n    \"by_minutes\": \"<integer>\"\n  },\n  \"usage_data\": {\n    \"data_type\": \"visitor\",\n    \"data\": \"<integer>\"\n  },\n  \"background_color\": {},\n  \"button_color\": {},\n  \"header_fill_color\": {},\n  \"page_font_color\": {},\n  \"logo_name\": \"Logo.png\",\n  \"logo\": {},\n  \"background_image_name\": \"Background.png\",\n  \"background_image\": {},\n  \"max_columns\": \"<integer>\",\n  \"page_title\": {},\n  \"welcome_text\": {},\n  \"terms_condition\": {},\n  \"display_terms_checkbox\": false,\n  \"display_term_options\": \"internal\",\n  \"ad_url\": {},\n  \"login_image_name\": \"Ad.png\",\n  \"ad_image\": {},\n  \"is_config_associated\": false,\n  \"capture_url\": {},\n  \"override_common_name\": \"<string>\",\n  \"override_common_name_enabled\": false\n}",
+            "destructive": true,
+            "description": "Create a new guest portal profile."
+          },
+          {
+            "id": "aruba-139",
+            "name": "Update guest portal",
+            "method": "PUT",
+            "path": "/guest/v1/portals/{{portal_id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"name\": \"<string>\",\n  \"auth_type\": \"unauthenticated\",\n  \"username_password_enabled\": false,\n  \"registration_enabled\": false,\n  \"verify_registration\": false,\n  \"bypass_cna_policy\": false,\n  \"cna_policy\": \"allow_always\",\n  \"register_accept_email\": false,\n  \"register_accept_phone\": true,\n  \"free_wifi_duration\": \"<integer>\",\n  \"self_reg_account_unlimited\": true,\n  \"self_reg_account_expire_days\": \"<integer>\",\n  \"self_reg_account_expire_hours\": \"<integer>\",\n  \"self_reg_account_expire_minutes\": \"<integer>\",\n  \"login_button_title\": {},\n  \"whitelist_urls\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"sms_messages\": {\n    \"custom_username_label\": {},\n    \"custom_password_label\": {},\n    \"custom_sender_message\": {},\n    \"custom_verification_message\": {},\n    \"custom_registration_message\": {},\n    \"custom_pwd_reset_message\": {}\n  },\n  \"auth_sources\": [\n    {\n      \"client_id\": {},\n      \"client_secret\": {},\n      \"name\": \"facebook\",\n      \"hosted_domain\": {},\n      \"login_button_title\": {}\n    },\n    {\n      \"client_id\": {},\n      \"client_secret\": {},\n      \"name\": \"twitter\",\n      \"hosted_domain\": {},\n      \"login_button_title\": {}\n    }\n  ],\n  \"facebook_wifi_configure_url\": {},\n  \"facebook_wifi_gateway_id\": {},\n  \"redirect_url\": {},\n  \"auth_failure_message\": {},\n  \"session_timeout\": {\n    \"days\": \"<integer>\",\n    \"hours\": \"<integer>\",\n    \"minutes\": \"<integer>\"\n  },\n  \"mac_caching_enabled\": false,\n  \"is_shared\": false,\n  \"simultaneous_login_limit\": \"<integer>\",\n  \"daily_usage_limit\": \"nolimit\",\n  \"usage_time\": {\n    \"by_hours\": \"<integer>\",\n    \"by_minutes\": \"<integer>\"\n  },\n  \"usage_data\": {\n    \"data_type\": \"visitor\",\n    \"data\": \"<integer>\"\n  },\n  \"background_color\": {},\n  \"button_color\": {},\n  \"header_fill_color\": {},\n  \"page_font_color\": {},\n  \"logo_name\": \"Logo.png\",\n  \"logo\": {},\n  \"background_image_name\": \"Background.png\",\n  \"background_image\": {},\n  \"max_columns\": \"<integer>\",\n  \"page_title\": {},\n  \"welcome_text\": {},\n  \"terms_condition\": {},\n  \"display_terms_checkbox\": false,\n  \"display_term_options\": \"internal\",\n  \"ad_url\": {},\n  \"login_image_name\": \"Ad.png\",\n  \"ad_image\": {},\n  \"is_config_associated\": false,\n  \"capture_url\": {},\n  \"override_common_name\": \"<string>\",\n  \"override_common_name_enabled\": false\n}",
+            "destructive": true,
+            "description": "Update an existing guest portal profile."
+          },
+          {
+            "id": "aruba-140",
+            "name": "Delete guest portal",
+            "method": "DELETE",
+            "path": "/guest/v1/portals/{{portal_id}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a guest portal profile."
+          },
+          {
+            "id": "aruba-141",
+            "name": "Create guest visitor",
+            "method": "POST",
+            "path": "/guest/v1/portals/{{portal_id}}/visitors",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"name\": \"<string>\",\n  \"id\": {},\n  \"company_name\": {},\n  \"user\": {\n    \"phone\": {},\n    \"email\": {}\n  },\n  \"is_enabled\": true,\n  \"valid_till_no_limit\": false,\n  \"valid_till_days\": \"<integer>\",\n  \"valid_till_hours\": \"<integer>\",\n  \"valid_till_minutes\": \"<integer>\",\n  \"notify\": false,\n  \"notify_to\": \"phone\",\n  \"password\": {},\n  \"status\": \"<boolean>\",\n  \"created_at\": {},\n  \"expire_at\": {}\n}",
+            "destructive": true,
+            "description": "Create a new guest visitor account in a portal."
+          },
+          {
+            "id": "aruba-142",
+            "name": "Update guest visitor",
+            "method": "PUT",
+            "path": "/guest/v1/portals/{{portal_id}}/visitors/{{visitor_id}}",
+            "headers": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": "{\n  \"name\": \"<string>\",\n  \"id\": {},\n  \"company_name\": {},\n  \"user\": {\n    \"phone\": {},\n    \"email\": {}\n  },\n  \"is_enabled\": true,\n  \"valid_till_no_limit\": false,\n  \"valid_till_days\": \"<integer>\",\n  \"valid_till_hours\": \"<integer>\",\n  \"valid_till_minutes\": \"<integer>\",\n  \"notify\": false,\n  \"notify_to\": \"phone\",\n  \"password\": {},\n  \"status\": \"<boolean>\",\n  \"created_at\": {},\n  \"expire_at\": {}\n}",
+            "destructive": true,
+            "description": "Update a guest visitor account."
+          },
+          {
+            "id": "aruba-143",
+            "name": "Delete guest visitor",
+            "method": "DELETE",
+            "path": "/guest/v1/portals/{{portal_id}}/visitors/{{visitor_id}}",
+            "headers": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{arubaToken}}"
+              }
+            ],
+            "body": null,
+            "destructive": true,
+            "description": "Delete a guest visitor account."
+          }
+        ],
+        "folders": []
+      }
+    ]
+  }
+}

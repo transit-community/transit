@@ -1,0 +1,39 @@
+[package]
+name = "transit_api"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "Read-only-capable REST transport for API sessions: host-pinned client, pluggable auth injection (API key / Bearer / Basic / none), and the agent-only GET gate (UniFi + generic vendors)."
+
+[lints]
+workspace = true
+
+[dependencies]
+# Centralized OS-trust TLS config (§9). We reuse the ONE trust-anchor
+# builder rather than constructing rustls config here, so API traffic
+# shares the exact verification posture of provider traffic. This is the
+# only internal dep, and it pulls in NO new external crates.
+transit_tls.workspace = true
+reqwest.workspace = true
+url.workspace = true
+secrecy.workspace = true
+thiserror.workspace = true
+# HTTP Basic auth: `Authorization: Basic base64(user:pass)`. Already a
+# workspace dep (license-approved); adds no new external crate to the graph.
+base64.workspace = true
+# `tokio::time::timeout` bounds the total request (connect + send + body
+# read). The workspace tokio already enables the `time` feature; tokio is
+# already in the dependency graph, so this adds no new external crate.
+tokio.workspace = true
+
+[dev-dependencies]
+# `#[tokio::test]` + an in-process HTTP mock for the client's send path.
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+wiremock.workspace = true
+# Property test: no caller-supplied path may ever escape the pinned host.
+proptest.workspace = true
+# Reads the SHIPPED collection JSON (frontend `src/lib/collections/`) so the
+# bundled-path confine guard runs against the real data, not a copy.
+serde_json.workspace = true

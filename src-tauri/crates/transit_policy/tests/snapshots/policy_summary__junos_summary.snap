@@ -1,0 +1,54 @@
+---
+source: crates/transit_policy/tests/policy_summary.rs
+assertion_line: 79
+expression: render(&s)
+---
+precedence: BlockWins
+allowed:
+  - ^show( |$)
+  - ^ping( |$)
+  - ^traceroute( |$)
+  - ^monitor( |$)
+  - ^file list( |$)
+  - ^op( |$)
+  - ^help 
+blocked:
+  - ^start shell
+  - ^request system 
+  - ^request 
+  - ^restart 
+  - ^reboot
+  - ^reload
+  - ^reset 
+  - ^configure
+  - ^commit
+  - ^edit 
+  - ^rollback
+  - ^load 
+  - ^save 
+  - ^copy 
+  - ^file (copy|delete|rename|create) 
+  - ^clear 
+  - ^test 
+  - ^monitor\b.*\bwrite-file\b
+  - ^quit
+  - ^exit
+  - ^logout
+pipe_allowed:
+  - ^display set( |$)
+  - ^display xml( |$)
+  - ^display json( |$)
+  - ^display inheritance( |$)
+  - ^match 
+  - ^except 
+  - ^find 
+  - ^count( |$)
+  - ^last( |$)
+  - ^last [0-9]+$
+  - ^no-more( |$)
+  - ^trim 
+pipe_blocked:
+  - ^save 
+  - ^compare
+  - ^commit
+  - ^request

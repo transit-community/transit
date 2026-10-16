@@ -1,0 +1,112 @@
+# Cisco IOS-XE — read-only command policy.
+#
+# IOS-XE is built on a Linux underlay (vs classic IOS's monolithic
+# image) and exposes additional vectors that need explicit blocking:
+#   - `guestshell` (Linux container shell escape)
+#   - `app-hosting` (deploy/run third-party containers)
+#   - `request platform software` (image management)
+#
+# Otherwise this file mirrors policies/cisco_ios.yaml with platform-
+# specific additions. When adding a new safe verb, add it to BOTH
+# files unless the verb is platform-specific. Design rationale: see
+# policies/cisco_ios_xe.README.md.
+---
+precedence: block-wins
+
+canonicalization:
+  aliases:
+    sh: show
+    sho: show
+    shw: show
+    wr: write
+    wri: write
+    p: ping
+    tr: traceroute
+
+# ---------------------------------------------------------------------
+# Head allow/block.
+# ---------------------------------------------------------------------
+
+allowed:
+  - "^show( |$)"
+  - "^ping( |$)"
+  - "^traceroute( |$)"
+  - "^dir( |$)"
+  - "^more "
+  - "^terminal length "
+  - "^terminal monitor"
+  - "^terminal no monitor"
+  - "^where "
+
+blocked:
+  # Privileged-mode + configure.
+  - "^enable( |$)"
+  - "^disable( |$)"
+  - "^configure"
+  - "^conf t"
+  # Saves + file mutations.
+  - "^write"
+  - "^copy "
+  - "^delete "
+  - "^erase "
+  - "^format "
+  - "^archive "
+  - "^boot "
+  # `show tech-support ... <file|fs:|url:>` writes a techfile to the
+  # device or off-box; the destination token overrides the broad `^show`
+  # allow. Backported from cisco_ios_xr.yaml.
+  - '^show tech-support\b.*\b(file\b|flash:|disk[0-9]+:|harddisk:|bootflash:|logflash:|volatile:|slot[0-9]+:|usb[0-9]+:|nvram:|tftp:|ftp:|scp:|sftp:|rcp:|https?:)'
+  # Reload / clear.
+  - "^reload"
+  - "^reset "
+  - "^clear "
+  # IOS-XE specific shell / container escapes.
+  - "^guestshell " # Linux container shell — full escape
+  - "^app-hosting " # third-party container management
+  - "^request platform software "
+  # Tcl / event manager.
+  - "^tclsh"
+  - "^tclquit"
+  - "^event manager run "
+  # Session control.
+  - "^logout"
+  - "^exit"
+  - "^quit"
+  - "^end"
+
+# ---------------------------------------------------------------------
+# Pipe-stage policy. Same as IOS — IOS-XE inherits the pipe verbs.
+# ---------------------------------------------------------------------
+
+pipe_allowed:
+  - "^include "
+  - "^exclude "
+  - "^begin "
+  - "^section "
+  - "^count$"
+  - "^format "
+
+pipe_blocked:
+  - "^redirect "
+  - "^tee "
+  - "^append "
+
+# v6.1.x #1 — phrasebook (see junos.yaml for the contract; gate-tested).
+phrasebook:
+  - "show version"
+  - "show ip interface brief"
+  - "show interfaces status"
+  - "show logging | include %"
+  - "show running-config | section interface"
+  - "show running-config interface GigabitEthernet1"
+  - "show ip route summary"
+  - "show ip bgp summary"
+  - "show ip ospf neighbor"
+  - "show cdp neighbors detail"
+  - "show arp"
+  - "show mac address-table"
+  - "show spanning-tree summary"
+  - "show platform resources"
+  - "show processes cpu sorted"
+  - "ping 10.0.0.1"
+  - "traceroute 10.0.0.1"

@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+
+# Production builds
+dist/
+dist-ssr/
+dist-windows/
+build/
+
+# Rust / Tauri build artifacts
+src-tauri/target/
+src-tauri/gen/
+src-tauri/WixTools/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / OS
+.DS_Store
+*.local
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Legacy / user-local config
+inventory.yaml
+transit.toml
+!transit.toml.example
+# Debug-build app config (BYOP user_dir + [network] strict_tls); the
+# release build writes to dirs::config_dir()/Transit/config.toml instead.
+transit-config.toml
+
+# Coverage
+coverage/
+
+# TypeScript incremental build artifacts
+*.tsbuildinfo
+
+# Claude Code runtime state (skills are committed under .claude/skills/;
+# anything else under .claude/ is local runtime).
+.claude/scheduled_tasks*
+
+# Local troubleshooting screenshots scratch dir.
+tshoot_screens/
+
+
+# cargo-mutants artifacts (mutation testing output, not a deliverable)
+mutants.out/
+**/mutants.out/
+**/mutants.out.old/

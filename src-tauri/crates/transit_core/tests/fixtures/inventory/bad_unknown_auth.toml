@@ -1,0 +1,10 @@
+# expect: Err::UnknownAuth
+[[device]]
+id = "vEX1"
+host = "192.0.2.35"
+vendor = "junos"
+auth = "missing-profile"
+
+[auth.lab-pw]
+username = "alice"
+secret = { backend = "keyring", key = "transit/lab-pw" }

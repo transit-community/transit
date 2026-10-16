@@ -1,0 +1,16 @@
+# expect: Err::DuplicateDevice
+[[device]]
+id = "dup"
+host = "h1"
+vendor = "junos"
+auth = "p"
+
+[[device]]
+id = "dup"
+host = "h2"
+vendor = "junos"
+auth = "p"
+
+[auth.p]
+username = "u"
+secret = { backend = "ssh_agent" }

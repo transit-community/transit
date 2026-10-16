@@ -1,0 +1,47 @@
+[package]
+name = "transit_console"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "USB-to-serial (console cable) transport for device sessions."
+
+[lints]
+workspace = true
+
+[dependencies]
+transit_core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+bytes.workspace = true
+time.workspace = true
+async-trait.workspace = true
+tokio = { version = "1", features = [
+    "sync",
+    "io-util",
+    "time",
+    "macros",
+    "rt",
+] }
+# Async wrapper around `serialport`. Exposes `SerialStream` as
+# `AsyncRead + AsyncWrite`, which lets the reader/writer split mirror
+# the actor pattern used by `transit_ssh::Session`. Re-exports
+# serialport's enumeration + builder types so we get them transitively
+# without a second top-level dep.
+#
+# Licensing: tokio-serial is MIT; serialport itself is MPL-2.0 and
+# is on the workspace allow-list (`deny.toml`). We use serialport
+# unmodified, so the file-level copyleft does not apply to our code.
+tokio-serial = "5.4"
+
+[dev-dependencies]
+tokio = { version = "1", features = [
+    "test-util",
+    "rt-multi-thread",
+    "macros",
+    "time",
+    "io-util",
+] }

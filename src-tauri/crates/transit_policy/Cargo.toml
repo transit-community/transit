@@ -1,0 +1,25 @@
+[package]
+name = "transit_policy"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+publish = false
+description = "Per-vendor command policy gate (default-deny)."
+
+[lints]
+workspace = true
+
+[dependencies]
+transit_core.workspace = true
+serde.workspace = true
+serde_yaml_bw.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+regex.workspace = true
+unicode-normalization.workspace = true
+
+[dev-dependencies]
+proptest = "1"
+tempfile.workspace = true
+insta.workspace = true

@@ -1,0 +1,11 @@
+error[E0432]: unresolved import `transit_auth`
+ --> tests/firewall/cant_import_transit_auth.rs:6:5
+  |
+6 | use transit_auth::SecretRegistry;
+  |     ^^^^^^^^^^^^ use of unresolved module or unlinked crate `transit_auth`
+  |
+help: there is a crate or module with a similar name
+  |
+6 - use transit_auth::SecretRegistry;
+6 + use transit_agent::SecretRegistry;
+  |

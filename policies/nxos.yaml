@@ -1,0 +1,137 @@
+# Cisco NX-OS — read-only command policy.
+#
+# NX-OS (Nexus 5k/7k/9k data-center switches) shares Cisco grammar
+# with IOS but has its own command surface for features, image
+# management, and shell escape. Notable vectors that DON'T appear in
+# IOS/IOS-XE:
+#   - `feature` / `no feature`     — turns capabilities on/off (mutates state)
+#   - `install all`                — image upgrade
+#   - `run bash`                   — drops to underlying Linux shell
+#   - `python`                     — embedded Python interpreter
+# All blocked below.
+#
+# Design rationale: see policies/nxos.README.md.
+---
+precedence: block-wins
+
+canonicalization:
+  aliases:
+    sh: show
+    sho: show
+    shw: show
+    p: ping
+    tr: traceroute
+
+# ---------------------------------------------------------------------
+# Head allow/block.
+# ---------------------------------------------------------------------
+
+allowed:
+  - "^show( |$)"
+  - "^ping( |$)"
+  - "^ping6( |$)" # NX-OS ipv6 probe verb
+  - "^traceroute( |$)"
+  - "^traceroute6( |$)"
+  - "^dir( |$)"
+  - "^more "
+  - "^terminal length "
+  - "^terminal monitor"
+  - "^terminal no monitor"
+  - "^where "
+
+blocked:
+  # Privileged-mode + configure.
+  - "^enable( |$)"
+  - "^disable( |$)"
+  - "^configure"
+  - "^conf t"
+  # Saves + file mutations. NX-OS uses `copy run start` for save;
+  # `^copy ` and `^write` cover both.
+  - "^write"
+  - "^copy "
+  - "^delete "
+  - "^erase "
+  - "^format "
+  - "^boot "
+  # `show tech-support ... <file|fs:|url:>` writes a techfile to the
+  # device or off-box; the destination token overrides the broad `^show`
+  # allow. Backported from cisco_ios_xr.yaml (adds NX-OS filesystems).
+  - '^show tech-support\b.*\b(file\b|flash:|disk[0-9]+:|harddisk:|bootflash:|logflash:|volatile:|slot[0-9]+:|usb[0-9]+:|nvram:|tftp:|ftp:|scp:|sftp:|rcp:|https?:)'
+  # NX-OS-specific state mutation.
+  - "^feature " # enables features e.g. `feature bgp`
+  - "^no feature "
+  - "^install " # `install all` image upgrade flow
+  - "^reload"
+  - "^restart "
+  - "^clear "
+  # Shell / scripting escapes — full bypass of the gate.
+  - "^run bash" # bash shell
+  - "^run python"
+  - "^python" # NX-OS embedded Python interpreter
+  - "^source " # runs script from bootflash
+  - "^tclsh"
+  # Event manager + scheduler.
+  - "^event manager run "
+  - "^scheduler "
+  # Session control.
+  - "^logout"
+  - "^exit"
+  - "^quit"
+  - "^end"
+
+# ---------------------------------------------------------------------
+# Pipe-stage policy. NX-OS pipe verbs:
+#   include / exclude / begin / count — standard filters
+#   grep / egrep / head / last / sort / uniq / wc — UNIX-style filters
+#   diff / vsh — special; vsh is a shell escape (BLOCKED)
+#   redirect — writes file (BLOCKED)
+# ---------------------------------------------------------------------
+
+pipe_allowed:
+  - "^include "
+  - "^exclude "
+  - "^begin "
+  - "^section "
+  - "^count$"
+  - "^grep "
+  - "^egrep "
+  - "^head "
+  - "^last( |$)"
+  - "^sort( |$)"
+  - "^uniq( |$)"
+  - "^wc( |$)"
+  - "^diff$"
+
+pipe_blocked:
+  - "^redirect "
+  - "^tee "
+  - "^append "
+  - "^vsh " # NX-OS virtual shell escape
+  - "^run-script "
+  # `sort` is bridged to GNU coreutils on NX-OS; its write/exec flags
+  # turn a read-only filter into a file write or arbitrary command exec.
+  # (`| sort` with no such flag stays allowed; `grep -o` etc. are
+  # unaffected because these are anchored to `^sort`.)
+  - '^sort\b.*\s-o(\s|$)' # sort -o FILE            (writes a file)
+  - '^sort\b.*--output' # sort --output=FILE      (writes a file)
+  - '^sort\b.*--compress-program' # sort --compress-program=CMD (exec)
+  - '^sort\b.*--files0-from' # sort --files0-from=FILE (reads arbitrary)
+
+# v6.1.x #1 — phrasebook (see junos.yaml for the contract; gate-tested).
+phrasebook:
+  - "show version"
+  - "show interface brief"
+  - "show interface status"
+  - "show logging last 50"
+  - "show running-config | section interface"
+  - "show running-config interface Ethernet1/1"
+  - "show ip route summary"
+  - "show ip bgp summary"
+  - "show ip ospf neighbors"
+  - "show cdp neighbors detail"
+  - "show mac address-table"
+  - "show spanning-tree summary"
+  - "show system uptime"
+  - "show processes cpu sort"
+  - "ping 10.0.0.1"
+  - "traceroute 10.0.0.1"

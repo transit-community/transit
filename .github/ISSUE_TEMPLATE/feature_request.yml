@@ -1,0 +1,46 @@
+name: Feature request
+description: Propose a change. Required before any pull request.
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the **problem** before the solution. If the change touches
+        the agent's reach, the policy gate, credentials, or outbound network
+        access, read `CLAUDE.md` §3–§4 first and say which rule it affects.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you are trying to do and what gets in the way today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What you would build, and any alternatives you considered.
+    validations:
+      required: true
+  - type: dropdown
+    id: invariants
+    attributes:
+      label: Does this touch a security invariant?
+      description: Rule 1 (no secret over IPC), Rule 2 (six agent tools), Rule 3 (gate AND modal), the Fourth Rule (no unconfigured outbound host).
+      options:
+        - "No"
+        - "Yes — I describe which one and why it still holds below"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Invariant notes
+      description: Leave blank if not applicable.
+  - type: checkboxes
+    id: willing
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to open the pull request for this once the approach is agreed.

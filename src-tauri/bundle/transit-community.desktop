@@ -1,0 +1,17 @@
+# Custom Tauri desktop-entry template (wired via tauri.conf.json
+# bundle.linux.{deb,rpm}.desktopTemplate). Shared by the .deb and .rpm so
+# both packages install an identical launcher entry.
+[Desktop Entry]
+Categories=Network;
+{{#if comment}}
+Comment={{comment}}
+{{/if}}
+Exec={{exec}}
+Icon={{icon}}
+Name={{name}}
+Terminal=false
+Type=Application
+StartupWMClass=transit_app
+{{#if mime_type}}
+MimeType={{mime_type}}
+{{/if}}

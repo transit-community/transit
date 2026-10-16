@@ -1,0 +1,101 @@
+# Windows live-capture probe.
+#
+# Runs the REAL Windows capture commands on a real Windows machine and
+# feeds their output through the very parsers the app uses.
+#
+# Why this exists: every previous Windows defect shipped past a passing
+# unit test, because those tests asserted on strings this repo generates
+# rather than on what Windows produces. A `Type: "NIC"` filter for a value
+# pktmon never emits. A JSON reader for a shape pktmon does not print. An
+# enumeration path that needed Administrator to fill a dropdown. Each was
+# "tested". None was verified.
+#
+# NOT part of the CI matrix: it is slower, it is only meaningful on
+# Windows, and its whole job is to answer questions during development.
+# Runs on demand, and automatically on the PCaps branch.
+#
+# ⚠️ What this CANNOT verify: GitHub's Windows runners already execute as
+# an administrator, so nothing here exercises the UAC prompt, the
+# unprivileged-first ladder, or a machine where elevation is refused by
+# policy. That still needs real hardware and a real user. This probe
+# covers the plumbing and the parsing — which is precisely the part that
+# kept being wrong.
+
+name: Windows live-capture probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/pcaps-pane]
+    paths:
+      - "src-tauri/crates/transit_pcap/**"
+      - ".github/workflows/win-probe.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Probe pktmon + Get-NetAdapter on Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
+        with:
+          workspaces: src-tauri
+
+      # Printed before the tests so the raw material is in the log even if
+      # a parser assertion fails. When these disagree with what the code
+      # expects, THIS is the evidence.
+      - name: Raw environment — what Windows actually prints
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          Write-Host "=== whoami /groups (is this runner elevated?) ==="
+          $id = [Security.Principal.WindowsIdentity]::GetCurrent()
+          $p  = New-Object Security.Principal.WindowsPrincipal($id)
+          Write-Host "elevated: $($p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))"
+
+          # Deliberately NOT a copy of the app's enumeration command. One
+          # lived here and drifted from it the same day. The exact shape
+          # the app asks for is printed by the probe test below, which runs
+          # `live::GET_NETADAPTER_PS` itself; this is the human-readable
+          # view for reading a failure in the log.
+          #
+          # InterfaceIndex is the join key: unlike a MAC it stays unique
+          # across an SR-IOV pair, where a synthetic adapter and its
+          # virtual function share a hardware address but not an index.
+          Write-Host "`n=== Get-NetAdapter (human view) ==="
+          Get-NetAdapter | Select-Object Name, InterfaceDescription, InterfaceIndex, MacAddress, Status | Format-Table -AutoSize | Out-String -Width 200
+
+          # pktmon exposes ifIndex only as a component PROPERTY in the JSON,
+          # never in the text table — so confirming the join needs this.
+          Write-Host "`n=== pktmon list --json (component ifIndex properties) ==="
+          pktmon list --json
+
+          Write-Host "`n=== pktmon help ==="
+          pktmon help
+
+          Write-Host "`n=== pktmon list ==="
+          pktmon list
+
+          Write-Host "`n=== pktmon status ==="
+          pktmon status
+
+          Write-Host "`n=== pktmon filter help (which verb clears filters?) ==="
+          pktmon filter help
+
+      - name: Integration probe (parsers against real output)
+        shell: pwsh
+        working-directory: src-tauri
+        run: |
+          # `--test-threads=1`: pktmon is machine-global and single-session,
+          # so tests that drive it must not run concurrently — parallel
+          # runs contend for the one session and the capture test's own
+          # "refuse a session I did not start" guard trips on a sibling's.
+          cargo test -p transit_pcap --test windows_live -- --ignored --nocapture --test-threads=1

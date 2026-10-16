@@ -1,0 +1,243 @@
+# Transit inventory — example shape.
+#
+# This file holds device metadata + references to where credentials are
+# stored. It NEVER contains a password, key, passphrase, or token. The
+# loader rejects any inline secret-shaped value with a parse error
+# pointing at file:line — see docs/security/secrets.md for the
+# pattern catalog.
+#
+# Most users won't see this file: the GUI's "+ New device" / Edit /
+# Delete dialogs and the right-click "Rename group" flow are the
+# primary UX. Editing the file by hand still works for power users —
+# the app rewrites the file via toml_edit so your comments and
+# ordering survive in-app edits.
+#
+# Default location:
+#   1. $TRANSIT_INVENTORY env var (explicit override)
+#   2. Release builds: per-OS canonical app data dir
+#        ~/Library/Application Support/TransitCommunity/transit.toml  (macOS)
+#        %APPDATA%\TransitCommunity\transit.toml             (Windows)
+#        ~/.config/TransitCommunity/transit.toml              (Linux)
+#   3. Debug builds: <project_root>/transit.toml
+#
+# The first in-app edit creates the file at the canonical location if
+# it doesn't yet exist.
+#
+# Sibling file: `known_hosts.toml` (same directory) holds the SSH
+# host-key TOFU pins. The first connect to any device prompts the
+# user to confirm the SHA256 fingerprint and records the answer.
+# Subsequent connects fail loudly on fingerprint mismatch.
+#
+# Each pin is scoped to the DEVICE (its `id` below), not to the
+# address — so two customers whose gateways are both 192.168.1.1
+# keep independent pins instead of tripping a changed-key warning
+# on every switch between them.
+#
+# To rotate a legitimately-changed host key you do NOT edit this
+# file: reconnect, and Transit shows both fingerprints side by side
+# and replaces the pin after you explicitly confirm the change. See
+# docs/security/threat-model.md §T11 for the rationale.
+
+# ---------------------------------------------------------------------
+# Devices
+#
+# `group` is an optional folder path. Use `/` to nest. Devices without
+# a group render at the sidebar root. Renaming a group via the GUI
+# rewrites every matching `device.group` prefix; the file edit is
+# atomic.
+# ---------------------------------------------------------------------
+
+[[device]]
+id     = "vEX1"
+host   = "192.0.2.35"
+port   = 22
+vendor = "junos"
+group  = "Lab/Junos"
+auth   = "lab-pw"
+
+[[device]]
+id     = "vEX2"
+host   = "192.0.2.101"
+port   = 22
+vendor = "junos"
+group  = "Lab/Junos"
+# Optional per-device accent color (curated palette token: red, amber,
+# green, blue, purple, cyan, slate). Renders as a left-edge accent on the
+# sidebar row, session tab, and terminal pane. Absent = no accent.
+color  = "blue"
+# Optional free-form tags, orthogonal to `group` — filter the sidebar by them.
+tags   = ["lab", "junos"]
+auth   = "lab-key"
+# Phase 2c per-device terminal preferences. Optional; missing field
+# (or `false`) means the safe default. The Edit-device dialog drives
+# both — see docs/highlighting.md and CLAUDE.md §17.
+syntax_highlighting = true
+# SecureCRT-style triple: auto-copy selection + middle/right-click paste.
+quick_copy_paste = true
+# v4.1.0 per-device appearance overrides. All optional.
+# Terminal font for THIS device only — any CSS font-family; absent = the
+# global Settings font. Size in CSS pixels (8–32); absent = the global size.
+font_family = "JetBrains Mono"
+font_size   = 15
+# Render the accent `color` as a louder background tint on the session tab
+# and pane (needs `color` set). Absent/false = the subtle edge accent only.
+bold_color  = true
+# v6.5.0 — jump host: the `id` of ANOTHER [[device]] to tunnel through
+# (OpenSSH ProxyJump / SecureCRT "Firewall"). Transit connects to that
+# device first (its own auth profile + host-key pin), then reaches this
+# one over an end-to-end-encrypted direct-tcpip channel — the jump box
+# never sees this device's credentials or plaintext. Chains (a jump's
+# jump) are allowed up to 4 hops; cycles and unknown ids are rejected
+# at load. Absent = direct connection.
+#jump_via = "vEX1"
+# v6.5.0 — SSH agent forwarding opt-in (default OFF). While connected,
+# processes on THIS device can sign with every key your local SSH agent
+# holds — enable only on hosts you trust as a workspace (a bastion you
+# shell into), never on arbitrary gear. Not needed for jump_via.
+#forward_agent = true
+
+# ---------------------------------------------------------------------
+# Auth profiles
+#
+# `secret.backend` selects where the credential is fetched at connect
+# time. Backends are tried in priority order at startup; the
+# device-specific entry below selects exactly one.
+#
+# Supported backends:
+#   ssh_agent      — talks to SSH_AUTH_SOCK. 1Password's SSH Agent
+#                    works transparently here; biometric unlock is
+#                    handled by 1Password, not Transit.
+#   ssh_key        — a private key file on disk (OpenSSH / PEM / PuTTY
+#                    .ppk). `path` points at the key; an optional nested
+#                    `passphrase` backend (keyring) holds the passphrase
+#                    for an encrypted key. SecureCRT-style; no agent.
+#   op             — 1Password CLI: `op read op://Vault/Item/field`.
+#                    Biometric via 1Password CLI integration.
+#   keyring        — OS keystore: macOS Keychain / Windows Credential
+#                    Manager / Linux Secret Service.
+#   env            — environment variable. Headless / CI use only.
+#   encrypted_file — age-encrypted file unlocked by a startup
+#                    passphrase. Last-resort fallback for minimal
+#                    Linux installs without Secret Service.
+# ---------------------------------------------------------------------
+
+[auth.lab-pw]
+username = "admin"
+secret   = { backend = "keyring", key = "transit/lab-pw" }
+# After saving this file (or creating the auth profile via the GUI),
+# enroll the actual password through the auth-profile dialog's
+# "Set value..." button. The keyring entry shows up in macOS Keychain
+# Access.app as service `transit`, account `transit/lab-pw`.
+
+[auth.lab-key]
+username = "admin"
+secret   = { backend = "ssh_agent" }
+
+# Examples of other auth profile shapes:
+#
+# [auth.file-key]                         # private key file on disk
+# username = "netadmin"
+# secret   = { backend = "ssh_key", path = "~/.ssh/id_ed25519" }
+#
+# [auth.file-key-enc]                     # encrypted key (passphrase in keychain)
+# username = "netadmin"
+# secret   = { backend = "ssh_key", path = "~/.ssh/id_rsa", passphrase = { backend = "keyring", key = "transit/file-key-enc-passphrase" } }
+#
+# [auth.prod-key]
+# username = "netadmin"
+# secret   = { backend = "ssh_agent", public_key_fingerprint = "SHA256:..." }
+#
+# [auth.prod-pw-1password]
+# username = "netadmin"
+# secret   = { backend = "op", reference = "op://Network/CoreSwitch/password" }
+#
+# [auth.ci-pw]
+# username = "ci-runner"
+# secret   = { backend = "env", var = "TRANSIT_CI_PW" }
+#
+# `prompt` (v6.1.0) stores NOTHING — Transit asks for the credential when
+# you connect and keeps it only for that connection. It is the only
+# backend that works with one-time codes (TOTP / RSA / Duo), PAM or
+# CyberArk account menus, and any device whose policy forbids stored
+# passwords, because those need a human per attempt. Devices using it are
+# skipped by bulk "Launch all".
+#
+# [auth.mfa-jump]
+# username = "netops"
+# secret   = { backend = "prompt" }
+
+# ---------------------------------------------------------------------
+# API sessions (v4.0.0)
+#
+# A `[[api_session]]` is a REST controller (UniFi first) you investigate
+# via its API instead of SSH — the HTTP analog of a `[[device]]`. It has
+# NO username (an API key needs none) and NO terminal prefs. Like a
+# device, the API key is a `secret` REFERENCE, never a literal — enroll
+# the real key through the GUI's "Set value..." button after saving.
+#
+# `kind` selects the API surface + how it's reached:
+#   site_manager    — UniFi Site Manager cloud (api.ui.com). Account-wide;
+#                     needs no host. One cloud API key drives it.
+#   network_local   — a local/self-hosted controller's Network API. Needs
+#                     `host` ("host" or "host:port", no scheme). A first-
+#                     connect cert pin handles the self-signed cert.
+#   connector_proxy — a console reached through api.ui.com's connector
+#                     proxy (no inbound firewall). Needs `console_id`.
+#   generic         — any REST controller (v4.2.0). Needs `base_url` (the
+#                     confinement root — every request stays under it).
+#                     The first-class vendors (meraki, apstra, aruba, aci,
+#                     sdwan, fortimanager, fortianalyzer, netbox) are all
+#                     generic-kind sessions whose `vendor` tag selects the
+#                     bundled collection + the dialog's auth preset.
+#
+# `vendor` selects the bundled request collection + the agent's read
+# policy. The AI agent may only ever issue GET (investigate-only); the
+# human Postman UI may use any method, exactly like the SSH terminal.
+#
+# `auth` selects how the credential is presented (v4.1.0; omitting it
+# keeps the historic UniFi `X-API-KEY` header):
+#   { scheme = "api_key", header = "X-API-KEY" }            custom header
+#   { scheme = "api_key", header = "Authorization", value_prefix = "Token " }
+#                                       header with a non-secret prefix
+#                                       (NetBox classic tokens; v6.2.0)
+#   { scheme = "bearer" }                                   Authorization: Bearer
+#   { scheme = "basic", username = "…" }                    HTTP Basic
+#   { scheme = "login_credentials", username = "…" }        login-request flow
+#   { scheme = "none" }                                     public API
+# ---------------------------------------------------------------------
+
+# [[api_session]]
+# id     = "office-unifi"          # stable id, unique among api_sessions
+# name   = "Office UniFi"          # display name in the APIs sidebar/tab
+# vendor = "unifi"
+# kind   = "site_manager"
+# group  = "MSP/Internal"          # optional folder path
+# tags   = ["prod"]                # optional
+# color  = "blue"                  # optional accent token
+# secret = { backend = "keyring", key = "transit/api-office-unifi" }
+#
+# [[api_session]]                  # local / self-hosted controller
+# id     = "udm-pro"
+# name   = "UDM Pro (HQ)"
+# vendor = "unifi"
+# kind   = "network_local"
+# host   = "192.168.1.1"           # or "udm.lan:8443"
+# secret = { backend = "op", reference = "op://Network/UDM/api-key" }
+#
+# [[api_session]]                  # cloud connector-proxy to one console
+# id     = "clientA-controller"
+# name   = "Client A — Controller"
+# vendor = "unifi"
+# kind   = "connector_proxy"
+# console_id = "AAAA-BBBB-CCCC"
+# secret = { backend = "keyring", key = "transit/api-clientA" }
+#
+# [[api_session]]                  # NetBox (CMDB/IPAM) — v6.2.0
+# id       = "netbox"
+# name     = "NetBox"
+# vendor   = "netbox"              # selects the bundled NetBox collection
+# kind     = "generic"
+# base_url = "https://netbox.example/api"   # instance root + /api
+# auth     = { scheme = "api_key", header = "Authorization", value_prefix = "Token " }
+# secret   = { backend = "keyring", key = "transit/api-netbox" }
+# # NetBox 4.4+ v2 tokens (nbt_…) use `auth = { scheme = "bearer" }` instead.

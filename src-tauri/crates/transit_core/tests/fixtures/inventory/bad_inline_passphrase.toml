@@ -1,0 +1,11 @@
+# expect: Err::InlineSecret
+[[device]]
+id = "x"
+host = "h"
+vendor = "junos"
+auth = "p"
+
+[auth.p]
+username = "u"
+passphrase = "should-not-live-here"
+secret = { backend = "ssh_agent" }
