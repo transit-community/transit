@@ -46,6 +46,9 @@ bumps the version files in lockstep.
   `.github/dependabot.yml`).
 
 ### Added
+- **Linux AppImage**, x86_64 and aarch64, beside the `.deb` and `.rpm` —
+  the install path for Arch and other distributions without one of those
+  package formats.
 - **Contribution process.** `CONTRIBUTING.md` (issue before PR, PR must
   reference the issue, DCO sign-off, the review checklist), issue
   templates for bugs and feature requests with a private-reporting link

@@ -65,9 +65,13 @@ and verify it against `SHA256SUMS.txt`. **Builds are unsigned.**
   clear the quarantine bit once: `xattr -d com.apple.quarantine "/Applications/Transit Community Edition.app"`.
 - **Windows** (`-setup.exe` or `.msi`): SmartScreen will warn about an
   unrecognised publisher; choose *More info → Run anyway*.
-- **Linux** (`.deb` for Ubuntu 24.04+ / Debian 13+, `.rpm` for Fedora 41+
-  and EL10 with EPEL; x86_64 and aarch64): install with your package
-  manager. RHEL/EL9 has no WebKitGTK 4.1 package and is not supported.
+- **Linux**, x86_64 and aarch64 for every format: `.deb` for Ubuntu
+  24.04+ / Debian 13+, `.rpm` for Fedora 41+ and EL10 with EPEL, and an
+  `.AppImage` for everything else (Arch and derivatives such as Omarchy,
+  openSUSE, NixOS with `appimage-run`). Make the AppImage executable and
+  run it; it needs FUSE 2 (`fuse2` on Arch), or run it with
+  `--appimage-extract-and-run`. RHEL/EL9 has no WebKitGTK 4.1 package and
+  is not supported by any format.
 
 ## Get an API key
 
