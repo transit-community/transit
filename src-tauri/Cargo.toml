@@ -62,7 +62,7 @@ anyhow = "1.0"
 # System font-database scan for the Settings → Terminal font picker
 # (v1.0.2). Pure-Rust (ttf-parser underneath); licenses all within
 # the deny.toml allowlist (MIT + Apache-2.0/MIT + Zlib transitives).
-fontdb = "0.23"
+fontdb = "0.24"
 
 # Tauri
 tauri = { version = "2.11.2" }
