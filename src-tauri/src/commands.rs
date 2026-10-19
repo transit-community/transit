@@ -3674,7 +3674,7 @@ pub struct ApiResponseWire {
     pub status: u16,
     pub body: String,
     pub truncated: bool,
-    /// Response headers (name, value) for the human Postman view. RAW like
+    /// Response headers (name, value) for the human request view. RAW like
     /// `body` — this is the operator's own controller data. The agent's
     /// tool output never carries headers (built from `body` alone), so a
     /// `Set-Cookie` session token can't reach the LLM via this path.
@@ -3695,7 +3695,7 @@ impl std::fmt::Debug for ApiResponseWire {
     }
 }
 
-/// Execute a HUMAN (Postman) request against an api_session's controller.
+/// Execute a HUMAN request against an api_session's controller.
 /// Resolves the session's endpoint + key, host-pins the path (the human
 /// cannot choose the host either), injects `X-API-KEY`, and sends with
 /// the caller's method. UNGATED on method — any method, exactly like

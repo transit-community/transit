@@ -1,7 +1,7 @@
 /**
  * Keyword-highlighting pattern sets.
  *
- * Inspired by feralpacket/securecrt-keyword-highlighting. The base set
+ * The base set
  * (`DEFAULT_PATTERNS`) is vendor-agnostic — each pattern is
  * word-bounded and case-insensitive where it should be. Per-vendor
  * packs layer vendor-specific vocabulary (Cisco syslog mnemonics,

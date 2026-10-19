@@ -96,7 +96,7 @@ function statusColor(status: number): string {
 }
 
 /**
- * v4.0.0 — the Postman-style request surface for an API session tab. The
+ * v4.0.0 — the request surface for an API session tab. The
  * HUMAN path: any method (ungated), host-pinned + key-injected server-side
  * via `api_send_request`. The endpoint catalog lives in the left APIs
  * sidebar under the controller; clicking an endpoint there loads it here
@@ -249,7 +249,7 @@ export function ApiSessionPane({
 
   // Panes stay mounted across tab switches (forceMount), so focus doesn't
   // follow the active tab on its own — land the cursor in the path box
-  // when this controller becomes active, the way Postman/SecureCRT do.
+  // when this controller becomes active, so typing can start at once.
   useEffect(() => {
     if (active) pathRef.current?.focus();
   }, [active]);

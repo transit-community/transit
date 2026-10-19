@@ -18,7 +18,7 @@ import { useUiStore } from "@/stores/uiStore";
  * The Cmd path (macOS metaKey) is an OS modifier — it's never
  * translated by xterm.js into bytes sent down the PTY. So every
  * `Cmd+letter` UI hotkey fires regardless of which element holds
- * focus, matching VS Code / Cursor / SecureCRT.
+ * focus, the common editor convention.
  *
  * The Ctrl path is different: `Ctrl+B` is readline backward-char,
  * `Ctrl+I` is Tab, `Ctrl+J` is linefeed. When the terminal owns

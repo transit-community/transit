@@ -3,7 +3,7 @@
 //! Design: the files pane sftp design notes (not included in this repository) (connection path) and
 //! §6 (this IPC surface). Threat model: T43.
 //!
-//! A Files session opens its **own** SSH connection (SecureFX behavior)
+//! A Files session opens its **own** SSH connection
 //! through the same `transit_ssh` machinery a terminal tab uses — same
 //! cipher policy, same host-key TOFU + changed-key modal, same weak-crypto
 //! opt-in, same auth-profile resolution — and then requests the `sftp`

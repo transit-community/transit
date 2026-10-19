@@ -325,7 +325,7 @@ impl Session {
         // caller starts driving the session. Sending init bytes via
         // `cmd_tx` (rather than directly through the channel half)
         // means they appear in scrollback like any other input,
-        // which matches SecureCRT's behavior — the user sees what
+        // so the user sees what
         // we sent.
         if let (Some(init_bytes), Some(rx)) = (paging_init, paging_rx) {
             // Spawned, NOT awaited: `open` must stay snappy, and the

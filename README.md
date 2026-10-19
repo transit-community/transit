@@ -15,7 +15,7 @@ are published as
 
 - **SSH terminal** built on `russh` and xterm.js: tabs, split panes,
   jump hosts (up to four hops), per-device colours, session logging,
-  a SecureCRT-style button bar, broadcast input to many sessions, and
+  a programmable button bar, broadcast input to many sessions, and
   bulk "launch all" from the inventory.
 - **USB-to-serial console** cables, a **local OS shell**, an **SFTP Files**
   pane, a **REST API** surface for controllers (UniFi, Meraki, NetBox, …),

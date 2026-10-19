@@ -136,7 +136,7 @@ export function DeviceRow({
           onClick={onClick}
           onContextMenu={onRowContextMenu}
           onDoubleClick={(e) => {
-            // Double-click is a Connect shortcut (matches SecureCRT).
+            // Double-click is a Connect shortcut.
             // preventDefault stops the second click from re-firing the
             // single-click select, which would race with the focus
             // shift that the new session tab triggers.

@@ -72,7 +72,7 @@ auth   = "lab-key"
 # (or `false`) means the safe default. The Edit-device dialog drives
 # both — see docs/highlighting.md and CLAUDE.md §17.
 syntax_highlighting = true
-# SecureCRT-style triple: auto-copy selection + middle/right-click paste.
+# Quick copy/paste: auto-copy selection + middle/right-click paste.
 quick_copy_paste = true
 # v4.1.0 per-device appearance overrides. All optional.
 # Terminal font for THIS device only — any CSS font-family; absent = the
@@ -83,7 +83,7 @@ font_size   = 15
 # and pane (needs `color` set). Absent/false = the subtle edge accent only.
 bold_color  = true
 # v6.5.0 — jump host: the `id` of ANOTHER [[device]] to tunnel through
-# (OpenSSH ProxyJump / SecureCRT "Firewall"). Transit connects to that
+# (OpenSSH ProxyJump). Transit connects to that
 # device first (its own auth profile + host-key pin), then reaches this
 # one over an end-to-end-encrypted direct-tcpip channel — the jump box
 # never sees this device's credentials or plaintext. Chains (a jump's
@@ -110,7 +110,7 @@ bold_color  = true
 #   ssh_key        — a private key file on disk (OpenSSH / PEM / PuTTY
 #                    .ppk). `path` points at the key; an optional nested
 #                    `passphrase` backend (keyring) holds the passphrase
-#                    for an encrypted key. SecureCRT-style; no agent.
+#                    for an encrypted key. No agent.
 #   op             — 1Password CLI: `op read op://Vault/Item/field`.
 #                    Biometric via 1Password CLI integration.
 #   keyring        — OS keystore: macOS Keychain / Windows Credential
@@ -192,7 +192,7 @@ secret   = { backend = "ssh_agent" }
 #
 # `vendor` selects the bundled request collection + the agent's read
 # policy. The AI agent may only ever issue GET (investigate-only); the
-# human Postman UI may use any method, exactly like the SSH terminal.
+# human request pane may use any method, exactly like the SSH terminal.
 #
 # `auth` selects how the credential is presented (v4.1.0; omitting it
 # keeps the historic UniFi `X-API-KEY` header):

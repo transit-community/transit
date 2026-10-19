@@ -90,7 +90,7 @@ export const deviceFormSchema = z.object({
    * so the TOML stays clean for users who never touched the checkbox.
    */
   syntax_highlighting: z.boolean(),
-  /** SecureCRT-style quick copy/paste — same null-on-false semantics. */
+  /** Quick copy/paste — same null-on-false semantics. */
   quick_copy_paste: z.boolean(),
   /** Per-device terminal font family override; "" = use the global
    *  terminal font. Collapses to `null` on the wire (like `color`). */

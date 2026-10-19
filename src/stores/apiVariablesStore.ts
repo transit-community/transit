@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 /**
- * v4.0.0 — per-controller API variables (Postman-style environment values).
+ * v4.0.0 — per-controller API variables (environment values for requests).
  *
  * The stable one is `consoleId` — needed in every Network/Protect connector
  * path but the same for a given console — so the operator sets it ONCE here

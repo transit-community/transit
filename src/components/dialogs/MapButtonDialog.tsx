@@ -25,9 +25,8 @@ export type MapButtonState =
   { kind: "none" } | { kind: "new" } | { kind: "edit"; button: ButtonBarButton };
 
 /**
- * SecureCRT-style "Map Button" dialog. v1 ships the single **Send String**
- * function (the dropdown is present to match SecureCRT's shape and leave room
- * for future functions). The String accepts the escape codes the executor
+ * "Map Button" dialog. v1 ships the single **Send String**
+ * function (the dropdown is present to leave room for future functions). The String accepts the escape codes the executor
  * understands (`\r \n \p \v \e \### \\`).
  */
 export function MapButtonDialog({

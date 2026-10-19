@@ -335,7 +335,7 @@ export function useEnrollSecret() {
 /**
  * Open an SSH session to a device. On success, appends a tab to
  * `uiStore.sessions` and focuses it. Multiple sessions per device
- * are allowed (Phase 3 — SecureCRT model); existing sessions are
+ * are allowed (Phase 3); existing sessions are
  * left alone, so a second Connect on the same device simply opens
  * a second tab.
  *

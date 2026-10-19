@@ -36,7 +36,7 @@ pub enum ApiError {
     PathEscape { base: String },
 
     /// The caller supplied an HTTP method that is not a valid token
-    /// (human Postman path only — the agent path is GET-locked).
+    /// (human request path only — the agent path is GET-locked).
     #[error("invalid HTTP method `{0}`")]
     InvalidMethod(String),
 

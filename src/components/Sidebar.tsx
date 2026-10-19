@@ -314,7 +314,7 @@ export function Sidebar() {
                     setActiveDeviceId(device.id);
                     // Phase 3: each Connect always opens a new tab.
                     // Existing sessions on the same device are left
-                    // alone (SecureCRT model). Close happens via the
+                    // alone. Close happens via the
                     // tab strip's X, not from the sidebar.
                     connectMutation.mutate(device.id, {
                       onError: (err) => {

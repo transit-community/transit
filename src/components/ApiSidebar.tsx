@@ -260,7 +260,7 @@ function ApiGroupView({
 /**
  * v4.0.0 — the "APIs" sidebar, shown when the left-rail PanelSwitcher is
  * on `apis`. The HTTP-world sibling of the device `Sidebar`: lists
- * `[[api_session]]` controllers, launches them into the Postman pane
+ * `[[api_session]]` controllers, launches them into the request pane
  * (wired next), and manages add/edit/delete. Server state lives in
  * TanStack Query (`["apiSessions"]`), never the store.
  */

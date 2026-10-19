@@ -24,8 +24,7 @@ import { isFilesTab, useUiStore } from "@/stores/uiStore";
 /**
  * v5.0.0 — the launcher for the Files (SFTP) surface, the 4th rail tab.
  *
- * Rides the SAME inventory as the SSH sidebar (SecureFX riding SecureCRT's
- * session database): it renders the very same `DeviceTree` — groups, tags,
+ * Rides the SAME inventory as the SSH sidebar: it renders the very same `DeviceTree` — groups, tags,
  * per-host colors, drag-to-regroup, multi-select, and the SHARED collapse
  * state (`preferences.collapsedGroups`, deliberately shared: same tree,
  * same folds) — with the injected launch action swapped from "Connect" to

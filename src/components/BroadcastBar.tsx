@@ -11,7 +11,7 @@ import { encodeBytesToBase64 } from "@/lib/terminal/bytes";
 import { hasPty, useUiStore } from "@/stores/uiStore";
 
 /**
- * v2.4.0 SecureCRT-style broadcast input bar. A strip below the button bar,
+ * v2.4.0 broadcast input bar. A strip below the button bar,
  * shown when `preferences.showBroadcastBar` (View → Broadcast Input). You
  * type ONE line and it's sent — with a trailing `\r` — to every targeted
  * LIVE session at once via the existing `send_input` PTY path.

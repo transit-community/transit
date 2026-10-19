@@ -40,7 +40,7 @@ const REQUEST_TIMEOUT: Duration = Duration::from_secs(60);
 /// *view* further downstream (`cap_head_tail`); this caps the *buffer*.
 const MAX_BODY_BYTES: usize = 8 * 1024 * 1024;
 
-/// Response-header caps for the human Postman view. A pathological
+/// Response-header caps for the human request view. A pathological
 /// controller cannot bloat the IPC payload / UI: at most this many
 /// (name, value) pairs, each value truncated to [`MAX_HEADER_VALUE_LEN`].
 const MAX_RESPONSE_HEADERS: usize = 100;
@@ -72,7 +72,7 @@ pub struct ApiClient {
 /// renders it verbatim (their own device's data).
 ///
 /// `headers` is the response header set (name, value) in wire order, for
-/// the HUMAN Postman view only — capped at [`MAX_RESPONSE_HEADERS`] pairs
+/// the HUMAN request view only — capped at [`MAX_RESPONSE_HEADERS`] pairs
 /// and per-value length. The agent's tool output is built from `body`
 /// alone, so headers never cross the redaction boundary to the LLM
 /// (a `Set-Cookie` session token stays out of the model's context).
@@ -268,7 +268,7 @@ impl ApiClient {
         self.send(Method::GET, url, &header_map, None, auth).await
     }
 
-    /// The HUMAN (Postman) send path. Confines `path` to `endpoint`
+    /// The HUMAN send path. Confines `path` to `endpoint`
     /// (host-pin — the human cannot choose the host either), accepts ANY
     /// method (ungated, exactly like typing at the SSH terminal), injects
     /// the key, and sends. The response is returned RAW — redaction is the
@@ -293,7 +293,7 @@ impl ApiClient {
 
     /// Parse caller (human) headers into a [`HeaderMap`], refusing any
     /// invalid name/value (CRLF, control chars) before a request is built.
-    /// Uses `append`, not `insert`: a Postman user may set the same header
+    /// Uses `append`, not `insert`: a user may set the same header
     /// twice (e.g. two `Accept`) and both must be sent. The injected
     /// `X-API-KEY` is unaffected — [`send`](Self::send) strips every caller
     /// `x-api-key` (case-insensitive) before injecting its own.
@@ -319,7 +319,7 @@ impl ApiClient {
     /// the host via [`Endpoint::confine`](crate::Endpoint::confine) or
     /// the [`gate`](crate::gate)).
     ///
-    /// `extra_headers` are caller-supplied (e.g. human Postman headers);
+    /// `extra_headers` are caller-supplied (e.g. the request pane's headers);
     /// any `x-api-key` among them is dropped — this method is the sole
     /// authority for that header. `key` is injected as `X-API-KEY`,
     /// marked sensitive, and never placed in the URL or logged. The

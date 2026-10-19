@@ -102,14 +102,14 @@ pub struct Device {
     /// defaults — see the field comments.
     ///
     /// Modeled per-device (not as a global UI preference) because
-    /// SecureCRT's session-config model is the user expectation:
+    /// per-session configuration is the user expectation:
     /// some devices want syntax highlighting, others want plain
     /// black/white, and the choice should travel with the session.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub syntax_highlighting: Option<bool>,
 
     /// Per-device quick copy/paste. When `Some(true)` the
-    /// `TerminalPane` enables three SecureCRT-style behaviors at
+    /// `TerminalPane` enables three behaviors at
     /// once: auto-copy on text selection, middle-click paste, and
     /// right-click paste. Multi-line pastes still gate on the
     /// confirmation dialog regardless of which trigger started them.
@@ -173,8 +173,7 @@ pub struct Device {
     pub netbox_id: Option<String>,
 
     /// Jump host: the `id` of ANOTHER device in this file to tunnel
-    /// through (v6.5.0 — OpenSSH `ProxyJump` semantics, SecureCRT's
-    /// "Firewall"). The connect flow establishes the referenced device's
+    /// through (v6.5.0 — OpenSSH `ProxyJump` semantics). The connect flow establishes the referenced device's
     /// connection first (its own auth profile, host-key pin, and
     /// weak-crypto opt-in), then reaches this device over a
     /// `direct-tcpip` channel — the jump box forwards ciphertext and is

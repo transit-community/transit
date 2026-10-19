@@ -10,7 +10,7 @@
 //! vs. agent-proposed commands (the policy gate is *agent-only*; human
 //! input is never gated):
 //!
-//! - **The human**, through the Postman-style UI, may issue ANY method
+//! - **The human**, through the API request pane, may issue ANY method
 //!   (GET / POST / PUT / DELETE). This is exactly like typing
 //!   `configure` at a terminal — the operator has always been able to
 //!   mutate their own gear. These calls skip [`gate`] entirely and go

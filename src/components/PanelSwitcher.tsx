@@ -7,8 +7,7 @@ import { useUiStore } from "@/stores/uiStore";
 
 /**
  * v4.0.0 — the far-left vertical rail that switches the sidebar between
- * SSH devices and API controllers. Mirrors SecureCRT's rotated
- * "Session Manager" / "Command Manager" tabs. UI-only state
+ * SSH devices and API controllers, as rotated tabs. UI-only state
  * (`uiStore.sidebarView`); the active view decides which sidebar App
  * renders.
  *

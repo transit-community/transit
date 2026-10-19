@@ -2,7 +2,7 @@
 //!
 //! A passive **second** subscriber on a session's output broadcast that
 //! streams each chunk to a user-chosen file, optionally prefixing every
-//! line with a UTC timestamp. SecureCRT-style "log this session".
+//! line with a UTC timestamp. "Log this session".
 //!
 //! # Why a second subscriber is safe
 //! `Session::subscribe()` hands out an independent `broadcast::Receiver`.

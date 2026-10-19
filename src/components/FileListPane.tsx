@@ -211,7 +211,7 @@ export function FileListPane({
   const open = (entry: FileEntry) => {
     if (disabled) return;
     // Directories navigate; anything else transfers to the other pane's
-    // current directory — SecureFX muscle memory (plan veto #4). An
+    // current directory (plan veto #4). An
     // explicitly chosen symlink is allowed through: the engine follows a
     // symlinked FILE that the user picked, and refuses only links it meets
     // while walking a directory (T43).

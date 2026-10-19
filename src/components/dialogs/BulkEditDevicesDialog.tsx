@@ -420,7 +420,7 @@ export function BulkEditDevicesDialog({ open, onOpenChange, devices }: BulkEditD
 
           <FieldRow
             label="Quick copy/paste"
-            help="SecureCRT-style: selection auto-copies; right/middle click pastes."
+            help="Selection auto-copies; right/middle click pastes."
             control={
               <ModeButtons
                 value={quickMode}

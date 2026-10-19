@@ -29,7 +29,7 @@ export const PREFERENCES_KEY = "transit.preferences";
  *  without lowering that strands restored sessions without tabs. */
 export const CHAT_TABS_MAX = 8;
 
-/** A single SecureCRT-style button-bar macro. `value` is the "Send
+/** A single button-bar macro. `value` is the "Send
  *  String" — sent to the active session with escape codes expanded
  *  (\r Enter, \n newline, \p 1s delay, \v paste, \e/\033/\### ESC/octal). */
 export interface ButtonBarButton {
@@ -39,7 +39,7 @@ export interface ButtonBarButton {
   /** v6.1.0 — where the button's text goes.
    *
    *  `"session"` (default, and what every pre-v6.1.0 button is) sends the
-   *  value to the active PTY with the SecureCRT escape codes expanded.
+   *  value to the active PTY with the escape codes expanded.
    *  `"agent"` drops it into the AI composer instead, turning the bar into
    *  a saved-prompt palette.
    *
@@ -124,7 +124,7 @@ interface PersistedPreferences {
    *  key means expanded, so the default-open behavior needs no
    *  migration and the map stays small. Survives app restarts. */
   collapsedGroups: Record<string, boolean>;
-  /** v1.4.0 SecureCRT-style button bar visibility (View → Button Bar,
+  /** v1.4.0 button bar visibility (View → Button Bar,
    *  or the bar's own hide). */
   showButtonBar: boolean;
   /** v2.7.0 — the user's named button bars (always ≥ 1). Replaces the
@@ -135,7 +135,7 @@ interface PersistedPreferences {
   /** Which bar renders + receives Map Button edits. Sanitized on load
    *  to an existing bar id (falls back to the first bar). */
   activeButtonBarId: string;
-  /** v2.4.0 SecureCRT-style broadcast input bar visibility (View →
+  /** v2.4.0 broadcast input bar visibility (View →
    *  Broadcast Input, or the bar's own close). Sends one typed line to
    *  every targeted live session at once — human input, NOT policy-gated
    *  (see BroadcastBar.tsx). Off by default. */
@@ -522,7 +522,7 @@ export interface SessionTab {
   sessionId: string;
   /** Inventory device id this session was opened against. NOT unique
    *  across the sessions array — Phase 3 allows multiple sessions per
-   *  device (SecureCRT model). */
+   *  device. */
   deviceId: string;
   /** Flips true when the remote closes the channel (`pty:{id}:closed`
    *  event). The tab stays in the array so the user can read the
@@ -532,7 +532,7 @@ export interface SessionTab {
   /** Phase 7a C9 — user-supplied tab label (right-click → Rename). When
    *  null/empty, the auto-generated label (`computeLabels`) is used.
    *  Session-scoped: reconnecting the same device opens a fresh tab
-   *  and the custom name does NOT carry over (matches SecureCRT). */
+   *  and the custom name does NOT carry over. */
   customLabel?: string | null;
   /** When set, this session is a PANE inside the tab whose PRIMARY session
    *  id is `splitWith` (v4.4.0 generalized "right pane" → "a pane in tab X").
@@ -689,8 +689,7 @@ interface UiState {
   toggleSidebar: () => void;
 
   /** v4.0.0 — which sidebar the left panel shows: SSH devices or API
-   *  controllers. Driven by the left-rail PanelSwitcher (SecureCRT's
-   *  Session/Command-Manager pattern). UI-only. */
+   *  controllers. Driven by the left-rail PanelSwitcher. UI-only. */
   sidebarView: SidebarView;
   setSidebarView: (view: SidebarView) => void;
 
@@ -799,10 +798,10 @@ interface UiState {
    *  Called after an import so the freshly-created groups are visible. */
   expandGroups: (paths: string[]) => void;
 
-  /** v1.4.0 button bar (SecureCRT-style). `showButtonBar` toggles the bar
+  /** v1.4.0 button bar. `showButtonBar` toggles the bar
    *  (View → Button Bar); the macros below are persisted with it. */
   setShowButtonBar: (visible: boolean) => void;
-  /** v2.4.0 broadcast bar (SecureCRT-style). Toggles the broadcast input
+  /** v2.4.0 broadcast bar. Toggles the broadcast input
    *  bar (View → Broadcast Input, or the bar's own close). */
   setShowBroadcastBar: (visible: boolean) => void;
   /** Append a macro to the ACTIVE bar (id generated). Capped at
@@ -915,7 +914,7 @@ interface UiState {
     dir: "row" | "col",
     agentDeviceId?: string,
   ) => void;
-  /** v4.0.0 — open a Postman-style API tab bound to an api_session
+  /** v4.0.0 — open an API request tab bound to an api_session
    *  controller. Frontend-only (no backend session); focuses the tab. */
   openApiTab: (apiSessionId: string, name: string) => void;
   /** v4.4.0 — append a local-shell tab. `sessionId` is the REAL backend

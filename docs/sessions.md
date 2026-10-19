@@ -1,7 +1,7 @@
 # Sessions
 
 Phase 3 lifts Transit from one-session-at-a-time to a tabbed
-multi-session UI, modeled on SecureCRT's session-tabs experience.
+multi-session UI.
 
 ## Opening sessions
 

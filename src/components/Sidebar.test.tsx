@@ -232,7 +232,7 @@ describe("Sidebar", () => {
     });
   });
 
-  it("double-clicking a device row connects (matches SecureCRT)", async () => {
+  it("double-clicking a device row connects", async () => {
     const { connectDevice } = await import("@/lib/api");
     const mockedConnect = vi.mocked(connectDevice);
     mockedConnect.mockResolvedValue("session-uuid-dbl");

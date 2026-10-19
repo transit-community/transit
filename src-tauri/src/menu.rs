@@ -1,5 +1,5 @@
 //! Native application menu (v1.4.0). Transit's first menu bar — the vehicle
-//! for SecureCRT-style **View → Button Bar**.
+//! for **View → Button Bar**.
 //!
 //! Because a custom menu replaces the macOS default, the standard App / Edit /
 //! Window items are re-added via `PredefinedMenuItem` so Quit / Copy / Paste /

@@ -1,7 +1,7 @@
-// SecureCRT-style "Send String" parser + executor for the v1.4.0 button bar.
+// "Send String" parser + executor for the v1.4.0 button bar.
 //
 // A button's value is a single string that may interleave literal text with
-// escape codes (matching SecureCRT's documented Send String codes):
+// escape codes:
 //
 //   \r        carriage return (Enter)
 //   \n        line feed (newline)
@@ -22,7 +22,7 @@ import { encodeBytesToBase64 } from "@/lib/terminal/bytes";
 export type ButtonSegment =
   { kind: "bytes"; bytes: Uint8Array } | { kind: "delay"; ms: number } | { kind: "paste" };
 
-/** Milliseconds for a single `\p` pause (SecureCRT = one second). */
+/** Milliseconds for a single `\p` pause (one second). */
 export const PAUSE_MS = 1000;
 
 const CR = 0x0d;

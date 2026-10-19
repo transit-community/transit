@@ -2,7 +2,7 @@
 //! history the agent reads via `read_scrollback` + `list_open_sessions`.
 //!
 //! An `[[api_session]]` (a UniFi controller) is inventory, not a live
-//! connection: the human's Postman UI sends stateless `api_send_request`
+//! connection: the human's request pane sends stateless `api_send_request`
 //! calls (`commands.rs`). To let the AGENT see + read a controller the way
 //! it sees an SSH session, a per-controller scrollback ring is created when
 //! the controller becomes an OPEN session — either the moment its API tab

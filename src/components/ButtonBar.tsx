@@ -25,15 +25,14 @@ import { useOverflowScroll } from "@/lib/useOverflowScroll";
 import { hasPty, resolveActivePaneId, useUiStore } from "@/stores/uiStore";
 
 /**
- * v1.4.0 SecureCRT-style button bar. A strip below the terminal, shown when
+ * v1.4.0 button bar. A strip below the terminal, shown when
  * `preferences.showButtonBar` (toggled from View → Button Bar). Each button
  * sends its macro to the ACTIVE session via the escape-code executor — this
  * is human input over the existing `send_input` PTY path (identical to
  * typing), so it is NOT policy-gated. Right-click the bar to add a button or
  * hide the bar; right-click a button to edit or delete it.
  *
- * v2.7.0 — multiple NAMED bars (e.g. a "VOIP" set vs a "Routers" set,
- * SecureCRT parity). Only the active bar renders; with 2+ bars a compact
+ * v2.7.0 — multiple NAMED bars (e.g. a "VOIP" set vs a "Routers" set). Only the active bar renders; with 2+ bars a compact
  * left cluster appears: stacked up/down chevrons cycle (up = previous,
  * down = next, wrapping) and the bar's name opens a jump popover. Bars are
  * managed from the strip's context menu (New / Rename / Delete — Delete is

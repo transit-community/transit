@@ -4,7 +4,7 @@
 //! requests can ever reach. Callers supply a relative path;
 //! [`Endpoint::confine`] joins it to the base and refuses anything that
 //! resolves off-origin or above the API path prefix. This is the one
-//! guarantee shared by BOTH the human (Postman) and agent paths: the
+//! guarantee shared by BOTH the human and agent paths: the
 //! host is never caller-chosen, so a crafted path cannot reach an
 //! internal service (SSRF) or ship the injected key to a foreign host.
 

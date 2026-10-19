@@ -38,7 +38,7 @@ export function MainArea() {
 
   // Pick the work-area content. Everything below renders inside a column
   // whose bottom row is the button bar — shown whenever enabled
-  // (SecureCRT-style: a persistent toolbar, NOT session-scoped, so it's
+  // (a persistent toolbar, NOT session-scoped, so it's
   // visible the moment you toggle View → Button Bar, connected or not).
   let content: ReactNode;
   if (hasSessions) {
@@ -97,11 +97,11 @@ export function MainArea() {
       {/* `min-h-0 flex-1 overflow-hidden` lets a fitted xterm shrink so the
           button-bar row below is never pushed off-screen (verified RC2). */}
       <div className="min-h-0 flex-1 overflow-hidden">{content}</div>
-      {/* v1.4.0 SecureCRT-style button bar — persistent across every view
+      {/* v1.4.0 button bar — persistent across every view
           when enabled. Renders null when off; clicks no-op without an
           active session. */}
       <ButtonBar />
-      {/* v2.4.0 SecureCRT-style broadcast input bar — below the button bar
+      {/* v2.4.0 broadcast input bar — below the button bar
           when both are on. Renders null when off. Human input (not
           policy-gated); loud red strip + live device count is the safety. */}
       <BroadcastBar />

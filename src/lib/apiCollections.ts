@@ -196,7 +196,7 @@ export function isDestructiveMethod(method: string): boolean {
   return NON_GET_METHODS.has(method.trim().toUpperCase());
 }
 
-/** Tailwind text-color class for an HTTP method badge (Postman-style). */
+/** Tailwind text-color class for an HTTP method badge. */
 export function methodColor(method: string): string {
   switch (method.trim().toUpperCase()) {
     case "GET":

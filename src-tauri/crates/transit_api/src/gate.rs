@@ -6,7 +6,7 @@
 //! semantics, so "investigate-only" holds by construction rather than by
 //! pattern-matching a command string.
 //!
-//! Human (Postman) requests do NOT come through here — they are ungated
+//! Human requests do NOT come through here — they are ungated
 //! by design (see the crate docs). Every AGENT-proposed request does.
 
 use url::Url;

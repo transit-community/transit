@@ -26,7 +26,7 @@ export interface DeviceMeta {
   syntax_highlighting: boolean | null;
   /**
    * Per-device quick copy/paste. When `true`, the `TerminalPane`
-   * enables three SecureCRT-style behaviors: auto-copy on
+   * enables three behaviors: auto-copy on
    * selection, middle-click paste, and right-click paste.
    * Multi-line pastes still confirm via the modal.
    */
@@ -55,7 +55,7 @@ export interface DeviceMeta {
    *  never form-edited. Non-secret. */
   netbox_id: string | null;
   /** Jump host (v6.5.0): the id of ANOTHER inventory device this one
-   *  tunnels through (OpenSSH ProxyJump / SecureCRT "Firewall").
+   *  tunnels through (OpenSSH ProxyJump).
    *  `null` = direct connection. Non-secret topology metadata. */
   jump_via: string | null;
   /** Per-device SSH agent-forwarding opt-in (v6.5.0, T53). `null` (or
@@ -341,12 +341,12 @@ export interface ApiResponseWire {
   body: string;
   truncated: boolean;
   /** Response headers (name, value) in wire order, RAW like `body`. Human
-   *  Postman view only — the agent's tool output never carries headers. */
+   *  request view only — the agent's tool output never carries headers. */
   headers: [string, string][];
 }
 
 /**
- * Execute a HUMAN (Postman) request against an api_session's controller.
+ * Execute a HUMAN request against an api_session's controller.
  * Any method (ungated). The host is pinned to the controller and the API
  * key is injected server-side; only method/path/headers/body cross IPC.
  */

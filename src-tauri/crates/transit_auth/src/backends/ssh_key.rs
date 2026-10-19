@@ -1,5 +1,5 @@
 //! `ssh_key` backend — loads an SSH private key from a file on disk
-//! (SecureCRT-style "pick the key file"), decrypting it with an
+//! ("pick the key file"), decrypting it with an
 //! optional passphrase that rides a *value* backend (keyring/op/env).
 //!
 //! Like [`SshAgentBackend`](super::ssh_agent::SshAgentBackend), the

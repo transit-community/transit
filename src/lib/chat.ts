@@ -77,9 +77,9 @@ function withKey(m: ChatMessage): ChatMessageView {
  *     deltas accumulate in `streamingText` until a `completed`
  *     event flushes them into `messages` as an Assistant entry.
  *   - `cancel()` aborts the in-flight stream (Rust side drops
- *     the reqwest body); we discard the partial text. Cursor's
- *     "stop the LLM mid-thought" UX expects the partial to vanish
- *     since the agent loop hasn't finalized it.
+ *     the reqwest body); we discard the partial text, since a
+ *     stopped-mid-thought reply was never finalized by the agent loop
+ *     and showing a fragment would read as an answer.
  */
 export interface UseChatResult {
   messages: ChatMessageView[];

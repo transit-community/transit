@@ -2,8 +2,7 @@
 
 Transit's terminal pane (Phase 2c+) supports optional **per-device**
 keyword highlighting — color matching for interface states, BGP
-states, severity keywords, and network identifiers. Inspired by
-[`feralpacket/securecrt-keyword-highlighting`][feralpacket]; rendered
+states, severity keywords, and network identifiers. Rendered
 client-side via line-buffered ANSI injection so it pauses correctly
 on alt-screen apps (`vi`, `less`, `top`).
 
@@ -19,7 +18,7 @@ A small `syntax highlighting` badge appears in the terminal-pane
 header while a session with highlighting enabled is open.
 
 The setting is **per-device** — each connection in the inventory has
-its own preference, mirroring SecureCRT's session-config model.
+its own preference, so the choice travels with the session.
 Disabling on one device leaves others untouched.
 
 ## Default pattern set
@@ -88,4 +87,3 @@ reach `term.write()`. Strategy:
   foreground color only; a future tier could use background for
   high-severity matches (CRITICAL / FAIL).
 
-[feralpacket]: https://github.com/feralpacket/securecrt-keyword-highlighting

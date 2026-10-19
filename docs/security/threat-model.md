@@ -1715,7 +1715,7 @@ skipped).**
 
 **Residual (accepted, documented).** A GET endpoint with a server-side
 side effect (bad vendor API design) would run — "GET is safe" is the HTTP
-contract we rely on, the same assumption the human Postman path makes; the
+contract we rely on, the same assumption the human request path makes; the
 per-call modal is the backstop (the human sees + approves every path). A
 controller's own API key can still read that controller's own secrets in the
 response — that is the point of the tool; the redaction filter (T38) keeps
@@ -1997,7 +1997,7 @@ all. We state this head-on rather than by analogy: the pane adds human write
 
 **Residual (accepted).** A human with credentials can push any file to a
 device they administer and pull any file the account can read — the same
-authority as `scp`/SecureFX, exercised deliberately, per file, with their own
+authority as `scp`, exercised deliberately, per file, with their own
 hands. A compromised webview gains no new authority class from `files_*` (it
 already holds `send_input` to live device terminals and `open_local_shell`).
 
@@ -2570,8 +2570,7 @@ one notch weaker (no remote device involved).
 **What shipped.** A device may declare `jump_via = "<device-id>"`: the
 connect flow establishes the referenced device's connection first (its own
 auth profile, host-key pin, weak-crypto opt-in), then reaches the target
-over a `direct-tcpip` channel on it — OpenSSH `ProxyJump` semantics,
-SecureCRT's "Firewall". Chains compose to depth 4. Both the PTY path and
+over a `direct-tcpip` channel on it — OpenSSH `ProxyJump` semantics. Chains compose to depth 4. Both the PTY path and
 the Files/SFTP path ride the same `establish_connection_chain`.
 
 **The threat.** The jump host is an intermediary chosen by inventory

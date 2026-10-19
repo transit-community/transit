@@ -12,6 +12,11 @@ bumps the version files in lockstep.
 
 ## [Unreleased]
 
+## [6.5.9] - 2026-10-19
+
+The first Community Edition release: the proprietary Transit desktop
+client at 6.5.9, open-sourced under Apache-2.0, plus everything below.
+
 ### Changed
 - **October dependency train (post-fork).** Tauri 2.12.4 with its plugins
   on both sides, React 19.3.1, Vite 8.3.4, Vitest 5.0.5, the Radix
