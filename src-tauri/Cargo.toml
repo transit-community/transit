@@ -158,7 +158,7 @@ tokio-stream = "0.1"
 
 # SSH transport. russh is pre-1.0 with periodic API churn — pin
 # loosely on the current minor; expect to migrate ~yearly.
-russh = "0.63"
+russh = "0.64"
 
 # `bytes::Bytes` for zero-copy PTY-byte plumbing. Already pulled in
 # transitively via russh; declared here so the public Session API
