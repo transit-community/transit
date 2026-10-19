@@ -26,6 +26,13 @@ yanked = "deny"
 # Carve-outs are for advisories on transitive deps we cannot upgrade
 # directly. Each entry needs a justification + a remove-by checkpoint.
 ignore = [
+    # zvariant / zbus_names / zvariant_derive were folded into zbus 6.0 as
+    # its `wire` module and flagged unmaintained as standalone crates
+    # (2026-10-17). They reach us only through tauri-plugin-opener → zbus 5.
+    # Remove when tauri-plugin-opener depends on zbus >= 6.
+    "RUSTSEC-2026-0370",  # zvariant
+    "RUSTSEC-2026-0371",  # zbus_names
+    "RUSTSEC-2026-0372",  # zvariant_derive
     # All in the unic-* family — pulled in by tauri 2.x via tauri-utils.
     # Awaiting upstream Tauri to migrate to icu_properties / unicode-ident.
     "RUSTSEC-2025-0075",  # unic-char-range

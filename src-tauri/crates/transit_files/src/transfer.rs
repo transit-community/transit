@@ -54,6 +54,7 @@ use crate::types::{
     Direction, EntryKind, OverwritePolicy, TransferDescriptor, TransferEvent, TransferItem,
     TransferState,
 };
+use russh_sftp::client::fs::File;
 
 /// Copy buffer. Comfortably inside russh-sftp's 256 KiB packet cap and
 /// 4× the SSH channel packet size, so the pipeline stays full without
@@ -649,6 +650,22 @@ async fn download_file(
     Ok(true)
 }
 
+/// Release a remote handle on the CANCEL path without waiting for it.
+///
+/// `File::close` awaits every in-flight request before sending the close.
+/// russh-sftp 3.0 pipelines up to `max_concurrent_reads` reads, so on a
+/// slow link that wait is up to sixteen round-trips — long enough that
+/// `FilesSession::close`'s drain timeout aborted the worker before the
+/// job could emit its `Cancelled` event (seen on the slower CI runners).
+/// Cancellation must be prompt. Since 3.0 a dropped `File` sends the
+/// server a close without waiting (`Drop` → `close_nowait`), so dropping
+/// is the right cancel-path release. The SUCCESS paths keep the awaited
+/// close, because there the close status (and any pending write error)
+/// is the result.
+fn close_detached(handle: File) {
+    drop(handle);
+}
+
 async fn copy_remote_to_local(
     remote: &RemoteFs,
     remote_path: &str,
@@ -679,7 +696,7 @@ async fn copy_remote_to_local(
         let read = tokio::select! {
             biased;
             _ = cancel.cancelled() => {
-                let _ = reader.close().await;
+                close_detached(reader);
                 return Err(FilesError::Cancelled);
             }
             r = reader.read(&mut buf) => r,
@@ -972,7 +989,7 @@ async fn copy_local_to_remote(
     let mut buf = vec![0u8; CHUNK];
     loop {
         if cancel.is_cancelled() {
-            let _ = writer.close().await;
+            close_detached(writer);
             return Err(FilesError::Cancelled);
         }
         let n = reader.read(&mut buf).await.map_err(|e| FilesError::Local {
@@ -986,7 +1003,7 @@ async fn copy_local_to_remote(
         let write = tokio::select! {
             biased;
             _ = cancel.cancelled() => {
-                let _ = writer.close().await;
+                close_detached(writer);
                 return Err(FilesError::Cancelled);
             }
             w = writer.write_all(&buf[..n]) => w,

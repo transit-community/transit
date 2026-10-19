@@ -24,6 +24,12 @@ bumps the version files in lockstep.
   re-pinned to their new commit SHAs.
 
 ### Fixed
+- **Cancelling a transfer waited on in-flight reads.** With russh-sftp 3.0
+  pipelining up to sixteen reads, the cancel path's awaited handle close
+  could outlast the session's two-second drain and the worker was aborted
+  before the transfer reported Cancelled. The cancel path now drops the
+  handle (3.0 closes it server-side without waiting); completed transfers
+  still await the close status.
 - **Tab rename lost the draft on a click inside the field.** Radix tabs
   1.2 focuses the tab button on mousedown, so a click to place the caret
   in the inline rename input bubbled up, blurred the input and committed
