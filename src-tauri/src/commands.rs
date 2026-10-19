@@ -361,6 +361,120 @@ pub fn inventory_path() -> PathBuf {
         .unwrap_or_else(|| PathBuf::from("transit.toml"))
 }
 
+/// First-launch import from the proprietary Transit client.
+///
+/// The Community Edition keeps its files under `TransitCommunity/` so the
+/// two apps can coexist, but a user migrating from Transit expects their
+/// devices and host-key pins to simply be there. On a release build, when
+/// our inventory does not exist yet and the legacy `Transit/` directory
+/// holds one, copy `transit.toml` and `known_hosts.toml` across once.
+/// Never overwrites, never deletes the originals, never touches
+/// `config.toml` (its `[local_models]` endpoints reference keychain tokens
+/// stored under the proprietary service name, which this edition cannot
+/// read — carrying them over would leave half-configured endpoints).
+/// Device credentials need no migration: both editions keep them under the
+/// same keychain service, keyed by the auth profile.
+///
+/// Skipped when `$TRANSIT_INVENTORY` is set (the user chose a path) and on
+/// debug builds (the inventory is project-relative there).
+pub fn migrate_legacy_config() {
+    if std::env::var_os("TRANSIT_INVENTORY").is_some() || cfg!(debug_assertions) {
+        return;
+    }
+    let Some(cfg) = dirs::config_dir() else {
+        return;
+    };
+    let copied = migrate_legacy_dir(&cfg.join("Transit"), &cfg.join("TransitCommunity"));
+    if !copied.is_empty() {
+        tracing::info!(files = ?copied, "imported configuration from the proprietary Transit client");
+    }
+}
+
+/// The pure half of [`migrate_legacy_config`]: copy each of the carried
+/// files from `legacy` into `new` when the source exists and the
+/// destination does not. Returns the names copied. A copy failure is
+/// logged and skipped; it must never block startup.
+pub(crate) fn migrate_legacy_dir(
+    legacy: &std::path::Path,
+    new: &std::path::Path,
+) -> Vec<&'static str> {
+    const CARRIED: [&str; 2] = ["transit.toml", "known_hosts.toml"];
+    // Only ever act on a fresh install: an existing inventory of ours means
+    // the user is already running this edition and the legacy files are
+    // history, not state.
+    if new.join("transit.toml").exists() {
+        return Vec::new();
+    }
+    let mut copied = Vec::new();
+    for name in CARRIED {
+        let src = legacy.join(name);
+        let dst = new.join(name);
+        if !src.is_file() || dst.exists() {
+            continue;
+        }
+        if let Err(e) = std::fs::create_dir_all(new) {
+            tracing::warn!(error = %e, "could not create the config directory for the legacy import");
+            return copied;
+        }
+        match std::fs::copy(&src, &dst) {
+            Ok(_) => copied.push(name),
+            Err(e) => tracing::warn!(file = name, error = %e, "legacy import: copy failed"),
+        }
+    }
+    copied
+}
+
+#[cfg(test)]
+mod legacy_import_tests {
+    use super::migrate_legacy_dir;
+
+    #[test]
+    fn copies_inventory_and_pins_once_and_never_overwrites() {
+        let tmp = tempfile::tempdir().unwrap();
+        let legacy = tmp.path().join("Transit");
+        let new = tmp.path().join("TransitCommunity");
+        std::fs::create_dir_all(&legacy).unwrap();
+        std::fs::write(legacy.join("transit.toml"), "devices = []\n").unwrap();
+        std::fs::write(legacy.join("known_hosts.toml"), "hosts = []\n").unwrap();
+        std::fs::write(legacy.join("config.toml"), "[local_models]\n").unwrap();
+
+        let copied = migrate_legacy_dir(&legacy, &new);
+        assert_eq!(copied, vec!["transit.toml", "known_hosts.toml"]);
+        assert_eq!(
+            std::fs::read_to_string(new.join("transit.toml")).unwrap(),
+            "devices = []\n"
+        );
+        assert!(new.join("known_hosts.toml").is_file());
+        assert!(
+            !new.join("config.toml").exists(),
+            "config.toml is deliberately not carried"
+        );
+        assert!(
+            legacy.join("transit.toml").is_file(),
+            "originals are left in place"
+        );
+
+        // A second launch is a no-op, and a later legacy edit never clobbers ours.
+        std::fs::write(legacy.join("transit.toml"), "devices = [1]\n").unwrap();
+        assert!(migrate_legacy_dir(&legacy, &new).is_empty());
+        assert_eq!(
+            std::fs::read_to_string(new.join("transit.toml")).unwrap(),
+            "devices = []\n"
+        );
+    }
+
+    #[test]
+    fn nothing_to_import_is_a_quiet_no_op() {
+        let tmp = tempfile::tempdir().unwrap();
+        let new = tmp.path().join("TransitCommunity");
+        assert!(migrate_legacy_dir(&tmp.path().join("Transit"), &new).is_empty());
+        assert!(
+            !new.exists(),
+            "no directory is created when there is nothing to copy"
+        );
+    }
+}
+
 /// Resolve the per-vendor policies directory. Precedence:
 ///
 /// 1. `$TRANSIT_POLICIES` — explicit override (CI, tests).

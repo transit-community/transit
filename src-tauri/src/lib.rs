@@ -88,6 +88,10 @@ pub fn run() {
             // setup.
             let policies_dir = commands::resolve_policies_dir(app);
             let user_policies_dir = commands::resolve_user_policies_dir();
+            // One-time import of a proprietary-Transit inventory + host-key
+            // pins into this edition's directory; a no-op on every later
+            // launch and on a fresh machine.
+            commands::migrate_legacy_config();
             let inventory_path = commands::inventory_path();
             let runtime = tokio::runtime::Builder::new_current_thread()
                 .enable_all()

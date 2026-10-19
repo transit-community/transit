@@ -116,6 +116,19 @@ the provider's dashboard to revoke it at any time.
 Prefer no key at all? **Settings → Local models** runs the assistant on
 Ollama or any OpenAI-compatible server on your own hardware.
 
+## Moving from the Transit app
+
+The Community Edition keeps its files in its own folder (`TransitCommunity`
+beside the old `Transit` one), so both can be installed at once. On its
+first launch, when it has no inventory of its own yet, it imports your
+devices (`transit.toml`) and your host-key pins (`known_hosts.toml`) from
+the Transit app, so nothing needs re-adding or re-trusting. Device
+passwords stored in the OS keychain carry over as well: both editions keep
+them under the same keychain entry. What does not carry over is anything
+tied to the hosted service: the AI runs on your own provider key or local
+model, entered under Settings → AI providers or Settings → Local models.
+Set `$TRANSIT_INVENTORY` to point at a specific inventory file instead.
+
 ## Quick start
 
 1. Open **Settings → AI providers** and save an Anthropic or OpenAI key,

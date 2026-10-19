@@ -69,6 +69,11 @@ bumps the version files in lockstep.
   `.github/dependabot.yml`).
 
 ### Added
+- **First-launch import from the Transit app.** When this edition has no
+  inventory yet and the proprietary client's folder holds one, `transit.toml`
+  and `known_hosts.toml` are copied across once (never overwritten, never
+  removed from the source). Device passwords need no import: both editions
+  use the same keychain entries.
 - **Linux AppImage**, x86_64 and aarch64, beside the `.deb` and `.rpm` —
   the install path for Arch and other distributions without one of those
   package formats.
