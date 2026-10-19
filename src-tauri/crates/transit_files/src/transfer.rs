@@ -692,39 +692,54 @@ async fn copy_remote_to_local(
         })?;
 
     let mut buf = vec![0u8; CHUNK];
-    loop {
-        let read = tokio::select! {
-            biased;
-            _ = cancel.cancelled() => {
-                close_detached(reader);
-                return Err(FilesError::Cancelled);
+    let pumped: Result<(), FilesError> = async {
+        loop {
+            let read = tokio::select! {
+                biased;
+                _ = cancel.cancelled() => return Err(FilesError::Cancelled),
+                r = reader.read(&mut buf) => r,
+            };
+            let n = match read {
+                Ok(n) => n,
+                Err(e) => {
+                    return Err(FilesError::Remote {
+                        op: "read",
+                        path: remote_path.to_string(),
+                        detail: e.to_string(),
+                    })
+                }
+            };
+            if n == 0 {
+                break;
             }
-            r = reader.read(&mut buf) => r,
-        };
-        let n = match read {
-            Ok(n) => n,
-            Err(e) => {
-                return Err(FilesError::Remote {
-                    op: "read",
-                    path: remote_path.to_string(),
+            writer
+                .write_all(&buf[..n])
+                .await
+                .map_err(|e| FilesError::Local {
+                    op: "write",
+                    path: part.display().to_string(),
                     detail: e.to_string(),
-                })
-            }
-        };
-        if n == 0 {
-            break;
+                })?;
+            progress.add_bytes(n as u64);
         }
-        writer
-            .write_all(&buf[..n])
-            .await
-            .map_err(|e| FilesError::Local {
-                op: "write",
-                path: part.display().to_string(),
-                detail: e.to_string(),
-            })?;
-        progress.add_bytes(n as u64);
+        Ok(())
     }
-    writer.flush().await.map_err(|e| FilesError::Local {
+    .await;
+    // Settle the LOCAL side on EVERY exit — cancel and error included —
+    // before the caller removes or renames the part. `tokio::fs::File`
+    // runs writes on the blocking pool, so a drop right after a buffered
+    // write can leave the handle open for a moment; on Windows that makes
+    // the caller's remove fail with a sharing violation and strands the
+    // `.transitpart` (seen on CI once the cancel path stopped waiting on
+    // the remote close). `shutdown` flushes and waits for in-flight ops.
+    let settled = writer.shutdown().await;
+    drop(writer);
+    // The REMOTE handle: on the cancel/error paths it is released when
+    // `reader` drops at return (russh-sftp 3.0 sends the close without
+    // waiting — prompt, which the cancel path needs). The success path
+    // closes it explicitly below so the close status is observed.
+    pumped?;
+    settled.map_err(|e| FilesError::Local {
         op: "write",
         path: part.display().to_string(),
         detail: e.to_string(),

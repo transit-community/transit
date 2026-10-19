@@ -103,6 +103,56 @@ jobs:
       # `command -v rustup` fails, so the broken Homebrew install
       # gets reused. Remove it here so the next step installs fresh
       # at ~/.cargo via https://sh.rustup.rs.
+      # Free disk space BEFORE the Rust cache restore. Originally placed
+      # before `cargo test` (Phase 7b: the workspace
+      # picked up tokio-serial / serialport / mio-serial via
+      # transit_console, which tipped the host-side cargo-test link
+      # over the Ubuntu runner's ~14 GB free space — `cc` failed with
+      # "No space left on device" partway through linking the test
+      # binaries). Moving the cleanup earlier amortizes its cost
+      # across cargo test, the dockerized integration steps, and the
+      # release build downstream.) Moved ahead of `Cache Rust workspace`
+      # on 2026-10-19: the restored cache itself grew past the runner's
+      # headroom and the job died in the restore step with "No space left
+      # on device", before any of our steps ran.
+      #
+      # `preinstalled-runtimes: false` preserves the Node + Rust toolchains
+      # the earlier steps configured. The sweep takes `libgtk-3-dev` /
+      # `libwebkit2gtk-4.1-dev` / `libdbus-1-dev` with it; the
+      # "Re-install Linux host deps" step right after reinstalls them
+      # so subsequent host-side compile/link steps (cargo test,
+      # SSH dockerized integration, release build) still find them.
+      - name: Free disk space (Ubuntu)
+        if: matrix.name == 'ubuntu-latest'
+        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
+        with:
+          preinstalled-runtimes: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Re-install Linux host deps (post-disk-cleanup)
+        # `Free disk space (Ubuntu)` above purges `libgtk-3-dev` +
+        # `libwebkit2gtk-4.1-dev` (needed for Tauri's GUI link) AND
+        # `libdbus-1-dev` (transitively required by transit_auth's
+        # keyring -> dbus-secret-service chain). Without libdbus-1
+        # the cargo test below — which compiles transit_ssh +
+        # transit_auth — fails at link time with "unable to find
+        # library -ldbus-1". apt is cached, ~10s.
+        if: matrix.name == 'ubuntu-latest'
+        timeout-minutes: 10
+        run: |
+          sudo apt-get -o Acquire::Retries=3 update
+          sudo apt-get -o Acquire::Retries=3 install -y \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libsoup-3.0-dev \
+            libjavascriptcoregtk-4.1-dev \
+            libdbus-1-dev
+
       - name: Clear Homebrew Rust on macOS (avoid rustup-init proxy misroute)
         if: matrix.name == 'macos-latest'
         run: |
@@ -196,52 +246,6 @@ jobs:
 
       - name: cargo clippy
         run: cargo clippy --manifest-path src-tauri/Cargo.toml --workspace --all-targets -- -D warnings
-
-      # Free disk space BEFORE `cargo test` (Phase 7b: the workspace
-      # picked up tokio-serial / serialport / mio-serial via
-      # transit_console, which tipped the host-side cargo-test link
-      # over the Ubuntu runner's ~14 GB free space — `cc` failed with
-      # "No space left on device" partway through linking the test
-      # binaries). Moving the cleanup earlier amortizes its cost
-      # across cargo test, the dockerized integration steps, and the
-      # release build downstream.
-      #
-      # `preinstalled-runtimes: false` preserves the Node + Rust toolchains
-      # the earlier steps configured. The sweep takes `libgtk-3-dev` /
-      # `libwebkit2gtk-4.1-dev` / `libdbus-1-dev` with it; the
-      # "Re-install Linux host deps" step right after reinstalls them
-      # so subsequent host-side compile/link steps (cargo test,
-      # SSH dockerized integration, release build) still find them.
-      - name: Free disk space (Ubuntu)
-        if: matrix.name == 'ubuntu-latest'
-        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
-        with:
-          preinstalled-runtimes: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
-
-      - name: Re-install Linux host deps (post-disk-cleanup)
-        # `Free disk space (Ubuntu)` above purges `libgtk-3-dev` +
-        # `libwebkit2gtk-4.1-dev` (needed for Tauri's GUI link) AND
-        # `libdbus-1-dev` (transitively required by transit_auth's
-        # keyring -> dbus-secret-service chain). Without libdbus-1
-        # the cargo test below — which compiles transit_ssh +
-        # transit_auth — fails at link time with "unable to find
-        # library -ldbus-1". apt is cached, ~10s.
-        if: matrix.name == 'ubuntu-latest'
-        timeout-minutes: 10
-        run: |
-          sudo apt-get -o Acquire::Retries=3 update
-          sudo apt-get -o Acquire::Retries=3 install -y \
-            libwebkit2gtk-4.1-dev \
-            libgtk-3-dev \
-            libsoup-3.0-dev \
-            libjavascriptcoregtk-4.1-dev \
-            libdbus-1-dev
 
       # Split so the in-process russh integration tests run ONE AT A TIME.
       # transit_ssh's tests stand up real russh SERVERS in-process and talk
