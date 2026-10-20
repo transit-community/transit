@@ -85,6 +85,12 @@ client at 6.5.9, open-sourced under Apache-2.0, plus everything below.
   `.github/dependabot.yml`).
 
 ### Added
+- **One-line installers.** `install.sh` for macOS and Linux (dmg; deb,
+  rpm, or a pacman package built from the deb; AppImage elsewhere) and
+  `install.ps1` for Windows. Both resolve the newest GitHub release, verify
+  the published SHA-256 before anything runs, print their plan and ask
+  first, and never run as root (the package-manager step alone uses sudo;
+  Windows installs per-user). A weekly workflow dry-runs them on every OS.
 - **First-launch import from the Transit app.** When this edition has no
   inventory yet and the proprietary client's folder holds one, `transit.toml`
   and `known_hosts.toml` are copied across once (never overwritten, never

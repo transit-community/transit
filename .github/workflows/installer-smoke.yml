@@ -1,0 +1,46 @@
+name: Installer smoke
+
+# Exercises the one-line installers against the NEWEST PUBLISHED RELEASE on
+# each OS in dry-run mode: resolve the version from the GitHub API, pick the
+# right asset from SHA256SUMS.txt, download it, verify the checksum, stop
+# before installing. Catches a renamed asset, a broken sums file, or a
+# script regression before a user does. Manual, plus weekly.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 6 * * 1" # Mondays 06:30 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  posix:
+    name: install.sh (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: ubuntu-apt, os: ubuntu-24.04, pm: apt }
+          - { name: ubuntu-aarch64-apt, os: ubuntu-24.04-arm, pm: apt }
+          - { name: ubuntu-appimage, os: ubuntu-24.04, pm: appimage }
+          - { name: ubuntu-pacman-pkgbuild, os: ubuntu-24.04, pm: pacman }
+          - { name: macos-aarch64, os: macos-15, pm: macos }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: dry run
+        env:
+          TRANSIT_FORCE_PM: ${{ matrix.pm }}
+        run: sh install.sh --dry-run -y
+
+  windows:
+    name: install.ps1 (windows)
+    runs-on: windows-2025
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: dry run
+        shell: pwsh
+        run: ./install.ps1 -DryRun -Yes

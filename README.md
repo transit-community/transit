@@ -57,9 +57,25 @@ that holds secrets.
 
 ## Install
 
-Download the artifact for your platform from the
-[latest release](https://github.com/transit-community/transit/releases/latest)
+Use the one-line installer, or download the artifact for your platform
+from the [latest release](https://github.com/transit-community/transit/releases/latest)
 and verify it against `SHA256SUMS.txt`. **Builds are unsigned.**
+
+- **One-line install.** Each script prints its plan and asks before
+  installing (`-y` / `-Yes` skips the prompt, `--dry-run` / `-DryRun`
+  only downloads and verifies the checksum). macOS and Linux share one
+  script; it picks the dmg, deb, rpm, or a pacman package built from the
+  deb, and falls back to the AppImage on distributions without one of
+  those. Windows installs for the current user with no administrator
+  prompt.
+
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/transit-community/transit/main/install.sh | sh
+  ```
+
+  ```powershell
+  irm https://raw.githubusercontent.com/transit-community/transit/main/install.ps1 | iex
+  ```
 
 - **macOS** (`.dmg`, Apple Silicon and Intel): after copying the app,
   clear the quarantine bit once: `xattr -d com.apple.quarantine "/Applications/Transit Community Edition.app"`.
