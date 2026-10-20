@@ -30,7 +30,6 @@ param(
 
 $ErrorActionPreference = "Stop"
 $Repo = if ($env:TRANSIT_REPO) { $env:TRANSIT_REPO } else { "transit-community/transit" }
-$Api = "https://api.github.com/repos/$Repo"
 $Dl = "https://github.com/$Repo/releases/download"
 
 function Die($msg) { Write-Host "error: $msg" -ForegroundColor Red; exit 1 }
@@ -39,12 +38,22 @@ $arch = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToSt
 if ($arch -ne "X64") { Die "unsupported architecture: $arch. Transit Community Edition publishes x64 Windows builds only." }
 
 if (-not $Version) {
-  try { $rel = Invoke-RestMethod -Uri "$Api/releases/latest" -Headers @{ "User-Agent" = "transit-community-installer" } }
-  catch { Die "could not reach the GitHub release API: $($_.Exception.Message)" }
-  $Version = $rel.tag_name -replace '^v', ''
+  # The releases/latest redirect carries the tag in its target URL: no API,
+  # no token, no rate limit.
+  try {
+    $r = Invoke-WebRequest -Uri "https://github.com/$Repo/releases/latest" -MaximumRedirection 0 -SkipHttpErrorCheck -UseBasicParsing
+    $loc = [string]$r.Headers["Location"]
+  } catch { Die "could not reach GitHub: $($_.Exception.Message)" }
+  if ($loc -notmatch '/releases/tag/v([0-9][0-9.]*)$') { Die "could not determine the newest release from: $loc" }
+  $Version = $Matches[1]
 }
 
-try { $sums = (Invoke-WebRequest -Uri "$Dl/v$Version/SHA256SUMS.txt" -UseBasicParsing).Content }
+# GitHub serves release assets as application/octet-stream, for which
+# PowerShell 7 hands back bytes rather than text; decode explicitly.
+try {
+  $raw = (Invoke-WebRequest -Uri "$Dl/v$Version/SHA256SUMS.txt" -UseBasicParsing).Content
+  $sums = if ($raw -is [byte[]]) { [System.Text.Encoding]::UTF8.GetString($raw) } else { [string]$raw }
+}
 catch { Die "no published release v$Version (or it has no SHA256SUMS.txt)." }
 
 $line = ($sums -split "`n") | Where-Object { $_ -match '_x64-setup\.exe\s*$' } | Select-Object -First 1

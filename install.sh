@@ -27,7 +27,6 @@
 set -eu
 
 REPO="${TRANSIT_REPO:-transit-community/transit}"
-API="https://api.github.com/repos/${REPO}"
 DL="https://github.com/${REPO}/releases/download"
 ASSUME_YES=0
 PIN_VERSION=""
@@ -104,13 +103,14 @@ esac
 
 # ------------------------------------------------------------- what to fetch
 
-# Newest version from the GitHub release API (no JSON parser needed: the
-# tag_name field is the only "vX.Y.Z" string on its line).
+# Newest version from the releases/latest redirect: its target URL ends in
+# the tag, needs no JSON parser and no token, and is not subject to the
+# API rate limit that shared CI runner addresses routinely exhaust.
 resolve_latest() {
-  _j=$(curl -fsSL -H 'Accept: application/vnd.github+json' "${API}/releases/latest") \
-    || die "could not reach the GitHub release API. Check the network and try again."
-  _v=$(printf '%s\n' "$_j" | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"v\([0-9][0-9.]*\)".*/\1/p' | head -n 1)
-  [ -n "$_v" ] || die "could not determine the newest release."
+  _u=$(curl -fsSL -o /dev/null -w '%{url_effective}' "https://github.com/${REPO}/releases/latest") \
+    || die "could not reach GitHub. Check the network and try again."
+  _v=$(printf '%s' "$_u" | sed -n 's|.*/releases/tag/v\([0-9][0-9.]*\)$|\1|p')
+  [ -n "$_v" ] || die "could not determine the newest release from: $_u"
   printf '%s' "$_v"
 }
 
