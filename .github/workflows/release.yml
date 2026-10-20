@@ -104,7 +104,10 @@ jobs:
         shell: bash
         run: |
           bin="src-tauri/target/${{ matrix.target }}/release/transit_app"
-          [[ -f "$bin" ]] || bin="$bin.exe"
+          # Git Bash on Windows makes `[[ -f transit_app ]]` succeed when
+          # only transit_app.exe exists, so the extension must be chosen
+          # positively: prefer the .exe whenever it is there.
+          [[ -f "$bin.exe" ]] && bin="$bin.exe"
           ./scripts/no-phone-home-scan.sh "$bin"
 
       - name: Collect artifacts
