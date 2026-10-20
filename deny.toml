@@ -22,6 +22,13 @@ feature-depth = 1
 db-path = "~/.cargo/advisory-db"
 db-urls = ["https://github.com/rustsec/advisory-db"]
 yanked = "deny"
+# Vulnerabilities and yanked crates fail the build everywhere in the tree.
+# "Unmaintained" is informational, and three notices in four days (zvariant,
+# zbus_names, basic-toml — all deep transitive crates we cannot swap) each
+# turned main red with no change on our side. Scope that class to crates
+# this workspace depends on DIRECTLY: those are ours to replace; a build
+# tool's build tool is not.
+unmaintained = "workspace"
 
 # Carve-outs are for advisories on transitive deps we cannot upgrade
 # directly. Each entry needs a justification + a remove-by checkpoint.
