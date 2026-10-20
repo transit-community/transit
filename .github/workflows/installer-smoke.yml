@@ -124,6 +124,9 @@ jobs:
       - name: second run reports reinstall
         shell: pwsh
         run: |
-          $out = ./install.ps1 -DryRun -Yes | Out-String
+          # The installer reports through Write-Host (the information
+          # stream), which a plain pipeline does not capture; merge all
+          # streams so the plan text is inspectable.
+          $out = ./install.ps1 -DryRun -Yes *>&1 | Out-String
           $out
           if ($out -notmatch 'Action\s+reinstall') { throw "second run did not detect the existing install" }
