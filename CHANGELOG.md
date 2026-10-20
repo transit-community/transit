@@ -34,7 +34,9 @@ client at 6.5.9, open-sourced under Apache-2.0, plus everything below.
   could outlast the session's two-second drain and the worker was aborted
   before the transfer reported Cancelled. The cancel path now drops the
   handle (3.0 closes it server-side without waiting); completed transfers
-  still await the close status.
+  still await the close status. A transfer is also
+  deregistered from the active set before its terminal event is emitted, so
+  the quit guard cannot see a transfer the UI has just been told is over.
 - **Tab rename lost the draft on a click inside the field.** Radix tabs
   1.2 focuses the tab button on mousedown, so a click to place the caret
   in the inline rename input bubbled up, blurred the input and committed

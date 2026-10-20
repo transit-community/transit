@@ -316,6 +316,7 @@ pub(crate) async fn worker_loop(
             max_entries,
             events.clone(),
             shutdown.clone(),
+            Arc::clone(&cancels),
         ));
         if let Err(join_err) = task.await {
             // A panic (or an abort during teardown) means `run_one_job` never
@@ -325,6 +326,11 @@ pub(crate) async fn worker_loop(
             // statement.
             if join_err.is_panic() {
                 tracing::error!(transfer = %id, "files transfer job panicked");
+                // Deregister BEFORE the terminal event, as `run_one_job` does.
+                cancels
+                    .lock()
+                    .unwrap_or_else(|e| e.into_inner())
+                    .remove(&id);
                 let mut progress = Progress::new(id.clone(), direction, name, events.clone());
                 progress.finish(
                     TransferState::Error,
@@ -353,28 +359,40 @@ async fn run_one_job(
     max_entries: usize,
     events: mpsc::UnboundedSender<TransferEvent>,
     shutdown: CancellationToken,
+    cancels: Arc<Mutex<HashMap<String, CancellationToken>>>,
 ) {
     let id = job.id.clone();
     let name = job_display_name(&job);
     let mut progress = Progress::new(id.clone(), job.direction, name, events);
 
-    if job.cancel.is_cancelled() || shutdown.is_cancelled() {
-        progress.finish(TransferState::Cancelled, None);
-        return;
-    }
-    progress.emit(TransferState::Running);
-    let result = match job.direction {
-        Direction::Download => download_item(&remote, &job, max_entries, &mut progress).await,
-        Direction::Upload => upload_item(&remote, &job, max_entries, &mut progress).await,
-    };
-    match result {
-        Ok(()) => progress.finish(TransferState::Done, None),
-        Err(FilesError::Cancelled) => progress.finish(TransferState::Cancelled, None),
-        Err(e) => {
-            tracing::warn!(transfer = %id, "transfer failed: {e}");
-            progress.finish(TransferState::Error, Some(e.to_string()));
+    let (state, error) = if job.cancel.is_cancelled() || shutdown.is_cancelled() {
+        (TransferState::Cancelled, None)
+    } else {
+        progress.emit(TransferState::Running);
+        let result = match job.direction {
+            Direction::Download => download_item(&remote, &job, max_entries, &mut progress).await,
+            Direction::Upload => upload_item(&remote, &job, max_entries, &mut progress).await,
+        };
+        match result {
+            Ok(()) => (TransferState::Done, None),
+            Err(FilesError::Cancelled) => (TransferState::Cancelled, None),
+            Err(e) => {
+                tracing::warn!(transfer = %id, "transfer failed: {e}");
+                (TransferState::Error, Some(e.to_string()))
+            }
         }
-    }
+    };
+    // Deregister BEFORE the terminal event. The event is the signal — to
+    // the UI, the quit guard's caller, and the tests — that this transfer
+    // is over, so `has_active_transfers` must already answer "no" by the
+    // time it lands. Doing it after the join (as the worker also does,
+    // idempotently, for the panic path) left a window in which a prompt
+    // reader of the event still saw the transfer as active.
+    cancels
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .remove(&id);
+    progress.finish(state, error);
 }
 
 /// The display name for a job's transfer events — the final path component,
