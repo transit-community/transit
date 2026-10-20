@@ -175,7 +175,14 @@ fi
 # ------------------------------------------------------------------- plan
 
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/transit-install.XXXXXX")
-cleanup() { rm -rf "$WORK"; }
+MNT="${WORK}/mnt"
+MOUNTED=0
+cleanup() {
+  # Detach a still-mounted image BEFORE removing the work dir, or rm walks
+  # into the read-only volume and the image stays attached.
+  if [ "$MOUNTED" -eq 1 ]; then hdiutil detach "$MNT" -force >/dev/null 2>&1 || true; fi
+  rm -rf "$WORK"
+}
 trap cleanup EXIT INT TERM
 
 APP_DIR="${HOME}/.local/share/transit-community"
@@ -193,7 +200,7 @@ case "$PM" in
 esac
 
 echo
-bold "Transit Community Edition ${VERSION} — Linux installer"
+bold "Transit Community Edition ${VERSION} — $([ "$PM" = macos ] && echo macOS || echo Linux) installer"
 echo
 printf '  %-10s %s\n' "Detected" "$PRETTY ($ARCH)"
 printf '  %-10s %s\n' "Action"   "$ACTION${CURRENT:+ (currently ${CURRENT})}"
@@ -312,12 +319,16 @@ DESKTOP
       have update-desktop-database && update-desktop-database "${HOME}/.local/share/applications" >/dev/null 2>&1 || true
       ;;
     macos)
-      MNT=$(hdiutil attach -nobrowse -readonly -mountrandom "$WORK" "${WORK}/${ASSET}" 2>/dev/null | awk -F'\t' '/\/Volumes\/|'"$WORK"'/{print $NF}' | tail -n 1)
-      [ -n "$MNT" ] && [ -d "${MNT}/${MAC_APP}" ] || die "could not mount the disk image, or it holds no ${MAC_APP}."
+      mkdir -p "$MNT"
+      hdiutil attach -nobrowse -readonly -mountpoint "$MNT" "${WORK}/${ASSET}" >/dev/null 2>&1 \
+        || die "could not mount the disk image."
+      MOUNTED=1
+      [ -d "${MNT}/${MAC_APP}" ] || die "the disk image holds no ${MAC_APP}."
       mkdir -p "$MAC_DEST"
       rm -rf "${MAC_DEST}/${MAC_APP}"
-      cp -R "${MNT}/${MAC_APP}" "${MAC_DEST}/" || { hdiutil detach "$MNT" >/dev/null 2>&1; die "copy failed."; }
+      cp -R "${MNT}/${MAC_APP}" "${MAC_DEST}/" || die "copy failed."
       hdiutil detach "$MNT" >/dev/null 2>&1 || true
+      MOUNTED=0
       xattr -dr com.apple.quarantine "${MAC_DEST}/${MAC_APP}" 2>/dev/null || true
       ;;
   esac

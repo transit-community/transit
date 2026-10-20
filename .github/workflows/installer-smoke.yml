@@ -115,7 +115,9 @@ jobs:
                Where-Object { $_.DisplayName -eq "Transit Community Edition" } | Select-Object -First 1
           if (-not $k) { throw "no per-user uninstall entry for Transit Community Edition" }
           "registered version: $($k.DisplayVersion) at $($k.InstallLocation)"
-          $exe = Join-Path $k.InstallLocation "transit_app.exe"
+          # NSIS writes InstallLocation with literal surrounding quotes.
+          $loc = ([string]$k.InstallLocation).Trim('"')
+          $exe = Join-Path $loc "transit_app.exe"
           if (-not (Test-Path $exe)) { throw "transit_app.exe not found at $exe" }
           $latest = ((Invoke-WebRequest -Uri "https://github.com/transit-community/transit/releases/latest" -MaximumRedirection 5 -UseBasicParsing).BaseResponse.RequestMessage.RequestUri.AbsoluteUri) -replace '.*/tag/v', ''
           if ($k.DisplayVersion -ne $latest) { throw "installed $($k.DisplayVersion) but latest is $latest" }
