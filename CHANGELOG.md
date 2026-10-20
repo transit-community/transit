@@ -43,6 +43,15 @@ client at 6.5.9, open-sourced under Apache-2.0, plus everything below.
   the draft early. Mousedown now stays inside the input.
 
 ### Security
+- Updated **russh** to 0.64.1 (GHSA-4wc5-f2rc-q74m: unbounded allocation
+  in the agent-protocol server; GHSA-j7h2-66j4-ghjf: a server accepting a
+  publickey signature in an algorithm other than the negotiated one).
+  Neither code path ships in this client (Transit never serves the agent
+  protocol, and russh's server exists here only in test harnesses), but
+  the first public release should not carry a dependency with a known
+  advisory. 0.64 also enforces rekey byte/time limits on long sessions and
+  fixes the `auth-agent-req@openssh.com` reply handling that agent
+  forwarding relies on.
 - Updated the SSH transport, **russh**, from 0.62 to 0.63.3: channel-scoped
   event handlers no longer fire for channel ids the client never opened
   (GHSA-47hw-gvq5-r2gm), the hybrid ML-KEM key exchange rejects an all-zero
