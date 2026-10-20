@@ -41,10 +41,15 @@ if (-not $Version) {
   # The releases/latest redirect carries the tag in its target URL: no API,
   # no token, no rate limit.
   try {
-    $r = Invoke-WebRequest -Uri "https://github.com/$Repo/releases/latest" -MaximumRedirection 0 -SkipHttpErrorCheck -UseBasicParsing
-    $loc = [string]$r.Headers["Location"]
+    $handler = [System.Net.Http.HttpClientHandler]::new()
+    $handler.AllowAutoRedirect = $false
+    $client = [System.Net.Http.HttpClient]::new($handler)
+    $client.DefaultRequestHeaders.UserAgent.ParseAdd("transit-community-installer")
+    $resp = $client.GetAsync("https://github.com/$Repo/releases/latest").GetAwaiter().GetResult()
+    $loc = if ($resp.Headers.Location) { $resp.Headers.Location.ToString() } else { "" }
+    $client.Dispose()
   } catch { Die "could not reach GitHub: $($_.Exception.Message)" }
-  if ($loc -notmatch '/releases/tag/v([0-9][0-9.]*)$') { Die "could not determine the newest release from: $loc" }
+  if ($loc -notmatch '/releases/tag/v([0-9][0-9.]*)$') { Die "could not determine the newest release from: '$loc'" }
   $Version = $Matches[1]
 }
 
