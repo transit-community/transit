@@ -133,11 +133,50 @@ jobs:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: dist
-      - name: Flatten + checksums
+      - name: Flatten + rename to the served names + checksums
+        shell: bash
         run: |
-          mkdir -p release
-          find dist -type f -not -path 'dist/release-notes/*' -exec cp {} release/ \;
+          set -euo pipefail
+          mkdir release
+          # GitHub stores a release asset under a sanitised name: each space
+          # becomes a dot, so "Transit Community Edition_6.5.10_x64.dmg" is
+          # served as "Transit.Community.Edition_6.5.10_x64.dmg". Rename before
+          # checksumming, so SHA256SUMS.txt, the uploaded asset and the file a
+          # user downloads all carry one name and `sha256sum -c` can find it.
+          while IFS= read -r -d '' f; do
+            name=$(basename "$f")
+            name=${name// /.}
+            if [[ -e "release/$name" ]]; then
+              echo "::error::two build artifacts would both publish as $name"
+              exit 1
+            fi
+            cp -- "$f" "release/$name"
+          done < <(find dist -type f -not -path 'dist/release-notes/*' -print0)
           (cd release && sha256sum -- * > SHA256SUMS.txt && cat SHA256SUMS.txt)
+      - name: SHA256SUMS.txt must name exactly the assets being uploaded
+        shell: bash
+        working-directory: release
+        run: |
+          set -euo pipefail
+          # Fails closed: nothing is published unless all three hold.
+          # 1. Every name is one GitHub serves unchanged: letters and digits
+          #    joined by single dots, underscores or hyphens. Anything else
+          #    could be renamed on upload and break the sums file again; map
+          #    it in the rename above rather than widening this pattern.
+          for f in *; do
+            if [[ ! "$f" =~ ^[A-Za-z0-9]+([._-][A-Za-z0-9]+)*$ ]]; then
+              echo "::error::'$f' is not a name GitHub serves unchanged"
+              exit 1
+            fi
+          done
+          # 2. The sums file lists every other file here, and nothing else.
+          if ! diff <(printf '%s\n' * | grep -vxF SHA256SUMS.txt | LC_ALL=C sort) \
+            <(sed -E 's/^[0-9a-f]{64}  //' SHA256SUMS.txt | LC_ALL=C sort); then
+            echo "::error::SHA256SUMS.txt does not list exactly the files being uploaded"
+            exit 1
+          fi
+          # 3. The check users are told to run passes against those files.
+          sha256sum --check --strict SHA256SUMS.txt
       - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v2
         with:
           name: v${{ needs.prepare.outputs.version }}

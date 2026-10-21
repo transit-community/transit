@@ -75,6 +75,9 @@ $line = ($sums -split "`n") | Where-Object { $_ -match '_x64-setup\.exe\s*$' } |
 if (-not $line) { Die "release v$Version publishes no x64 setup.exe." }
 $sha = ($line -split '\s+', 2)[0].ToLowerInvariant()
 $file = ($line -replace '^[0-9A-Fa-f]+\s+', '').Trim()
+# GitHub serves release assets with spaces replaced by dots. Releases after
+# 6.5.10 list that served name already; -Version installs of the older ones
+# still need the mapping.
 $asset = $file -replace ' ', '.'
 $url = "$Dl/v$Version/$asset"
 
