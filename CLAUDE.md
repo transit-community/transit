@@ -418,7 +418,13 @@ stale closure — read live state through a ref.
 changelog section, builds unsigned bundles for macOS (arm64 + x86_64),
 Windows, Linux (`.deb` + `.rpm`, x86_64 + aarch64), runs the no-phone-home
 scan on each, and publishes a GitHub Release with `SHA256SUMS.txt`.
-There is no updater: users install the next release by hand.
+Artifacts are renamed to the names GitHub serves (each space becomes `.`)
+before they are checksummed, and the publish job uploads nothing unless
+every name is one GitHub keeps unchanged and `SHA256SUMS.txt` lists exactly
+the uploaded files and passes `sha256sum --check`. If a new character in an
+artifact name trips it, map that character in the rename rather than
+widening the check. There is no updater: users install the next release by
+hand.
 
 ## 19. Model list
 

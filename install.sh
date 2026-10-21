@@ -137,7 +137,9 @@ SHA=$(printf '%s' "$LINE" | awk '{print $1}' | tr 'A-F' 'a-f')
 # The filename may contain spaces ("Transit Community Edition_…"): take
 # everything after the checksum + two-space separator.
 FILE=$(printf '%s' "$LINE" | sed 's/^[0-9A-Fa-f]*  *//')
-# GitHub serves release assets with spaces replaced by dots.
+# GitHub serves release assets with spaces replaced by dots. Releases after
+# 6.5.10 list that served name already; --version installs of the older ones
+# still need the mapping.
 ASSET=$(printf '%s' "$FILE" | tr ' ' '.')
 URL="${DL}/v${VERSION}/${ASSET}"
 

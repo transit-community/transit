@@ -59,7 +59,7 @@ that holds secrets.
 
 Use the one-line installer, or download the artifact for your platform
 from the [latest release](https://github.com/transit-community/transit/releases/latest)
-and verify it against `SHA256SUMS.txt`. **Builds are unsigned.**
+and verify it against `SHA256SUMS.txt` (below). **Builds are unsigned.**
 
 - **One-line install.** Each script prints its plan and asks before
   installing (`-y` / `-Yes` skips the prompt, `--dry-run` / `-DryRun`
@@ -76,6 +76,26 @@ and verify it against `SHA256SUMS.txt`. **Builds are unsigned.**
 
   ```powershell
   irm https://raw.githubusercontent.com/transit-community/transit/main/install.ps1 | iex
+  ```
+
+- **Verify a download.** Save the file and that release's
+  `SHA256SUMS.txt` in one folder and run the check there. Your file's
+  line must end in `OK`; `--ignore-missing` skips the files you did not
+  download. A match proves the download is intact, not who built it.
+
+  ```bash
+  sha256sum -c --ignore-missing SHA256SUMS.txt       # Linux
+  shasum -a 256 -c --ignore-missing SHA256SUMS.txt   # macOS
+  ```
+
+  On Windows, compare `Get-FileHash <file>` in PowerShell with your
+  file's line. Up to 6.5.10, `SHA256SUMS.txt` spells each name with
+  spaces where the downloaded file has dots; check those releases with
+  this (on macOS, `shasum -a 256 -c --ignore-missing` in place of
+  `sha256sum -c --ignore-missing`):
+
+  ```bash
+  sed -E 's/ /./g; s/^([0-9a-f]{64})\.\./\1  /' SHA256SUMS.txt | sha256sum -c --ignore-missing
   ```
 
 - **macOS** (`.dmg`, Apple Silicon and Intel): after copying the app,

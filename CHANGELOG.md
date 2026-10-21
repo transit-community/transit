@@ -12,6 +12,19 @@ bumps the version files in lockstep.
 
 ## [Unreleased]
 
+### Fixed
+- **`sha256sum -c SHA256SUMS.txt` found none of the downloads.** The
+  checksum file named each asset the way the build wrote it, with spaces
+  (`Transit Community Edition_6.5.10_x64.dmg`), but GitHub replaces each
+  space with a dot when it stores a release asset, so the file you
+  download is `Transit.Community.Edition_6.5.10_x64.dmg`. The hashes were
+  always right; only the names differed. The release job now renames the
+  files to the names GitHub serves before checksumming them, and refuses
+  to publish unless `SHA256SUMS.txt` lists exactly the files it uploads,
+  under names GitHub keeps unchanged, and passes `sha256sum --check`
+  against them. README → *Install* shows the check, with a one-liner for
+  6.5.10 and earlier. The one-line installers already accepted both forms.
+
 ## [6.5.10] - 2026-10-21
 
 ### Security
