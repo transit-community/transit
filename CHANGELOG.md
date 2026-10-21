@@ -12,6 +12,23 @@ bumps the version files in lockstep.
 
 ## [Unreleased]
 
+## [6.5.10] - 2026-10-21
+
+### Security
+- **Certificate verification could accept distrusted intermediates.**
+  `rustls-webpki` 0.103.16 fixes RUSTSEC-2026-0382, where verification could
+  accept a chain through an intermediate that should no longer be trusted.
+- **The bundled root store still trusted distrusted emSign intermediates.**
+  `webpki-roots` and `webpki-root-certs` 1.0.10 fix RUSTSEC-2026-0381 and
+  RUSTSEC-2026-0383.
+
+Both sit under `transit_tls`, so they cover every HTTPS connection the app
+makes: the direct calls to model providers that carry your API key, and the
+REST device transport. Exploiting either would take a network attacker
+holding a certificate from a distrusted authority; nothing suggests that has
+happened, but certificate validation is not something to leave behind.
+Dependency-only release: no source changes.
+
 ## [6.5.9] - 2026-10-19
 
 The first Community Edition release: the proprietary Transit desktop
