@@ -16,7 +16,7 @@ members = [
 ]
 
 [workspace.package]
-version = "6.5.9"
+version = "6.5.10"
 edition = "2021"
 # The oldest toolchain Transit actually builds on, derived from the highest
 # MSRV in our own dependency graph (tauri → plist, plus image/time/darling/
