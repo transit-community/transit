@@ -30,6 +30,16 @@ param(
 
 $ErrorActionPreference = "Stop"
 $Repo = if ($env:TRANSIT_REPO) { $env:TRANSIT_REPO } else { "transit-community/transit" }
+
+# Windows PowerShell 5.1 (the built-in one) cannot run this script: the
+# RuntimeInformation and HttpClient types it relies on are not available
+# there. Say so plainly instead of failing on the first of them.
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+  Write-Host "error: this installer needs PowerShell 7 or newer; this is Windows PowerShell $($PSVersionTable.PSVersion)." -ForegroundColor Red
+  Write-Host "Install it with:  winget install Microsoft.PowerShell   then open 'PowerShell 7' and re-run the command." -ForegroundColor Red
+  Write-Host "Or download the setup.exe from https://github.com/$Repo/releases/latest and run it." -ForegroundColor Red
+  return
+}
 $Dl = "https://github.com/$Repo/releases/download"
 
 function Die($msg) { Write-Host "error: $msg" -ForegroundColor Red; exit 1 }

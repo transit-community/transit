@@ -67,7 +67,8 @@ and verify it against `SHA256SUMS.txt`. **Builds are unsigned.**
   script; it picks the dmg, deb, rpm, or a pacman package built from the
   deb, and falls back to the AppImage on distributions without one of
   those. Windows installs for the current user with no administrator
-  prompt.
+  prompt and needs **PowerShell 7** (`winget install Microsoft.PowerShell`);
+  the built-in Windows PowerShell 5.1 is not supported.
 
   ```bash
   curl -fsSL https://raw.githubusercontent.com/transit-community/transit/main/install.sh | sh
@@ -80,7 +81,8 @@ and verify it against `SHA256SUMS.txt`. **Builds are unsigned.**
 - **macOS** (`.dmg`, Apple Silicon and Intel): after copying the app,
   clear the quarantine bit once: `xattr -d com.apple.quarantine "/Applications/Transit Community Edition.app"`.
 - **Windows** (`-setup.exe` or `.msi`): SmartScreen will warn about an
-  unrecognised publisher; choose *More info → Run anyway*.
+  unrecognised publisher; choose *More info → Run anyway*. The one-line
+  installer requires PowerShell 7; the installers themselves do not.
 - **Linux**, x86_64 and aarch64 for every format: `.deb` for Ubuntu
   24.04+ / Debian 13+, `.rpm` for Fedora 41+ and EL10 with EPEL, and an
   `.AppImage` for everything else (Arch and derivatives such as Omarchy,
