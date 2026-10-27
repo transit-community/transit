@@ -14,6 +14,18 @@ bumps the version files in lockstep.
 
 ## [6.5.11] - 2026-10-27
 
+### Security
+- **Constant-time arithmetic in the SSH crypto stack.** `crypto-bigint`
+  0.7.10 fixes RUSTSEC-2026-0387 (secret-dependent branches in
+  subtraction, division, Montgomery multiplication, and limb equality) and
+  `ctutils` 0.4.6 fixes RUSTSEC-2026-0385 (branching mask generation and
+  `u128` comparisons). Both sit under `russh` and the RustCrypto curves,
+  so they cover host-key verification, key exchange, and key-based
+  authentication. Exploitation would need an attacker able to observe
+  timing or microarchitectural side channels on your machine during a
+  handshake; no exploit is known. `clipboard-win` 5.4.3 replaces a yanked
+  release (no advisory).
+
 ### Fixed
 - **Sign in with ChatGPT failed after a successful browser login** with
   "Sign-in did not complete" and `400 Bad Request invalid_grant` in the
