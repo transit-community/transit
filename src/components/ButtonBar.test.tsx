@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ButtonBar } from "@/components/ButtonBar";
+import { deviceColorTint } from "@/lib/deviceColors";
 import {
   type ButtonBar as ButtonBarModel,
   type ButtonBarButton,
@@ -20,6 +21,17 @@ vi.mock("@tauri-apps/plugin-clipboard-manager", () => ({
 vi.mock("@tauri-apps/api/event", () => ({
   emit: vi.fn().mockResolvedValue(undefined),
 }));
+
+// Partial mock: the real helper runs, but wrapped in a spy so the tint
+// test can assert the wiring. happy-dom >= 20.12.1 validates inline color
+// values and silently DROPS any `color-mix()` (probed on 21.0.4: every
+// color-mix form, even with literal colors, leaves `style` null), so the
+// rendered attribute can no longer carry the assertion; the helper's own
+// unit test (deviceColors.test.ts) pins the color-mix string itself.
+vi.mock("@/lib/deviceColors", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/deviceColors")>();
+  return { ...actual, deviceColorTint: vi.fn(actual.deviceColorTint) };
+});
 
 // jsdom lacks ResizeObserver; the bar's overflow-scroll hook needs a
 // stub (same pattern as TerminalArea.test.tsx).
@@ -113,16 +125,25 @@ describe("ButtonBar", () => {
         { id: "b2", label: "plain", value: "y" },
       ],
     });
+    const tint = vi.mocked(deviceColorTint);
+    tint.mockClear();
     render(<ButtonBar />);
 
-    // The colored button carries an inline background tint (color-mix over
-    // the theme-aware palette var); the uncolored one keeps the default.
-    expect(screen.getByRole("button", { name: "voip" }).getAttribute("style")).toContain(
-      "color-mix",
-    );
-    expect(screen.getByRole("button", { name: "plain" }).getAttribute("style") ?? "").not.toContain(
-      "color-mix",
-    );
+    // The colored button is styled with the background tint (color-mix over
+    // the theme-aware palette var); the uncolored one gets no tint and keeps
+    // the default. Asserted at the helper seam (see the module mock above).
+    expect(screen.getByRole("button", { name: "voip" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "plain" })).toBeTruthy();
+    const results = tint.mock.calls.map(([token], i) => ({
+      token,
+      bg: tint.mock.results[i]?.value?.backgroundColor,
+    }));
+    expect(results).toContainEqual({
+      token: "blue",
+      bg: expect.stringContaining("color-mix"),
+    });
+    expect(results).toContainEqual({ token: undefined, bg: undefined });
+    expect(results.filter((r) => r.bg !== undefined).map((r) => r.token)).toEqual(["blue"]);
   });
 
   it("clicking a button returns focus to the active terminal", async () => {

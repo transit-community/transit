@@ -12,7 +12,38 @@ bumps the version files in lockstep.
 
 ## [Unreleased]
 
+## [6.5.11] - 2026-10-27
+
+### Security
+- **Constant-time arithmetic in the SSH crypto stack.** `crypto-bigint`
+  0.7.10 fixes RUSTSEC-2026-0387 (secret-dependent branches in
+  subtraction, division, Montgomery multiplication, and limb equality) and
+  `ctutils` 0.4.6 fixes RUSTSEC-2026-0385 (branching mask generation and
+  `u128` comparisons). Both sit under `russh` and the RustCrypto curves,
+  so they cover host-key verification, key exchange, and key-based
+  authentication. Exploitation would need an attacker able to observe
+  timing or microarchitectural side channels on your machine during a
+  handshake; no exploit is known. `clipboard-win` 5.4.3 replaces a yanked
+  release (no advisory).
+- **Dev-toolchain advisories cleared** (`npm audit` is a release gate, so
+  these block a build even though none ships in the app): `happy-dom`
+  21.0.4 (GHSA-834v-8h66-3h79, test runner DOM only), `undici` 6.29.1
+  (GHSA-4qv8-2p9j-2685, GHSA-xjj6-f33q-929c), `ip-address` 10.7.5
+  (GHSA-rxp7-6hxx-x8q5), `fast-uri` 3.1.9 (four URI-parsing advisories).
+  All reach the tree through the license checker, the form resolver, or
+  the test runner; none is bundled into the desktop binary.
+
 ### Fixed
+- **Sign in with ChatGPT failed after a successful browser login** with
+  "Sign-in did not complete" and `400 Bad Request invalid_grant` in the
+  log. The authorize request carried OpenAI's `resource` indicator
+  (`https://api.openai.com/v1`) but the authorization-code exchange and
+  the refresh grant did not, and OpenAI binds the grant to it. Both token
+  requests now repeat the same `resource`, as OpenAI's Sign in with
+  ChatGPT documentation specifies for each grant. Reported with a precise
+  diagnosis in [#18](https://github.com/transit-community/transit/issues/18);
+  pinned by `exchange_request_repeats_resource_and_redirect_uri` and the
+  extended refresh-shape test. No new hosts, permissions, or storage.
 - **`sha256sum -c SHA256SUMS.txt` found none of the downloads.** The
   checksum file named each asset the way the build wrote it, with spaces
   (`Transit Community Edition_6.5.10_x64.dmg`), but GitHub replaces each

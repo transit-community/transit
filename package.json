@@ -1,7 +1,7 @@
 {
   "name": "transit-community",
   "private": true,
-  "version": "6.5.10",
+  "version": "6.5.11",
   "type": "module",
   "description": "Transit Community Edition \u2014 open-source GUI SSH client with an embedded read-only AI agent that runs on your own provider key or your own hardware",
   "license": "Apache-2.0",
@@ -73,7 +73,7 @@
     "@typescript-eslint/parser": "^8.71.2",
     "@vitejs/plugin-react": "^6.1.2",
     "eslint": "^10.13.0",
-    "happy-dom": "20.12.0",
+    "happy-dom": "21.0.4",
     "husky": "^9.1.7",
     "license-checker-rseidelsohn": "^5.0.1",
     "lint-staged": "^17.6.0",
@@ -87,11 +87,12 @@
     "vitest": "^5.0.5"
   },
   "overrides": {
-    "ip-address": "^10.7.2",
+    "ip-address": "^10.7.5",
     "smol-toml": "^1.8.1",
-    "undici": "^6.29.0",
+    "undici": "^6.29.1",
     "brace-expansion": "^5.0.12",
     "postcss-selector-parser": "^7.1.6",
-    "http-cache-semantics": "^4.2.1"
+    "http-cache-semantics": "^4.2.1",
+    "fast-uri": "^3.1.9"
   }
 }
