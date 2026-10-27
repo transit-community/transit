@@ -38,6 +38,14 @@ updates:
       # age's ml-kem dependency reaches 0.3.
       - dependency-name: "age"
         versions: [">= 0.12"]
+      # keyring 4 is a redesign: the API moved to keyring-core and every
+      # platform store (apple-native, windows-native, linux-native) into a
+      # crate of its own, so the feature names transit_auth selects no longer
+      # exist. The resolver conflict aborts Dependabot's whole cargo job
+      # (2026-10-27). Lift when transit_auth is ported to the keyring-core +
+      # per-store layout.
+      - dependency-name: "keyring"
+        versions: [">= 4"]
 
   - package-ecosystem: "npm"
     directory: "/"
