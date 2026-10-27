@@ -66,10 +66,3 @@ updates:
       # Lift once `npm view typescript-eslint peerDependencies` admits 7.
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
-      # happy-dom 20.12.1 rewrote CSSStyleDeclaration and drops a valid
-      # inline `color-mix(...)` declaration — ButtonBar.test "shades a
-      # colored button" fails on 20.12.1 through 20.14.5 and passes on
-      # 20.12.0. Test-environment regression only; real webviews render
-      # it. Pinned exact at 20.12.0 in package.json.
-      - dependency-name: "happy-dom"
-        versions: [">= 20.12.1"]

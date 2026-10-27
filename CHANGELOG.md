@@ -25,6 +25,13 @@ bumps the version files in lockstep.
   timing or microarchitectural side channels on your machine during a
   handshake; no exploit is known. `clipboard-win` 5.4.3 replaces a yanked
   release (no advisory).
+- **Dev-toolchain advisories cleared** (`npm audit` is a release gate, so
+  these block a build even though none ships in the app): `happy-dom`
+  21.0.4 (GHSA-834v-8h66-3h79, test runner DOM only), `undici` 6.29.1
+  (GHSA-4qv8-2p9j-2685, GHSA-xjj6-f33q-929c), `ip-address` 10.7.5
+  (GHSA-rxp7-6hxx-x8q5), `fast-uri` 3.1.9 (four URI-parsing advisories).
+  All reach the tree through the license checker, the form resolver, or
+  the test runner; none is bundled into the desktop binary.
 
 ### Fixed
 - **Sign in with ChatGPT failed after a successful browser login** with
