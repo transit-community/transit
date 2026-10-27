@@ -216,10 +216,15 @@ impl ChatGptState {
             self.clear_all().await;
             return Err(PlanAuthError::Reauth);
         };
+        // The same resource indicator as the authorize request on EVERY
+        // grant: OpenAI binds the grant to it and answers `invalid_grant`
+        // otherwise (community issue #18). `scope` is deliberately absent
+        // on refresh so the original grant is retained.
         let form = [
             ("grant_type", "refresh_token"),
             ("refresh_token", refresh.expose_secret()),
             ("client_id", client_id.as_str()),
+            ("resource", RESOURCE),
         ];
         let resp = self
             .http()
@@ -374,12 +379,15 @@ impl ChatGptState {
         client_id: &str,
         verifier: &str,
     ) -> Result<(), String> {
+        // `redirect_uri` and `resource` must repeat the authorize request
+        // byte for byte; the code is bound to both (community issue #18).
         let form = [
             ("grant_type", "authorization_code"),
             ("code", code),
             ("redirect_uri", redirect_uri),
             ("client_id", client_id),
             ("code_verifier", verifier),
+            ("resource", RESOURCE),
         ];
         let resp = tokio::time::timeout(
             EXCHANGE_TIMEOUT,
@@ -1036,6 +1044,9 @@ mod tests {
             .and(path("/token"))
             .and(body_string_contains("grant_type=refresh_token"))
             .and(body_string_contains("refresh_token=dead"))
+            .and(body_string_contains(
+                "resource=https%3A%2F%2Fapi.openai.com%2Fv1",
+            ))
             .respond_with(ResponseTemplate::new(400).set_body_json(serde_json::json!({
                 "error": "refresh_token_expired"
             })))
@@ -1049,6 +1060,7 @@ mod tests {
             ("grant_type", "refresh_token"),
             ("refresh_token", "dead"),
             ("client_id", "oaiapp_1"),
+            ("resource", RESOURCE),
         ];
         let resp = state
             .http()
@@ -1064,5 +1076,49 @@ mod tests {
             .error
             .unwrap();
         assert!(DEAD_GRANT_ERRORS.contains(&code.as_str()));
+    }
+
+    /// Community issue #18: the code exchange omitted `resource`, so OpenAI
+    /// answered `invalid_grant` after a successful browser login. Every
+    /// field the doc lists for the `authorization_code` grant must be on
+    /// the wire, `resource` and `redirect_uri` identical to the authorize
+    /// request. A 400 reply keeps the keychain out of the test.
+    #[tokio::test]
+    async fn exchange_request_repeats_resource_and_redirect_uri() {
+        use wiremock::matchers::{body_string_contains, method, path};
+        use wiremock::{Mock, MockServer, ResponseTemplate};
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/token"))
+            .and(body_string_contains("grant_type=authorization_code"))
+            .and(body_string_contains("code=abc"))
+            .and(body_string_contains(
+                "redirect_uri=http%3A%2F%2F127.0.0.1%3A4242%2Fauth%2Fcallback",
+            ))
+            .and(body_string_contains("client_id=oaiapp_1"))
+            .and(body_string_contains("code_verifier=v"))
+            .and(body_string_contains(
+                "resource=https%3A%2F%2Fapi.openai.com%2Fv1",
+            ))
+            .respond_with(ResponseTemplate::new(400).set_body_json(serde_json::json!({
+                "error": "invalid_grant"
+            })))
+            .expect(1)
+            .mount(&server)
+            .await;
+        let state = ChatGptState::new();
+        *state.token_url.write().unwrap() = Some(format!("{}/token", server.uri()));
+        let err = state
+            .exchange_code(
+                "abc",
+                "http://127.0.0.1:4242/auth/callback",
+                "oaiapp_1",
+                "v",
+            )
+            .await
+            .unwrap_err();
+        assert!(err.contains("invalid_grant"), "{err}");
+        // `.expect(1)` is verified on drop: a request missing any field
+        // would not have matched and the mock would panic the test.
     }
 }

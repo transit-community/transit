@@ -12,7 +12,19 @@ bumps the version files in lockstep.
 
 ## [Unreleased]
 
+## [6.5.11] - 2026-10-27
+
 ### Fixed
+- **Sign in with ChatGPT failed after a successful browser login** with
+  "Sign-in did not complete" and `400 Bad Request invalid_grant` in the
+  log. The authorize request carried OpenAI's `resource` indicator
+  (`https://api.openai.com/v1`) but the authorization-code exchange and
+  the refresh grant did not, and OpenAI binds the grant to it. Both token
+  requests now repeat the same `resource`, as OpenAI's Sign in with
+  ChatGPT documentation specifies for each grant. Reported with a precise
+  diagnosis in [#18](https://github.com/transit-community/transit/issues/18);
+  pinned by `exchange_request_repeats_resource_and_redirect_uri` and the
+  extended refresh-shape test. No new hosts, permissions, or storage.
 - **`sha256sum -c SHA256SUMS.txt` found none of the downloads.** The
   checksum file named each asset the way the build wrote it, with spaces
   (`Transit Community Edition_6.5.10_x64.dmg`), but GitHub replaces each

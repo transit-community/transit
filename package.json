@@ -1,7 +1,7 @@
 {
   "name": "transit-community",
   "private": true,
-  "version": "6.5.10",
+  "version": "6.5.11",
   "type": "module",
   "description": "Transit Community Edition \u2014 open-source GUI SSH client with an embedded read-only AI agent that runs on your own provider key or your own hardware",
   "license": "Apache-2.0",

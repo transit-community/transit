@@ -7236,7 +7236,7 @@ dependencies = [
 
 [[package]]
 name = "transit_agent"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "async-trait",
  "eventsource-stream",
@@ -7264,7 +7264,7 @@ dependencies = [
 
 [[package]]
 name = "transit_api"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "base64 0.23.1",
  "proptest",
@@ -7280,7 +7280,7 @@ dependencies = [
 
 [[package]]
 name = "transit_app"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "age",
  "async-trait",
@@ -7326,7 +7326,7 @@ dependencies = [
 
 [[package]]
 name = "transit_auth"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "async-trait",
  "keyring",
@@ -7344,7 +7344,7 @@ dependencies = [
 
 [[package]]
 name = "transit_console"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "async-trait",
  "bytes",
@@ -7360,7 +7360,7 @@ dependencies = [
 
 [[package]]
 name = "transit_core"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "async-trait",
  "bytes",
@@ -7383,7 +7383,7 @@ dependencies = [
 
 [[package]]
 name = "transit_files"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "dirs",
  "russh-sftp",
@@ -7398,7 +7398,7 @@ dependencies = [
 
 [[package]]
 name = "transit_localpty"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "async-trait",
  "bytes",
@@ -7415,7 +7415,7 @@ dependencies = [
 
 [[package]]
 name = "transit_pcap"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "base64 0.23.1",
  "etherparse",
@@ -7431,7 +7431,7 @@ dependencies = [
 
 [[package]]
 name = "transit_policy"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "insta",
  "proptest",
@@ -7447,7 +7447,7 @@ dependencies = [
 
 [[package]]
 name = "transit_ssh"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "async-trait",
  "bytes",
@@ -7469,7 +7469,7 @@ dependencies = [
 
 [[package]]
 name = "transit_tls"
-version = "6.5.10"
+version = "6.5.11"
 dependencies = [
  "rcgen",
  "reqwest 0.12.28",
