@@ -12,6 +12,10 @@ bumps the version files in lockstep.
 
 ## [Unreleased]
 
+## [6.5.12] - 2026-11-14
+
+Dependabot updates and security patches.
+
 ### Security
 - **`russh` 0.65.1** (from 0.64.1). Upstream's release fixes three
   advisories. GHSA-9264-jvgf-6w2f: the client `kex_done` callback could
@@ -22,6 +26,13 @@ bumps the version files in lockstep.
   does not run (agent forwarding pumps bytes to your own local agent).
 - **`async-executor` 1.14.1** replaces a yanked 1.14.0 (no advisory; it
   reaches the tree through `zbus` on Linux).
+- **`pageant` 0.2.5** (GHSA-662x-8wvj-2276, low): unbounded buffering in
+  the Windows Pageant client that `russh` pulls in. Transit never calls
+  that client, so the app was not exposed; the bump clears the advisory.
+- **Build tooling only:** `minimatch` 11.0.8 (GHSA-g3hv-75wg-m249) and
+  `glob` 14.0.6 (GHSA-3g3m-2fjr-6pw4), pinned through npm `overrides`.
+  Both sit under the linter and the licence checker and are not part of
+  the shipped app.
 
 ### Fixed
 - **SSH handshakes that failed against some servers** (inherited from
@@ -31,8 +42,11 @@ bumps the version files in lockstep.
   encrypt-then-MAC algorithm is negotiated.
 
 ### Changed
-- Routine dependency updates: `tauri-plugin-dialog` 2.8.4, the monthly npm
-  group (nine minor and patch updates), and the CI `install-action` pin.
+- Routine dependency updates: `tauri-plugin-dialog` 2.8.4,
+  `tauri-plugin-opener` 2.7.3, `tauri-plugin-log` 2.10.2, `webpki-roots`
+  1.0.12, the monthly npm group (minor and patch updates, including Vite
+  8.3.8, Vitest 5.1.0 and zustand 5.1.0), and the CI `install-action` and
+  `action-gh-release` pins.
 
 ## [6.5.11] - 2026-10-27
 
