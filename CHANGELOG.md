@@ -12,6 +12,28 @@ bumps the version files in lockstep.
 
 ## [Unreleased]
 
+### Security
+- **`russh` 0.65.1** (from 0.64.1). Upstream's release fixes three
+  advisories. GHSA-9264-jvgf-6w2f: the client `kex_done` callback could
+  run before the server host key was verified. Transit does not implement
+  that callback, so host-key trust (TOFU and the changed-key prompt) was
+  not affected; the fix is taken as defence in depth. GHSA-736f-c93q-9fwx
+  and GHSA-9wfm-jcj8-jfv9 are in russh's SSH agent *server*, which Transit
+  does not run (agent forwarding pumps bytes to your own local agent).
+- **`async-executor` 1.14.1** replaces a yanked 1.14.0 (no advisory; it
+  reaches the tree through `zbus` on Linux).
+
+### Fixed
+- **SSH handshakes that failed against some servers** (inherited from
+  `russh` 0.65.1): devices that pad ECDSA P-521 signature values with
+  leading zero bytes (upstream names the Huawei S6720) now complete key
+  exchange, and valid packets are no longer rejected when an
+  encrypt-then-MAC algorithm is negotiated.
+
+### Changed
+- Routine dependency updates: `tauri-plugin-dialog` 2.8.4, the monthly npm
+  group (nine minor and patch updates), and the CI `install-action` pin.
+
 ## [6.5.11] - 2026-10-27
 
 ### Security
