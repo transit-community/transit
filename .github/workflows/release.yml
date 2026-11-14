@@ -86,7 +86,7 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - uses: Swatinem/rust-cache@c8037a86dde8214a8310e9f54a8fc61ab362aa31 # v2
+      - uses: Swatinem/rust-cache@eedcf2fb1c22f010a0eb66b92f378c110977f266 # v2
         with:
           workspaces: src-tauri
 
@@ -177,7 +177,7 @@ jobs:
           fi
           # 3. The check users are told to run passes against those files.
           sha256sum --check --strict SHA256SUMS.txt
-      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v2
+      - uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v2
         with:
           name: v${{ needs.prepare.outputs.version }}
           body_path: dist/release-notes/release-notes.md
